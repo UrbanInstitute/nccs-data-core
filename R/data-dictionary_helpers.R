@@ -4,6 +4,24 @@
 # Date Created: 2024-07-25
 # Date Last Edited: 2024-07-25
 
+# Global Variables
+CONCORDANCE_URL <- "https://raw.githubusercontent.com/Nonprofit-Open-Data-Collective/irs-efile-master-concordance-file/master/concordance.csv"
+CONCORDANCE_DF <- readr::read_csv(CONCORDANCE_URL)
+
+NCCS_VARS_DF <- data.frame(
+  variable_name = c("TAX_YEAR", "EIN2", "DUP_RTRN_X", "MISSION_NTEE", "GEO_ZIP5"),
+  description = c(
+    "Tax Year",
+    "Reformatted EIN",
+    "Indicates duplicate return",
+    "NTEE Codes",
+    "5-digit Zip Code"
+  ),
+  location_code = rep(NA, 5),
+  variable_scope = rep(NA, 5)
+)
+
+
 #' @title Function to create data dictionary for multiple form scopes belonging to single data series
 #' @description maps single create_data_dictionary() call to a named list of processed files
 #' @param proc_files_scope_ls named list mapping form scopes (scalar) to paths to processed files belonging to that form scope (vector)

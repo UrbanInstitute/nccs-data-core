@@ -1,3 +1,9 @@
+# Script Header
+# Description: This script contains utility functions used in CORE Harmonization 
+# Programmer: Thiyaghessan Poongundranar - tpoongundranar@urban.org
+# Date Created: 2024-07-25
+# Date Last Edited: 2024-07-25
+
 #' @title Function to get the contents of an S3 Bucket
 #' @param bucket_name character scalar. Name of S3 Bucket
 #' @param bucket_folder character scalar. Folder to get contents from

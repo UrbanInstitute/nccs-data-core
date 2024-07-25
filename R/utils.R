@@ -102,3 +102,29 @@ get_files <- function( folder_name, scope ){
   return( filepaths_ls )
   
 }
+
+#' @title Upload a harmonized data set to aws S3
+#' 
+#' @description This function takes the url link to a legacy data set hosted on
+#' aws s3 and uploads its harmonized counterpart to a new folder in the same bucket
+#' 
+#' @param file_path character scalar. Path to processed file.
+#' @param file_name character scalar. Name of harmonized file
+#' @param s3_folder Name of s3 folder to upload data set to
+#' 
+#' @returns Message indicating that upload is complete
+upload_to_s3 <- function(file_path, file_name, s3_folder) {
+  s3 <- paws::s3()
+  
+  bucket_name = "nccsdata"
+  key_name = paste0(s3_folder, file_name)
+  
+  message("Uploading to S3: ", file_name)
+  
+  s3$put_object(Body = file_path,
+                Bucket = bucket_name,
+                Key = key_name)
+  
+  return(message("S3 Upload Complete"))
+  
+}

@@ -69,3 +69,17 @@ download_raw_data <- function( url_ls, destfolder,logger ){
   return( message( "Download Complete" ) )
   
 }
+
+#' @title Function to create a logger
+#' @param logfile_path character scalar. Path to logfile.
+#' @return log4r logger object
+create_logger <- function(logfile_path) {
+  my_console_appender = log4r::console_appender(layout = default_log_layout())
+  my_file_appender = log4r::file_appender(logfile_path, append = TRUE, layout = default_log_layout())
+  
+  my_logger <- log4r::logger(
+    threshold = "INFO",
+    appenders = list(my_console_appender, my_file_appender)
+  )
+  return(my_logger)
+}

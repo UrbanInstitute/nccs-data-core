@@ -89,3 +89,16 @@ create_logger <- function(logfile_path) {
   )
   return(my_logger)
 }
+
+#' @title Function to get contents of a local folder containing raw NCCS data.
+#' @param folder_name character scalar. Name of folder
+#' @param scope character scalar. Form scope.
+get_files <- function( folder_name, scope ){
+  
+  files_hrmn <- list.files( folder_name )[ grepl( scope, list.files( folder_name ) ) ]
+  filepaths_ls <- as.list( paste0( folder_name, files_hrmn ) )
+  names( filepaths_ls ) <- files_hrmn
+  
+  return( filepaths_ls )
+  
+}

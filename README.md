@@ -1,2 +1,6 @@
 # nccs-data-core
-Data workflow code for production, documentation, and platforming of the NCCS Core dataseries. 
+
+## Harmonization Workflow
+
+1. Run scripts in numerical order from the R/ folder
+2. Outputs are saved to data/ folder

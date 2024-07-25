@@ -23,7 +23,7 @@ my_logger <- create_logger("data/logs/data_harmonize_log.txt")
 # (1) Load Crosswalks
 
 # (1.1) SOI
-XWALK_SOI <- readxl::read_xlsx("data/crosswalks/ds-soi-extracts/VARIABLE-NAME-CROSSWALK-V1.xlsx")
+XWALK_SOI <- readxl::read_xlsx("data/crosswalks/VARIABLE-NAME-CROSSWALK-V1.xlsx")
 
 harmonize_cols <-
   c(
@@ -55,7 +55,7 @@ XWALK_SOI <- XWALK_SOI %>%
   dplyr::distinct()
 
 # (1.2) CORE
-XWALK_CORE <- readr::read_csv( "data/crosswalks/ds-core/VAR-CROSSWALK-CORE-COMBINED.csv" )
+XWALK_CORE <- readr::read_csv( "data/crosswalks/VAR-CROSSWALK-CORE-COMBINED.csv" )
 
 # (2) Run Harmonization
 

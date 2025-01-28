@@ -1,0 +1,8 @@
+WARN  [2025-01-28 14:18:23] simpleWarning: 4 parsing failures.
+  row           col    expected      actual                                                                                             file
+38771 INVSTEXCISETX a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 CRELAMT       a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 NA            178 columns 177 columns 'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+
+

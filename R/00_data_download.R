@@ -2,10 +2,12 @@
 # Description: This script contains the data download code for CORE Harmonization 
 # Programmer: Thiyaghessan Poongundranar - tpoongundranar@urban.org
 # Date Created: 2024-07-25
-# Date Last Edited: 2024-07-25
+# Date Last Edited: 2025-01-28
 # Details:
-# (1) - Download IRS SOI Data
-# (2) - Download Legacy CORE Data
+# (1) - Download IRS SOI Data (non PF)
+# (2) - Download Legacy CORE Data (non PF)
+# (3) - Download IRS SOI Data (PF)
+# (4) - Download Legacy CORE Data (PF)
 
 # Packages
 library(log4r)
@@ -44,4 +46,20 @@ core_url_ls <- core_url_ls[!grepl("html|COMPARISON", core_url_ls)]
 
 download_raw_data(url_ls = core_url_ls,
                   destfolder = "data/raw/core/",
+                  logger = my_logger)
+
+# (3) Download SOI Data from Giving Tuesday Data Lake (PF)
+
+soi_pf_url_ls <- soi_url_ls[grepl("pf", soi_url_ls)]
+
+download_raw_data(url_ls = soi_pf_url_ls[3:4],
+                  destfolder = "data/raw/soi_pf/",
+                  logger = my_logger)
+
+# (4) Download CORE Data from Legacy NCCS Site (PF)
+
+core_pf_url_ls <- core_url_ls[grepl("-PF", core_url_ls)]
+
+download_raw_data(url_ls = core_pf_url_ls,
+                  destfolder = "data/raw/core_pf/",
                   logger = my_logger)

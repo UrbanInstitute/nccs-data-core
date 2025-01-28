@@ -52,6 +52,19 @@ download_raw_data(url_ls = core_url_ls,
 
 soi_pf_url_ls <- soi_url_ls[grepl("pf", soi_url_ls)]
 
+# for christina
+soi_pf_url_ls <- list(
+  `12eofinextract990pf.dat` = "https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/12eofinextract990pf.dat",
+  `13eofinextract990pf.dat` = "https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/13eofinextract990pf.dat",
+  `14eofinextract990pf.dat` = "https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat",
+  `15eofinextract990pf.dat` = "https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat",
+  `16eofinextract990pf.dat` = "https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/16eofinextract990pf.dat",
+  `20eoextract990pf.xlsx` = "https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/20eoextract990pf.xlsx",
+  `21eoextract990pf.xlsx` = "https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/21eoextract990pf.xlsx",
+  `22eoextract990pf.xlsx` = "https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/22eoextract990pf.xlsx",
+  `23eoextract990pf.xlsx` = "https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/23eoextract990pf.xlsx"
+)
+
 download_raw_data(url_ls = soi_pf_url_ls[3:4],
                   destfolder = "data/raw/soi_pf/",
                   logger = my_logger)

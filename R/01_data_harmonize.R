@@ -2,7 +2,7 @@
 # Description: This script contains the harmonization code for CORE Harmonization 
 # Programmer: Thiyaghessan Poongundranar - tpoongundranar@urban.org
 # Date Created: 2024-07-25
-# Date Last Edited: 2024-07-25
+# Date Last Edited: 2025-02-04
 # Details:
 # (1) - Load Crosswalks
 # (2) - Run Harmonization
@@ -54,6 +54,14 @@ XWALK_SOI <- XWALK_SOI %>%
   dplyr::mutate(var_old = toupper(var_old)) %>% 
   dplyr::distinct()
 
+# SOI - PF
+pf_xwalk <- rio::import("data/crosswalks/pf_crosswalk.xlsx")
+
+pf_xwalk <- pf_xwalk |>
+  dplyr::select(OlD, NEW) |>
+  dplyr::rename(var_old = OlD,
+                var_new = NEW)
+
 # (1.2) CORE
 XWALK_CORE <- readr::read_csv( "data/crosswalks/VAR-CROSSWALK-CORE-COMBINED.csv" )
 
@@ -63,10 +71,12 @@ XWALK_CORE <- readr::read_csv( "data/crosswalks/VAR-CROSSWALK-CORE-COMBINED.csv"
 
 # (2.1) Get list of raw files
 
+# PC and PZ
 raw_core_501c3_pc_files_ls <- get_files( folder_name = "data/raw/core/", scope = "501C3-CHARITIES-PC" )
 raw_core_501c3_pz_files_ls <- get_files( folder_name = "data/raw/core/", scope = "501C3-CHARITIES-PZ" )
 raw_core_501ce_pc_files_ls <- get_files( folder_name = "data/raw/core/", scope = "501CE-NONPROFIT-PC" )
 raw_core_501ce_pz_files_ls <- get_files( folder_name = "data/raw/core/", scope = "501CE-NONPROFIT-PZ" )
+
 
 # (2.2) Harmonize
 
@@ -121,9 +131,11 @@ raw_files <- list.files("data/raw/soi/")
 
 pc_files <- raw_files[ grepl( "990\\.", raw_files ) ]
 ez_files <- raw_files[ grepl( "ez", tolower( raw_files ) ) ]
+pf_files_ls <- get_files(folder_name = "data/raw/soi_pf/", scope = "pf")
 
-# (2.4) Harmonize only PC and EZ files
+# (2.4) Harmonize 
 
+# PC and EZ files
 scope_raw_ls <- list(
   "PC" = paste0("data/raw/soi/", pc_files),
   "EZ" = paste0("data/raw/soi/", ez_files)
@@ -150,3 +162,37 @@ run_harmonization(
   tax_year_column = "F9_00_TAX_PERIOD_END_DATE",
   tax_years = as.character(2012:2022)
 )
+
+run_harmonization(
+  raw_paths = pf_files_ls[1:2],
+  logger = my_logger,
+  xwalk_df = pf_xwalk,
+  ds = "SOI-EXTRACT",
+  scope = "PF",
+  tax_year_column = "F9_00_TAX_PERIOD_END_DATE",
+  tax_years = as.character(2012:2022)
+)
+
+test_pf_path <- pf_files_ls[[1]]
+pf <- data.table::fread(test_pf_path)
+
+pf_hrmn <- harmonize_data(pf, pf_xwalk)
+
+unique
+
+
+
+
+library(dtplyr)
+
+pf_lazy <- dtplyr::lazy_dt(pf)
+
+pf_lazy <- pf_lazy |>
+  dplyr::mutate(newcol = VALASSETSCOLB * 25)
+
+pf_processed <- data.frame(pf_lazy)
+
+# rename columns
+# save everything by year
+
+

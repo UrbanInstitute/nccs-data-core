@@ -38,41 +38,43 @@ get_s3_bucket_contents <- function( bucket_name, bucket_folder, bucket_url ){
 #' @param logger logging object. Logger to log failed downloads
 #' @return message indicating that download is complete.
 
-download_raw_data <- function( url_ls, destfolder,logger ){
+download_raw_data <- function(url_ls, destfolder, logger) {
+  purrr::map2(
+    .x = unlist(url_ls),
+    .y = names(url_ls),
+    .f = function(x, y) {
+      tryCatch({
+        message(sprintf("Downloading file: %s", y))
+        if (grepl("dat", y)) {
+          df <- readr::read_table(x)
+        }
+        else if (grepl("csv", y)) {
+          df <- data.table::fread(x)
+        }
+        else if (grepl("xlsx", y)) {
+          df <- rio::import(x)
+        }
+        
+      }, warning = function(w) {
+        log4r::warn(logger, message = w)
+      }, error = function(e) {
+        log4r::error(logger, message = sprintf("Failed to download file: %s from %s", y, x))
+        log4r::error(logger, message = e)
+        
+      }, finally = {
+        message("Moving to Next File")
+        
+      })
+      
+      file_root <- gsub("\\..*", "", y)
+      destfile <- paste0(destfolder, file_root, ".csv")
+      rio::export(df, destfile)
+      
+    },
+    .progress = "Download Progress"
+  )
   
-  purrr::map2( .x = unlist( url_ls ),
-               .y = names( url_ls ),
-               .f = function( x, y ){
-                 
-                 tryCatch({
-                   
-                   message( sprintf( "Downloading file: %s", y ) )
-                   if ( grepl( "dat", y ) ){ df <- readr::read_table( x ) }
-                   else if ( grepl( "csv", y ) ){ df <- data.table::fread( x ) }
-                   else if ( grepl( "xlsx", y ) ){ df <- rio::import( x ) }
-                   
-                 }, warning = function(w) {
-                   log4r::warn( logger, message = w )
-                   
-                 }, error = function(e) {
-                   log4r::error( logger,
-                                 message = sprintf( "Failed to download file: %s from %s", y, x ))
-                   log4r::error( logger, message = e )
-                   
-                 }, finally = {
-                   message( "Moving to Next File" )
-                   
-                 })
-                 
-                 file_root <- gsub( "\\..*",  "",  y )
-                 destfile <- paste0( destfolder,  file_root, ".csv" )
-                 
-                 rio::export( df, destfile )
-                 
-               },
-               .progress = "Download Progress")
-  
-  return( message( "Download Complete" ) )
+  return(message("Download Complete"))
   
 }
 

@@ -46,7 +46,7 @@ download_raw_data <- function(url_ls, destfolder, logger) {
       tryCatch({
         message(sprintf("Downloading file: %s", y))
         if (grepl("dat", y)) {
-          df <- readr::read_table(x)
+          df <- readr::read_delim(x)
         }
         else if (grepl("csv", y)) {
           df <- data.table::fread(x)

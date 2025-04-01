@@ -65,7 +65,7 @@ soi_pf_url_ls <- list(
   `23eoextract990pf.xlsx` = "https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/23eoextract990pf.xlsx"
 )
 
-download_raw_data(url_ls = soi_pf_url_ls[3:4],
+download_raw_data(url_ls = soi_pf_url_ls,
                   destfolder = "data/raw/soi_pf/",
                   logger = my_logger)
 

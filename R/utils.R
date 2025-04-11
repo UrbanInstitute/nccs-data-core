@@ -45,13 +45,13 @@ download_raw_data <- function(url_ls, destfolder, logger) {
     .f = function(x, y) {
       tryCatch({
         message(sprintf("Downloading file: %s", y))
-        if (grepl("dat", y)) {
+        if (grepl("dat$", y)) {
           df <- readr::read_delim(x)
         }
-        else if (grepl("csv", y)) {
+        else if (grepl("csv$", y)) {
           df <- data.table::fread(x)
         }
-        else if (grepl("xlsx", y)) {
+        else if (grepl("xlsx$", y)) {
           df <- rio::import(x)
         }
         
@@ -68,6 +68,8 @@ download_raw_data <- function(url_ls, destfolder, logger) {
       
       file_root <- gsub("\\..*", "", y)
       destfile <- paste0(destfolder, file_root, ".csv")
+      print(destfile)
+      print(head(df))
       rio::export(df, destfile)
       
     },

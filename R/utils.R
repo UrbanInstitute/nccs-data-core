@@ -47,7 +47,7 @@ download_raw_data <- function( url_ls, destfolder,logger ){
                  tryCatch({
                    
                    message( sprintf( "Downloading file: %s", y ) )
-                   if ( grepl( "dat", y ) ){ df <- readr::read_table( x ) }
+                   if ( grepl( "dat", y ) ){ df <- data.table::fread( x , fill = TRUE) }
                    else if ( grepl( "csv", y ) ){ df <- data.table::fread( x ) }
                    else if ( grepl( "xlsx", y ) ){ df <- rio::import( x ) }
                    

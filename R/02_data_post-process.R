@@ -45,7 +45,7 @@ soi_post_process_ls <- list(
 
 purrr::imap(
   .x = soi_post_process_ls,
-  .f = function( dest_folder, filepaths ){
+  .f = function( filepaths, dest_folder ){
     purrr::map(
       filepaths,
       process_harmonized_data,
@@ -66,7 +66,7 @@ core_post_process_ls <- list(
 
 purrr::imap(
   .x = core_post_process_ls,
-  .f = function( dest_folder, filepaths ){
+  .f = function( filepaths, dest_folder ){
     purrr::map(
       filepaths,
       process_harmonized_data,

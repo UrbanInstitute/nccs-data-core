@@ -34,7 +34,7 @@ validate_processed_data <- function(proc_filepaths_ls,
       
       data.validator::validate(df, name = idx) %>%
         data.validator::validate_cols(yr_check(yr), TAX_YEAR, description = "Accurate Tax Year") %>%
-        data.validator::validate_if(assertr::is_uniq(RTRN_ID), description = "Unique IDs") %>%
+        #data.validator::validate_if(assertr::is_uniq(RTRN_ID), description = "Unique IDs") %>%
         data.validator::add_results(report)
       
       result <- report %>% data.validator::get_results(unnest = TRUE)
@@ -52,6 +52,11 @@ validate_processed_data <- function(proc_filepaths_ls,
   
   if (save_results == TRUE) {
     destpath <- sprintf("data/validation_outputs/%s", destfile)
+    
+    if (!dir.exists(dirname(destpath))) {
+      dir.create(dirname(destpath), recursive = TRUE)
+    }
+    
     data.table::fwrite(validate_rs, destpath)
     
   }

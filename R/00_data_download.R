@@ -14,6 +14,8 @@ library(paws)
 library(purrr)
 library(stringr)
 library(rio)
+library(data.table)
+library(tidyverse)
 
 # Helper Scripts
 source("R/utils.R")

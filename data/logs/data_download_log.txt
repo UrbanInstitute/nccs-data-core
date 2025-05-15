@@ -6,3 +6,120 @@ WARN  [2025-01-28 14:18:23] simpleWarning: 4 parsing failures.
 38771 NA            178 columns 177 columns 'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
 
 
+WARN  [2025-01-28 14:23:08] simpleWarning: 6 parsing failures.
+  row           col    expected      actual                                                                                             file
+70346 INVSTEXCISETX a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 CRELAMT       a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 NA            179 columns 178 columns 'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+97339 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+..... ............. ........... ........... ................................................................................................
+See problems(...) for more details.
+
+
+WARN  [2025-01-28 14:23:22] simpleWarning: 4 parsing failures.
+  row           col    expected      actual                                                                                             file
+19293 INVSTEXCISETX a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/16eofinextract990pf.dat'
+19293 CRELAMT       a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/16eofinextract990pf.dat'
+19293 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/16eofinextract990pf.dat'
+19293 NA            179 columns 178 columns 'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/16eofinextract990pf.dat'
+
+
+WARN  [2025-01-28 14:25:41] simpleWarning: 6 parsing failures.
+  row           col    expected      actual                                                                                             file
+70346 INVSTEXCISETX a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 CRELAMT       a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 NA            179 columns 178 columns 'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+97339 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+..... ............. ........... ........... ................................................................................................
+See problems(...) for more details.
+
+
+ERROR [2025-01-28 14:25:41] Failed to download file: 15eofinextract990pf.dat from https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat
+ERROR [2025-01-28 14:25:41] Error: 'x' is not a data.frame or matrix
+
+WARN  [2025-01-28 14:25:53] simpleWarning: 4 parsing failures.
+  row           col    expected      actual                                                                                             file
+19293 INVSTEXCISETX a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/16eofinextract990pf.dat'
+19293 CRELAMT       a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/16eofinextract990pf.dat'
+19293 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/16eofinextract990pf.dat'
+19293 NA            179 columns 178 columns 'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/16eofinextract990pf.dat'
+
+
+ERROR [2025-01-28 14:25:53] Failed to download file: 16eofinextract990pf.dat from https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/16eofinextract990pf.dat
+ERROR [2025-01-28 14:25:53] Error: 'x' is not a data.frame or matrix
+
+WARN  [2025-01-28 14:52:05] simpleWarning: 4 parsing failures.
+  row           col    expected      actual                                                                                             file
+38771 INVSTEXCISETX a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 CRELAMT       a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 NA            178 columns 177 columns 'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+
+
+ERROR [2025-01-28 14:52:05] Failed to download file: 14eofinextract990pf.dat from https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat
+ERROR [2025-01-28 14:52:05] Error: 'x' is not a data.frame or matrix
+
+WARN  [2025-01-28 14:52:17] simpleWarning: 6 parsing failures.
+  row           col    expected      actual                                                                                             file
+70346 INVSTEXCISETX a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 CRELAMT       a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 NA            179 columns 178 columns 'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+97339 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+..... ............. ........... ........... ................................................................................................
+See problems(...) for more details.
+
+
+ERROR [2025-01-28 14:52:17] Failed to download file: 15eofinextract990pf.dat from https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat
+ERROR [2025-01-28 14:52:17] Error: 'x' is not a data.frame or matrix
+
+WARN  [2025-01-28 14:52:50] simpleWarning: 4 parsing failures.
+  row           col    expected      actual                                                                                             file
+38771 INVSTEXCISETX a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 CRELAMT       a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 NA            178 columns 177 columns 'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+
+
+WARN  [2025-01-28 14:53:02] simpleWarning: 6 parsing failures.
+  row           col    expected      actual                                                                                             file
+70346 INVSTEXCISETX a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 CRELAMT       a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 NA            179 columns 178 columns 'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+97339 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+..... ............. ........... ........... ................................................................................................
+See problems(...) for more details.
+
+
+WARN  [2025-01-28 14:54:28] simpleWarning: 4 parsing failures.
+  row           col    expected      actual                                                                                             file
+38771 INVSTEXCISETX a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 CRELAMT       a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 NA            178 columns 177 columns 'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+
+
+WARN  [2025-01-28 14:54:41] simpleWarning: 6 parsing failures.
+  row           col    expected      actual                                                                                             file
+70346 INVSTEXCISETX a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 CRELAMT       a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+70346 NA            179 columns 178 columns 'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+97339 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/15eofinextract990pf.dat'
+..... ............. ........... ........... ................................................................................................
+See problems(...) for more details.
+
+
+WARN  [2025-01-28 14:54:57] simpleWarning: 4 parsing failures.
+  row           col    expected      actual                                                                                             file
+38771 INVSTEXCISETX a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 CRELAMT       a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 DVDNDSINTE    a double    N           'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+38771 NA            178 columns 177 columns 'https://gt990datalake-rawdata.s3.amazonaws.com/EfileData/Extracts/Data/14eofinextract990pf.dat'
+
+
+WARN  [2025-01-28 15:05:15] simpleWarning in download.file(file, tmpFile, method = method, mode = "wb", quiet = !showProgress): downloaded length 46742392 != reported length 63175529
+

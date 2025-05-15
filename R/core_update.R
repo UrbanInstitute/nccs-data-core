@@ -39,7 +39,7 @@ download_raw_data(url_ls = soi_updt_url_ls[3:4],
 
 # Step 3: Begin harmonization
 
-# 3.1 read in crosswalk\
+# 3.1 read in crosswalk
 
 xwalk_990ez <- data.table::fread("data/crosswalks/XWALK-990-V2.csv")
 

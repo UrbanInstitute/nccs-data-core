@@ -36,6 +36,6 @@ years <- 2012:2022
 purrr::map(
   .x = years,
   .f = subseccd_merge,
-  subseccd = subseccd,
+  subseccd = subsection.code_bmf,
   .progress = "Merging SOI with Core Data"
 )

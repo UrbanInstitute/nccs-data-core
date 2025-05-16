@@ -11,6 +11,10 @@
 library(purrr)
 library(tidyverse)
 
+# Helper Scripts
+source("R/utils.R")
+source("R/data-dictionary_helpers.R")
+
 # (1): Get path to processed core files
 
 pz_501c3_proc_filepaths_ls <- get_files(folder_name = "data/processed/core/501c3-pz/", scope = "501C3-CHARITIES-PZ")

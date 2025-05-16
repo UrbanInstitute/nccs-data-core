@@ -37,10 +37,9 @@ scope_ls <- list( "PC-501C3" = pc_501c3_proc_filepaths_ls,
 
 purrr::imap(
   .x = scope_ls,
-  .f = function( file_scope, filepath_ls ){
-    purrr::map(
-      filepath_ls,
-      validate_processed_data,
+  .f = function( filepath_ls, file_scope ){
+    validate_processed_data(
+      proc_filepaths_ls = filepath_ls,
       file_scope = file_scope,
       destfile = "core-validate.csv",
       save_results = TRUE,

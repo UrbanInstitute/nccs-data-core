@@ -37,6 +37,10 @@ create_master_data_dictionary <- function(proc_files_scope_ls,
   master_dd <- data.table::rbindlist(dds)
   
   if (save_results == TRUE) {
+    
+    if (!dir.exists(dirname(destfile))) {
+      dir.create(dirname(destfile), recursive = TRUE)
+    }
     data.table::fwrite(master_dd, destfile)
   }
   

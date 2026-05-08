@@ -1,0 +1,364 @@
+source_var,harmonized_name,description,location,years_present,source
+ACCOUNTINGFEES,accounting_fees,Accounting fees,"990-PF Pt I-16b, col (a)",2020-2024,pf_only
+ACQDRINDRINTCD,distribution_to_daf_advisory_cd,Distribution to donor advised fund with advisory privileges?,990-PF Pt VI-A-12,2020-2024,pf_only
+ACTNOTPR,activities_not_prev_reported_cd,Activities not previously reported?,990-PF Pt VI-A-2,2020-2024,pf_only
+ADJNETINC,adjusted_net_income,Adjusted net income,990-PF Pt I-27c,2020-2024,pf_only
+ADJNETINCCOLA,adjusted_net_income_curr_yr,Adjusted net income column a,"990-PF Pt XIII-2a, col (a)",2020-2024,pf_only
+ADJNETINCCOLB,adjusted_net_income_prior1,Adjusted net income column b,"990-PF Pt XIII-2a, col (b)",2020-2024,pf_only
+ADJNETINCCOLC,adjusted_net_income_prior2,Adjusted net income column c,"990-PF Pt XIII-2a, col (c)",2020-2024,pf_only
+ADJNETINCCOLD,adjusted_net_income_prior3,Adjusted net income column d,"990-PF Pt XIII-2a, col (d)",2020-2024,pf_only
+ADJNETINCTOT,adjusted_net_income_4yr_total,Adjusted net income total,"990-PF Pt XIII-2a, col (e)",2020-2024,pf_only
+AGREMKPAYCD,agreed_pay_govt_official_cd,Agree to make pay?,990-PF Pt VI-B-1a(6),2020-2024,pf_only
+APPLYPROVIND,not_applying_4942_provisions_cd,Not applying section 4942(a)(2) provisions?,990-PF Pt VI-B-2b,2020-2024,pf_only
+BRWLNDMNYCD,dqp_borrow_lend_cd,Borrow lend money?,990-PF Pt VI-B-1a(2),2020-2024,pf_only
+CHGNPRVRPTCD,changes_to_governing_docs_cd,Changes not previously reported?,990-PF Pt VI-A-3,2020-2024,pf_only
+CLAIMSTATCD,claiming_private_op_status_cd,Claiming status?,990-PF Pt VI-A-9,2020-2024,pf_only
+CMPMININVSTRET,minimum_investment_return,Minimum investment return,990-PF Pt IX-6,2020-2024,pf_only
+CNTRBTRSTXYRCD,new_substantial_contributors_cd,Substantial contributors?,990-PF Pt VI-A-10,2020-2024,pf_only
+COMPOFFICERS,compensation_officers,Compensation of officers,"990-PF Pt I-13, col (a)",2020-2024,pf_only
+CONTRACTNCD,liquidated_terminated_cd,Contraction?,990-PF Pt VI-A-5,2020-2024,pf_only
+CONTRPDPBKS,contributions_paid,"Contributions, gifts, grants paid","990-PF Pt I-25, col (a)",2020-2024,pf_only
+COSTSOLD,cost_of_goods_sold,Cost-of-goods-sold,990-PF Pt I-10b,2020-2024,pf_only
+CRELAMT,credit_elect_amount,Credit elect amount,990-PF Pt V-11,2020-2024,pf_only
+DEPRECIATIONAMT,depreciation_depletion,Depreciation and depletion,"990-PF Pt I-19, col (a)",2020-2024,pf_only
+DIRINDIRINTCD,direct_indirect_interest_2pct_cd,Direct indirect interest?,990-PF Pt VI-B-3a,2020-2024,pf_only
+DISTRIBAMT,distributable_amount,Distributable amount,990-PF Pt X-7,2020-2024,pf_only
+DIVIDNDSAMT,dividends,Dividends,"990-PF Pt I Line 4, col (a)",2020-2024,pf_only
+DVDNDSINTD,dividends_interest_excluded,Dividends and interest from securities (excluded),"990-PF Pt XV-A-4, col (d)",2020-2024,pf_only
+DVDNDSINTE,dividends_interest_exempt_function,Dividends and interest from securities (exempt),"990-PF Pt XV-A-4, col (e)",2020-2024,pf_only
+EIN,ein,Employer Identification Number,"Form 990-PF, Item A",2020-2024,from_990
+ELF,efile_indicator,E-file indicator,n/a,2020-2024,from_990
+ENDWMNTSCOLA,endowments_curr_yr,Endowments column a,"990-PF Pt XIII-3b, col (a)",2020-2024,pf_only
+ENDWMNTSCOLB,endowments_prior1,Endowments column b,"990-PF Pt XIII-3b, col (b)",2020-2024,pf_only
+ENDWMNTSCOLC,endowments_prior2,Endowments column c,"990-PF Pt XIII-3b, col (c)",2020-2024,pf_only
+ENDWMNTSCOLD,endowments_prior3,Endowments column d,"990-PF Pt XIII-3b, col (d)",2020-2024,pf_only
+ENDWMNTSTOT,endowments_4yr_total,Endowments total,"990-PF Pt XIII-3b, col (e)",2020-2024,pf_only
+EOSTATUS,eo_status,EO Status Code,n/a (IRS-Coded),2020-2024,pf_only
+ERRONBKUPWTHLD,erroneous_backup_withholding_credit,Erroneous backup withholding credit amount,990-PF Pt V-6d,2020-2024,pf_only
+ESTPNLTY,estimated_tax_penalty,Estimated tax penalty,990-PF Pt V-8,2020-2024,pf_only
+ESTTAXCR,estimated_tax_credit,Estimated tax credit,990-PF Pt V-6a,2020-2024,pf_only
+EXCEPTACTSIND,dqp_acts_failed_to_qualify_cd,Acts fail to qualify under section 53.4941(d)-3?,990-PF Pt VI-B-1b,2020-2024,pf_only
+EXCESSHLDCD,excess_business_holdings_cd,Excess business holdings?,990-PF Pt VI-B-3b,2020-2024,pf_only
+EXCESSRCPTS,excess_revenue_over_expenses,Net income less deficit,990-PF Pt I-27a,2020-2024,pf_only
+EXCPTRANSIND,s4945_transactions_failed_cd,Transactions fail to qualify under section 53.4945?,990-PF Pt VI-B-5b,2020-2024,pf_only
+FAIRMRKTVALAMT,fair_mkt_value_total_assets_eoy,Total assets – e-o-y fair market value,"990-PF Header, Item I",2020-2024,pf_only
+FAIRMRKTVALEOY,fair_mkt_value_total_assets_eoy,Total assets – e-o-y fair market value,"990-PF Pt II-16, col (c)",2020-2024,pf_only
+FILEDF990TCD,filed_form_990t_cd,Filed 990-T?,990-PF Pt VI-A-4b,2020-2024,from_990
+FILEDLF1041IND,filed_in_lieu_1041_cd,Section 4947(a)(1) filing in lieu of Form 1041?,990-PF Pt VI-A-15,2020-2024,pf_only
+FURNGOODSCD,dqp_furnish_goods_cd,Furnished goods?,990-PF Pt VI-B-1a(3),2020-2024,pf_only
+FURNISHCPYCD,furnished_copy_to_ag_cd,Furnished copy to Attorney General?,990-PF Pt VI-A-8b,2020-2024,pf_only
+GRNTAPPRVFUT,grants_approved_for_future,Grants approved for future payment,990-PF Pt XIV-3b,2020-2024,pf_only
+GRNTINDIVCD,s4945_grant_to_indiv_cd,Grant individual?,990-PF Pt VI-B-5a(3),2020-2024,pf_only
+GRSCONTRGIFTS,contributions_received,Contributions received,"990-PF Pt I Line 1, col (a)",2020-2024,pf_only
+GRSINVSTINCA,gross_investment_income_curr_yr,Gross investment income column a,"990-PF Pt XIII-3c(4), col (a)",2020-2024,pf_only
+GRSINVSTINCB,gross_investment_income_prior1,Gross investment income column b,"990-PF Pt XIII-3c(4), col (b)",2020-2024,pf_only
+GRSINVSTINCC,gross_investment_income_prior2,Gross investment income column c,"990-PF Pt XIII-3c(4), col (c)",2020-2024,pf_only
+GRSINVSTINCD,gross_investment_income_prior3,Gross investment income column d,"990-PF Pt XIII-3c(4), col (d)",2020-2024,pf_only
+GRSINVSTINCTOT,gross_investment_income_4yr_total,Gross investment income total,"990-PF Pt XIII-3c(4), col (e)",2020-2024,pf_only
+GRSPROFITBUS,gross_profit,Gross profit,"990-PF Pt I-10c, col (a)",2020-2024,pf_only
+GRSRENTS,gross_rents,Gross rents,"990-PF Pt I-5a, col (a)",2020-2024,pf_only
+GRSSLSPRAMT,gross_sales_price_assets,Gross sales price for assets,990-PF Pt I-6b,2020-2024,pf_only
+INFLEG,influence_legislation_cd,Influence legislation?,990-PF Pt VI-A-1a,2020-2024,pf_only
+INTERESTAMT,interest_expense,Interest,"990-PF Pt I-17, col (a)",2020-2024,from_990
+INTONSVNGSD,interest_savings_excluded,Interest on savings and temporary cash investments (excluded),"990-PF Pt XV-A-3, col (d)",2020-2024,pf_only
+INTONSVNGSE,interest_savings_exempt_function,Interest on savings and temporary cash investments (exempt),"990-PF Pt XV-A-3, col (e)",2020-2024,pf_only
+INTRSTRVNUE,interest_revenue,Interest revenue,"990-PF Pt I Line 3, col (a)",2020-2024,pf_only
+INVSTCORPBND,investments_corp_bonds,Investments in corporate bonds– e-o-y book value,"990-PF Pt II-10c, col (b)",2020-2024,pf_only
+INVSTCORPSTK,investments_corp_stock,Investments in corporate stock – e-o-y book value,"990-PF Pt II-10b, col (b)",2020-2024,pf_only
+INVSTEXCISETX,excise_tax_net_investment_income,Excise tax on net investment income,990-PF Pt V-1,2020-2024,pf_only
+INVSTGOVTOBLIG,investments_govt_obligations,Investments in U.S. & state government obligations – e-o-y book value,"990-PF Pt II-10a, col (b)",2020-2024,pf_only
+INVSTJEXMPTCD,jeopardizing_investments_cd,Jeopardizing investments?,990-PF Pt VI-B-4a,2020-2024,pf_only
+IPUBELECTCD,s4945_influence_election_cd,Influence public election?,990-PF Pt VI-B-5a(2),2020-2024,pf_only
+LEGALFEESAMT,legal_fees,Legal fees,"990-PF Pt I-16a, col (a)",2020-2024,pf_only
+LOANSGUARCD,nce_org_loans_or_guarantees_cd,Loans or other guarantees?,990-PF Pt XVI-1b(5),2020-2024,pf_only
+MEMBERSHPDUESD,membership_dues_excluded,Membership dues and assessments (excluded),"990-PF Pt XV-A-2, col (d)",2020-2024,pf_only
+MEMBERSHPDUESE,membership_dues_exempt_function,Membership dues and assessments (exempt),"990-PF Pt XV-A-2, col (e)",2020-2024,pf_only
+MRTGLOANS,mortgage_loans_eoy,Investments mortgage loans – e-o-y book value,"990-PF Pt II-12, col (b)",2020-2024,pf_only
+MRTGNOTESPAY,mortgage_notes_payable_eoy,Mortgage loans payable – e-o-y book value,"990-PF Pt II-21, col (b)",2020-2024,pf_only
+NCHRTYGRNTCD,s4945_grant_to_non_charity_cd,Non-charity grant?,990-PF Pt VI-B-5a(4),2020-2024,pf_only
+NETINVSTINC,net_investment_income,Net investment income,990-PF Pt I-27b,2020-2024,pf_only
+NRELIGIOUSCD,s4945_non_religious_purpose_cd,Non-religious?,990-PF Pt VI-B-5a(5),2020-2024,pf_only
+OCCUPANCYAMT,occupancy,Occupancy,"990-PF Pt I-20, col (a)",2020-2024,pf_only
+OPERATINGCD,operating_foundation_cd,Operating foundation code,n/a (IRS-Coded),2020-2024,pf_only
+ORGCMPLYPUBCD,complied_public_inspection_cd,Comply with public inspection?,990-PF Pt VI-A-13,2020-2024,pf_only
+OTHERINCAMT,other_income,Other income,"990-PF Pt I-11, col (a)",2020-2024,pf_only
+OTHRASSETSEOY,other_assets_eoy,Other assets – e-o-y book value,"990-PF Pt II-15, col (b)",2020-2024,pf_only
+OTHRCASHAMT,noninterest_cash_eoy,Cash non-interest-bearing – e-o-y book value,"990-PF Pt II-1, col (b)",2020-2024,pf_only
+OTHRINVSTEND,other_investments_eoy,Other investments – e-o-y book value,"990-PF Pt II-13, col (b)",2020-2024,pf_only
+OTHRLIABLTSEOY,other_liabilities_eoy,Other liabilities – e-o-y book value,"990-PF Pt II-22, col (b)",2020-2024,pf_only
+OVERPAY,overpayment,Overpayment,990-PF Pt V-10,2020-2024,pf_only
+PAIDCMPNCD,dqp_paid_compensation_cd,Paid compensation?,990-PF Pt VI-B-1a(4),2020-2024,pf_only
+PENSPLEMPLBENF,pension_employee_benefits,"Pension plans, employee benefits","990-PF Pt I-15, col (a)",2020-2024,pf_only
+PERFSERVICESCD,nce_org_perform_services_cd,Performance of services or membership or fundraising solicitations?,990-PF Pt XVI-1b(6),2020-2024,pf_only
+PRCHSASSTSCD,nce_org_purchase_assets_cd,Purchase of assets from noncharitable exempt organization?,990-PF Pt XVI-1b(2),2020-2024,pf_only
+PREVJEXMPTCD,prior_year_jeopardizing_invest_cd,Prior year jeopardizing investments?,990-PF Pt VI-B-4b,2020-2024,pf_only
+PRINTINGPUBL,printing_publications,Printing and publications,"990-PF Pt I-22, col (a)",2020-2024,pf_only
+PRIORACTVCD,dqp_acts_prior_year_cd,Engage in acts in prior year?,990-PF Pt VI-B-1c,2020-2024,pf_only
+PROGSRVCACOLD,program_revenue_1a_excluded,Program service revenue line 1a (excluded),"990-PF Pt XV-A-1a, col (d)",2020-2024,pf_only
+PROGSRVCACOLE,program_revenue_1a_exempt_function,Program service revenue line 1a (exempt),"990-PF Pt XV-A-1a, col (e)",2020-2024,pf_only
+PROGSRVCBCOLD,program_revenue_1b_excluded,Program service revenue line 1b (excluded),"990-PF Pt XV-A-1b, col (d)",2020-2024,pf_only
+PROGSRVCBCOLE,program_revenue_1b_exempt_function,Program service revenue line 1b (exempt),"990-PF Pt XV-A-1b, col (e)",2020-2024,pf_only
+PROGSRVCCCOLD,program_revenue_1c_excluded,Program service revenue line 1c (excluded),"990-PF Pt XV-A-1c, col (d)",2020-2024,pf_only
+PROGSRVCCCOLE,program_revenue_1c_exempt_function,Program service revenue line 1c (exempt),"990-PF Pt XV-A-1c, col (e)",2020-2024,pf_only
+PROGSRVCDCOLD,program_revenue_1d_excluded,Program service revenue line 1d (excluded),"990-PF Pt XV-A-1d, col (d)",2020-2024,pf_only
+PROGSRVCDCOLE,program_revenue_1d_exempt_function,Program service revenue line 1d (exempt),"990-PF Pt XV-A-1d, col (e)",2020-2024,pf_only
+PROGSRVCECOLD,program_revenue_1e_excluded,Program service revenue line 1e (excluded),"990-PF Pt XV-A-1e, col (d)",2020-2024,pf_only
+PROGSRVCECOLE,program_revenue_1e_exempt_function,Program service revenue line 1e (exempt),"990-PF Pt XV-A-1e, col (e)",2020-2024,pf_only
+PROGSRVCFCOLD,program_revenue_1f_excluded,Program service revenue line 1f (excluded),"990-PF Pt XV-A-1f, col (d)",2020-2024,pf_only
+PROGSRVCFCOLE,program_revenue_1f_exempt_function,Program service revenue line 1f (exempt),"990-PF Pt XV-A-1f, col (e)",2020-2024,pf_only
+PROGSRVCGCOLD,program_revenue_1g_excluded,Program service revenue--fees and contracts from government line 1g (excluded),"990-PF Pt XV-A-1g, col (d)",2020-2024,pf_only
+PROGSRVCGCOLE,program_revenue_1g_exempt_function,Program service revenue--fees and contracts from government line 1g (exempt),"990-PF Pt XV-A-1g, col (e)",2020-2024,pf_only
+PROPEXCHCD,dqp_property_exchange_cd,Property exchange?,990-PF Pt VI-B-1a(1),2020-2024,pf_only
+PROPGNDACD,s4945_propaganda_legislation_cd,Propaganda?,990-PF Pt VI-B-5a(1),2020-2024,pf_only
+PUBSUPRTCOLA,public_support_curr_yr,Public support column a,"990-PF Pt XIII-3c(2), col (a)",2020-2024,pf_only
+PUBSUPRTCOLB,public_support_prior1,Public support column b,"990-PF Pt XIII-3c(2), col (b)",2020-2024,pf_only
+PUBSUPRTCOLC,public_support_prior2,Public support column c,"990-PF Pt XIII-3c(2), col (c)",2020-2024,pf_only
+PUBSUPRTCOLD,public_support_prior3,Public support column d,"990-PF Pt XIII-3c(2), col (d)",2020-2024,pf_only
+PUBSUPRTTOT,public_support_4yr_total,Public support total,"990-PF Pt XIII-3c(2), col (e)",2020-2024,pf_only
+PYPRSNLBNFTIND,paid_premiums_personal_benefit_cd,Pay premiums on personal benefit contract?,990-PF Pt VI-B-6b,2020-2024,pf_only
+QLFYASSETA,qualifying_assets_curr_yr,Qualifying assets column a,"990-PF Pt XIII-3a(2), col (a)",2020-2024,pf_only
+QLFYASSETB,qualifying_assets_prior1,Qualifying assets column b,"990-PF Pt XIII-3a(2), col (b)",2020-2024,pf_only
+QLFYASSETC,qualifying_assets_prior2,Qualifying assets column c,"990-PF Pt XIII-3a(2), col (c)",2020-2024,pf_only
+QLFYASSETD,qualifying_assets_prior3,Qualifying assets column d,"990-PF Pt XIII-3a(2), col (d)",2020-2024,pf_only
+QLFYASSETTOT,qualifying_assets_4yr_total,Qualifying assets total,"990-PF Pt XIII-3a(2), col (e)",2020-2024,pf_only
+QLFYDISTRIBA,qualifying_distributions_curr_yr,Qualifying distributions column a,"990-PF Pt XIII-2e, col (a)",2020-2024,pf_only
+QLFYDISTRIBB,qualifying_distributions_prior1,Qualifying distributions column b,"990-PF Pt XIII-2e, col (b)",2020-2024,pf_only
+QLFYDISTRIBC,qualifying_distributions_prior2,Qualifying distributions column c,"990-PF Pt XIII-2e, col (c)",2020-2024,pf_only
+QLFYDISTRIBD,qualifying_distributions_prior3,Qualifying distributions column d,"990-PF Pt XIII-2e, col (d)",2020-2024,pf_only
+QLFYDISTRIBTOT,qualifying_distributions_4yr_total,Qualifying distributions total,"990-PF Pt XIII-2e, col (e)",2020-2024,pf_only
+REIMBRSMNTSCD,nce_org_reimbursements_cd,Reimbursements arrangements?,990-PF Pt XVI-1b(4),2020-2024,pf_only
+RENTLSFACLTSCD,nce_org_rental_facilities_cd,Rental of facilities or other assets?,990-PF Pt XVI-1b(3),2020-2024,pf_only
+RFPRSNLBNFTIND,received_funds_for_premiums_cd,Receive funds to pay premiums on personal benefit contract?,990-PF Pt VI-B-6a,2020-2024,pf_only
+S4960_TX_PYMT_CD,s4960_excess_comp_tax_cd,Section 4960 tax on excess compensation?,990-PF Pt VI-B-8,2020-2024,pf_only
+SALESASSTSCD,nce_org_sale_assets_cd,Sale of assets to noncharitable exempt organization?,990-PF Pt XVI-1b(1),2020-2024,pf_only
+SCHEDBIND,sched_b_required_cd,Schedule B indicator,n/a (IRS-Coded based on presence of Schedule B contributor information),2020-2024,pf_only
+SEC4940NOTXCD,sec4940_no_tax_cd,Section 4940 – no tax,990-PF Pt V-1b not checked,2020-2024,pf_only
+SEC4940REDTXCD,sec4940_reduced_tax_cd,Section 4940 – 1 % tax,990-PF Pt V-1b checked,2020-2024,pf_only
+SECT511TX,section_511_tax,Section 511 tax,990-PF Pt V-2,2020-2024,pf_only
+SHARNGASSTSCD,nce_org_sharing_assets_cd,"Sharing of facilities, equipment, mailing lists, other assets, or paid employees?",990-PF Pt XVI-1c,2020-2024,pf_only
+SUBCD,subsection_cd,Subsection code,n/a (IRS-Coded),2020-2024,pf_only
+SUBTITLEATX,subtitle_a_tax,Subtitle A tax,990-PF Pt V-4,2020-2024,pf_only
+TAXDUE,tax_due,Tax due,990-PF Pt V-9,2020-2024,pf_only
+TAX_PRD,tax_period,Tax period (YYYYMM format),Top of form,2020-2024,pf_only
+TAX_YR,soi_year,SOI Year,990-PF Header,2020-2024,pf_only
+TFAIRMRKTUNUSE,fair_mkt_value_assets_not_charitable_use,Fair market value of assets not used for charitable purposes,990-PF Pt IX-1d,2020-2024,pf_only
+TFUNDNWORTH,total_fund_net_worth_eoy,Total fund net worth – e-o-y book value,"990-PF Pt II-31, col (b)",2020-2024,pf_only
+TOPRADMNEXPNSA,total_operating_admin_expenses_col_a,Total operating and administrative expenses column a,"990-PF Pt I-24, col (a)",2020-2024,pf_only
+TOPRADMNEXPNSB,total_operating_admin_expenses_col_b,Total operating and administrative expenses column b,"990-PF Pt I-24, col (b)",2020-2024,pf_only
+TOPRADMNEXPNSD,total_operating_admin_expenses_col_d,Total operating and administrative expenses column d,"990-PF Pt I-24, col (d)",2020-2024,pf_only
+TOTASSETSEND,total_assets_eoy,Total assets – e-o-y book value,"990-PF Pt II-16, col (b)",2020-2024,from_990
+TOTAXPYR,total_excise_tax,Total excise tax,990-PF Pt V-5,2020-2024,pf_only
+TOTEXCAPGN,capital_gain,Net gain – sales of assets,990-PF Part IV-2 > 0,2020-2024,pf_only
+TOTEXCAPGNLS,capital_gain_net_income,Capital gain net income,990-PF Pt IV-2,2020-2024,pf_only
+TOTEXCAPLS,capital_loss,Net loss – sales of assets,990-PF Part IV-2 < 0,2020-2024,pf_only
+TOTEXPNSADJNET,total_expenses_col_c,Total expenses adjusted net income,"990-PF Pt I-26, col (c)",2020-2024,pf_only
+TOTEXPNSEXEMPT,total_expenses_col_d,Total expenses – exempt purpose,"990-PF Pt I-26, col (d)",2020-2024,pf_only
+TOTEXPNSNETINC,total_expenses_col_b,Total expenses net investment income,"990-PF Pt I-26, col (b)",2020-2024,pf_only
+TOTEXPNSPBKS,total_expenses_col_a,Total expenses,"990-PF Pt I-26, col (a)",2020-2024,pf_only
+TOTINVSTSEC,total_investments_securities,Total investments in securities – e-o-y book value,"990-PF Pt II, Lines 10a+10b+10c, col (b)",2020-2024,pf_only
+TOTLIABEND,total_liabilities_eoy,Total liabilities – e-o-y book value,"990-PF Pt II-23, col (b)",2020-2024,from_990
+TOTRCPTNETINC,total_revenue_col_b,Total receipts net investment income,"990-PF Pt I-12, col (b)",2020-2024,pf_only
+TOTRCPTPERBKS,total_revenue_col_a,Total revenue,"990-PF Pt I-12, col (a)",2020-2024,pf_only
+TOTSUPRTCOLA,total_support_curr_yr,Total support column a,"990-PF Pt XIII-3c(1), col (a)",2020-2024,pf_only
+TOTSUPRTCOLB,total_support_prior1,Total support column b,"990-PF Pt XIII-3c(1), col (b)",2020-2024,pf_only
+TOTSUPRTCOLC,total_support_prior2,Total support column c,"990-PF Pt XIII-3c(1), col (c)",2020-2024,pf_only
+TOTSUPRTCOLD,total_support_prior3,Total support column d,"990-PF Pt XIII-3c(1), col (d)",2020-2024,pf_only
+TOTSUPRTTOT,total_support_4yr_total,Total support total,"990-PF Pt XIII-3c(1), col (e)",2020-2024,pf_only
+TRANSFERCD,dqp_transfer_assets_cd,Transfer?,990-PF Pt VI-B-1a(5),2020-2024,pf_only
+TRAVLCONFMTNGS,travel_conf_meetings,"Travel, conferences, and meetings","990-PF Pt I-21, col (a)",2020-2024,pf_only
+TRCPTADJNETINC,total_revenue_col_c,Total receipts adjusted net income,"990-PF Pt I-12, col (c)",2020-2024,pf_only
+TRNSFRCASHCD,nce_org_transfer_cash_cd,Transfer cash to noncharitable exempt organization?,990-PF Pt XVI-1a(1),2020-2024,pf_only
+TRNSOTHASSTSCD,nce_org_transfer_other_assets_cd,Transfer other assets to noncharitable exempt organization?,990-PF Pt XVI-1a(2),2020-2024,pf_only
+TXPAIDF2758,tax_paid_with_form_2758,Tax paid with Form 2758 (filing extension),990-PF Pt V-6c,2020-2024,pf_only
+TXWITHLDSRC,tax_withheld_at_source,Tax withheld at source,990-PF Pt V-6b,2020-2024,pf_only
+UNDISTRIBINCYR,undistributed_income_current_yr,Undistributed income,"990-PF Pt XII-6f, col (d)",2020-2024,pf_only
+UNDISTRINCCD,undistributed_income_cd,Undistributed income?,990-PF Pt VI-B-2a,2020-2024,pf_only
+VALASSETSCOLA,value_assets_curr_yr,Value assets column a,"990-PF Pt XIII-3a(1), col (a)",2020-2024,pf_only
+VALASSETSCOLB,value_assets_prior1,Value assets column b,"990-PF Pt XIII-3a(1), col (b)",2020-2024,pf_only
+VALASSETSCOLC,value_assets_prior2,Value assets column c,"990-PF Pt XIII-3a(1), col (c)",2020-2024,pf_only
+VALASSETSCOLD,value_assets_prior3,Value assets column d,"990-PF Pt XIII-3a(1), col (d)",2020-2024,pf_only
+VALASSETSTOT,value_assets_4yr_total,Value assets total,"990-PF Pt XIII-3a(1), col (e)",2020-2024,pf_only
+VALNCHARITASSETS,net_value_noncharitable_assets,Net value of noncharitable-use assets,990-PF Pt IX-5,2020-2024,pf_only
+accountingfees,accounting_fees,Accounting fees,"990-PF Pt I-16b, col (a)",2013-2016,pf_only
+acqdrindrintcd,distribution_to_daf_advisory_cd,Acquire interest in applicable insurance contract question,"990-PF Pt VII-A, Line 12",2013-2014,pf_only
+actnotpr,activities_not_prev_reported_cd,Activities not previously reported?,990-PF Pt VII-A-2,2013-2016,pf_only
+adjnetinc,adjusted_net_income,Adjusted net income,990-PF Pt I-27c,2012-2016,pf_only
+adjnetinccola,adjusted_net_income_curr_yr,Adjusted net income column a,"990-PF Pt XIV-2a, col (a)",2012-2016,pf_only
+adjnetinccolb,adjusted_net_income_prior1,Adjusted net income column b,"990-PF Pt XIV-2a, col (b)",2012-2016,pf_only
+adjnetinccolc,adjusted_net_income_prior2,Adjusted net income column c,"990-PF Pt XIV-2a, col (c)",2012-2016,pf_only
+adjnetinccold,adjusted_net_income_prior3,Adjusted net income column d,"990-PF Pt XIV-2a, col (d)",2012-2016,pf_only
+adjnetinctot,adjusted_net_income_4yr_total,Adjusted net income total,"990-PF Pt XIV-2a, col (e)",2012-2016,pf_only
+agremkpaycd,agreed_pay_govt_official_cd,Agree to make pay?,990-PF Pt VII-B-1a(6),2012-2016,pf_only
+applyprovind,not_applying_4942_provisions_cd,Not applying section 4942(a)(2) provisions?,990-PF Pt VII-B-2b,2013-2016,pf_only
+assetcdgen,asset_size_code,Asset code,Generated based on value of total assets,2012,pf_only
+balduopt,balance_due_or_overpayment,Balance due or overpayment,"990-PF Pt IV, Line 9 or Line 10 - Balance due if positive; overpayment if negative",2012,pf_only
+brwlndmnycd,dqp_borrow_lend_cd,Borrow lend money?,990-PF Pt VII-B-1a(2),2012-2016,pf_only
+chgnprvrptcd,changes_to_governing_docs_cd,Changes not previously reported?,990-PF Pt VII-A-3,2013-2016,pf_only
+claimstatcd,claiming_private_op_status_cd,Claiming status?,990-PF Pt VII-A-9,2012-2016,pf_only
+cmpmininvstret,minimum_investment_return,Minimum investment return,990-PF Pt X-6,2012-2016,pf_only
+cntrbtrstxyrcd,new_substantial_contributors_cd,Substantial contributors?,990-PF Pt VII-A-10,2013-2016,pf_only
+compofficers,compensation_officers,Compensation of officers,"990-PF Pt I-13, col (a)",2012-2016,pf_only
+contractncd,liquidated_terminated_cd,Contraction?,990-PF Pt VII-A-5,2012-2016,pf_only
+contrpdpbks,contributions_paid,"Contributions, gifts, grants paid","990-PF Pt I-25, col (a)",2012-2016,pf_only
+costsold,cost_of_goods_sold,Cost-of-goods-sold,990-PF Pt I-10b,2012-2016,pf_only
+crelamt,credit_elect_amount,Credit elect amount,990-PF Pt VI-11,2012-2016,pf_only
+depreciationamt,depreciation_depletion,Depreciation and depletion,"990-PF Pt I-19, col (a)",2013-2016,pf_only
+dirindirintcd,direct_indirect_interest_2pct_cd,Direct indirect interest?,990-PF Pt VII-B-3a,2012-2016,pf_only
+distribamt,distributable_amount,Distributable amount,990-PF Pt XI-7,2012-2016,pf_only
+distribdafcd,distribution_to_daf_advisory_cd,Distribution to donor advised fund with advisory privileges?,990-PF Pt VII-A-12,2015-2016,pf_only
+dividndsamt,dividends,Dividends,"990-PF Pt I Line 4, col (a)",2012-2016,pf_only
+dvdndsintd,dividends_interest_excluded,Dividends and interest from securities (excluded),"990-PF Pt XVI-A-4, col (d)",2013-2016,pf_only
+dvdndsinte,dividends_interest_exempt_function,Dividends and interest from securities (exempt),"990-PF Pt XVI-A-4, col (e)",2013-2016,pf_only
+ein,ein,Employer Identification Number,"Form 990-PF, Item A",2012-2016,from_990
+elf,efile_indicator,E-file indicator,n/a,2015-2016,from_990
+endwmntscola,endowments_curr_yr,Endowments column a,"990-PF Pt XIV-3b, col (a)",2012-2016,pf_only
+endwmntscolb,endowments_prior1,Endowments column b,"990-PF Pt XIV-3b, col (b)",2012-2016,pf_only
+endwmntscolc,endowments_prior2,Endowments column c,"990-PF Pt XIV-3b, col (c)",2012-2016,pf_only
+endwmntscold,endowments_prior3,Endowments column d,"990-PF Pt XIV-3b, col (d)",2012-2016,pf_only
+endwmntstot,endowments_4yr_total,Endowments total,"990-PF Pt XIV-3b, col (e)",2012-2016,pf_only
+eostatus,eo_status,EO Status Code,n/a (IRS-Coded),2012-2016,pf_only
+erronbkupwthld,erroneous_backup_withholding_credit,Erroneous backup withholding credit amount,990-PF Pt VI-6d,2012-2016,pf_only
+estpnlty,estimated_tax_penalty,Estimated tax penalty,990-PF Pt VI-8,2012-2016,pf_only
+esttaxcr,estimated_tax_credit,Estimated tax credit,990-PF Pt VI-6a,2012-2016,pf_only
+exceptactsind,dqp_acts_failed_to_qualify_cd,Acts fail to qualify under section 53.4941(d)-3?,990-PF Pt VII-B-1b,2013-2016,pf_only
+excesshldcd,excess_business_holdings_cd,Excess business holdings?,990-PF Pt VII-B-3b,2012-2016,pf_only
+excessrcpts,excess_revenue_over_expenses,Net income less deficit,990-PF Pt I-27a,2012-2016,pf_only
+excptransind,s4945_transactions_failed_cd,Transactions fail to qualify under section 53.4945?,990-PF Pt VII-B-5b,2013-2016,pf_only
+fairmrktvalamt,fair_mkt_value_total_assets_eoy,Total assets – e-o-y fair market value,"990-PF Header, Item I",2012-2016,pf_only
+fairmrktvaleoy,fair_mkt_value_total_assets_eoy,Total assets – e-o-y fair market value,"990-PF Pt II-16, col (c)",2012-2016,pf_only
+filedf990tcd,filed_form_990t_cd,Filed 990-T?,990-PF Pt VII-A-4b,2013-2016,from_990
+filedlf1041ind,filed_in_lieu_1041_cd,Section 4947(a)(1) filing in lieu of Form 1041?,990-PF Pt VII-A-15,2013-2016,pf_only
+furngoodscd,dqp_furnish_goods_cd,Furnished goods?,990-PF Pt VII-B-1a(3),2012-2016,pf_only
+furnishcpycd,furnished_copy_to_ag_cd,Furnished copy to Attorney General?,990-PF Pt VII-A-8b,2013-2016,pf_only
+grntapprvfut,grants_approved_for_future,Grants approved for future payment,990-PF Pt XV-3b,2013-2016,pf_only
+grntindivcd,s4945_grant_to_indiv_cd,Grant individual?,990-PF Pt VII-B-5a(3),2012-2016,pf_only
+grscontrgifts,contributions_received,Contributions received,"990-PF Pt I Line 1, col (a)",2012-2016,pf_only
+grsinvstinca,gross_investment_income_curr_yr,Gross investment income column a,"990-PF Pt XIV-3c(4), col (a)",2012-2016,pf_only
+grsinvstincb,gross_investment_income_prior1,Gross investment income column b,"990-PF Pt XIV-3c(4), col (b)",2012-2016,pf_only
+grsinvstincc,gross_investment_income_prior2,Gross investment income column c,"990-PF Pt XIV-3c(4), col (c)",2012-2016,pf_only
+grsinvstincd,gross_investment_income_prior3,Gross investment income column d,"990-PF Pt XIV-3c(4), col (d)",2012-2016,pf_only
+grsinvstinctot,gross_investment_income_4yr_total,Gross investment income total,"990-PF Pt XIV-3c(4), col (e)",2012-2016,pf_only
+grsprofitbus,gross_profit,Gross profit,"990-PF Pt I-10c, col (a)",2012-2016,pf_only
+grsrents,gross_rents,Gross rents,"990-PF Pt I-5a, col (a)",2012-2016,pf_only
+grsslspramt,gross_sales_price_assets,Gross sales price for assets,990-PF Pt I-6b,2013-2016,pf_only
+infleg,influence_legislation_cd,Influence legislation?,990-PF Pt VII-A-1a,2012-2016,pf_only
+interestamt,interest_expense,Interest,"990-PF Pt I-17, col (a)",2013-2016,from_990
+intonsvngsd,interest_savings_excluded,Interest on savings and temporary cash investments (excluded),"990-PF Pt XVI-A-3, col (d)",2013-2016,pf_only
+intonsvngse,interest_savings_exempt_function,Interest on savings and temporary cash investments (exempt),"990-PF Pt XVI-A-3, col (e)",2013-2016,pf_only
+intrstrvnue,interest_revenue,Interest revenue,"990-PF Pt I Line 3, col (a)",2012-2016,pf_only
+invstcorpbnd,investments_corp_bonds,Investments in corporate bonds– e-o-y book value,"990-PF Pt II-10c, col (b)",2012-2016,pf_only
+invstcorpstk,investments_corp_stock,Investments in corporate stock – e-o-y book value,"990-PF Pt II-10b, col (b)",2012-2016,pf_only
+invstexcisetx,excise_tax_net_investment_income,Excise tax on net investment income,990-PF Pt VI-1,2012-2016,pf_only
+invstgovtoblig,investments_govt_obligations,Investments in U.S. & state government obligations – e-o-y book value,"990-PF Pt II-10a, col (b)",2012-2016,pf_only
+invstjexmptcd,jeopardizing_investments_cd,Jeopardizing investments?,990-PF Pt VII-B-4a,2012-2016,pf_only
+ipubelectcd,s4945_influence_election_cd,Influence public election?,990-PF Pt VII-B-5a(2),2013-2016,pf_only
+legalfeesamt,legal_fees,Legal fees,"990-PF Pt I-16a, col (a)",2013-2016,pf_only
+loansguarcd,nce_org_loans_or_guarantees_cd,Loans or other guarantees?,990-PF Pt XVII-1b(5),2013-2016,pf_only
+membershpduesd,membership_dues_excluded,Membership dues and assessments (excluded),"990-PF Pt XVI-A-2, col (d)",2013-2016,pf_only
+membershpduese,membership_dues_exempt_function,Membership dues and assessments (exempt),"990-PF Pt XVI-A-2, col (e)",2013-2016,pf_only
+mrtgloans,mortgage_loans_eoy,Investments mortgage loans – e-o-y book value,"990-PF Pt II-12, col (b)",2012-2016,pf_only
+mrtgnotespay,mortgage_notes_payable_eoy,Mortgage loans payable – e-o-y book value,"990-PF Pt II-21, col (b)",2012-2016,pf_only
+nchrtygrntcd,s4945_grant_to_non_charity_cd,Non-charity grant?,990-PF Pt VII-B-5a(4),2012-2016,pf_only
+netinvstinc,net_investment_income,Net investment income,990-PF Pt I-27b,2012-2016,pf_only
+nreligiouscd,s4945_non_religious_purpose_cd,Non-religious?,990-PF Pt VII-B-5a(5),2012-2016,pf_only
+occupancyamt,occupancy,Occupancy,"990-PF Pt I-20, col (a)",2013-2016,pf_only
+operatingcd,operating_foundation_cd,Operating foundation code,n/a (IRS-Coded),2012-2016,pf_only
+orgcmplypubcd,complied_public_inspection_cd,Comply with public inspection?,990-PF Pt VII-A-13,2013-2016,pf_only
+otherincamt,other_income,Other income,"990-PF Pt I-11, col (a)",2012-2016,pf_only
+othrassetseoy,other_assets_eoy,Other assets – e-o-y book value,"990-PF Pt II-15, col (b)",2013-2016,pf_only
+othrcashamt,noninterest_cash_eoy,Cash non-interest-bearing – e-o-y book value,"990-PF Pt II-1, col (b)",2012-2016,pf_only
+othrinvstend,other_investments_eoy,Other investments – e-o-y book value,"990-PF Pt II-13, col (b)",2012-2016,pf_only
+othrliabltseoy,other_liabilities_eoy,Other liabilities – e-o-y book value,"990-PF Pt II-22, col (b)",2013-2016,pf_only
+overpay,overpayment,Overpayment,990-PF Pt VI-10,2013-2016,pf_only
+paidcmpncd,dqp_paid_compensation_cd,Paid compensation?,990-PF Pt VII-B-1a(4),2012-2016,pf_only
+pensplemplbenf,pension_employee_benefits,"Pension plans, employee benefits","990-PF Pt I-15, col (a)",2013-2016,pf_only
+perfservicescd,nce_org_perform_services_cd,Performance of services or membership or fundraising solicitations?,990-PF Pt XVII-1b(6),2013-2016,pf_only
+prchsasstscd,nce_org_purchase_assets_cd,Purchase of assets from noncharitable exempt organization?,990-PF Pt XVII-1b(2),2013-2016,pf_only
+prevjexmptcd,prior_year_jeopardizing_invest_cd,Prior year jeopardizing investments?,990-PF Pt VII-B-4b,2013-2016,pf_only
+printingpubl,printing_publications,Printing and publications,"990-PF Pt I-22, col (a)",2013-2016,pf_only
+prioractvcd,dqp_acts_prior_year_cd,Engage in acts in prior year?,990-PF Pt VII-B-1c,2013-2016,pf_only
+progsrvcacold,program_revenue_1a_excluded,Program service revenue line 1a (excluded),"990-PF Pt XVI-A-1a, col (d)",2013-2016,pf_only
+progsrvcacole,program_revenue_1a_exempt_function,Program service revenue line 1a (exempt),"990-PF Pt XVI-A-1a, col (e)",2013-2016,pf_only
+progsrvcbcold,program_revenue_1b_excluded,Program service revenue line 1b (excluded),"990-PF Pt XVI-A-1b, col (d)",2013-2016,pf_only
+progsrvcbcole,program_revenue_1b_exempt_function,Program service revenue line 1b (exempt),"990-PF Pt XVI-A-1b, col (e)",2013-2016,pf_only
+progsrvcccold,program_revenue_1c_excluded,Program service revenue line 1c (excluded),"990-PF Pt XVI-A-1c, col (d)",2013-2016,pf_only
+progsrvcccole,program_revenue_1c_exempt_function,Program service revenue line 1c (exempt),"990-PF Pt XVI-A-1c, col (e)",2013-2016,pf_only
+progsrvcdcold,program_revenue_1d_excluded,Program service revenue line 1d (excluded),"990-PF Pt XVI-A-1d, col (d)",2013-2016,pf_only
+progsrvcdcole,program_revenue_1d_exempt_function,Program service revenue line 1d (exempt),"990-PF Pt XVI-A-1d, col (e)",2013-2016,pf_only
+progsrvcecold,program_revenue_1e_excluded,Program service revenue line 1e (excluded),"990-PF Pt XVI-A-1e, col (d)",2013-2016,pf_only
+progsrvcecole,program_revenue_1e_exempt_function,Program service revenue line 1e (exempt),"990-PF Pt XVI-A-1e, col (e)",2013-2016,pf_only
+progsrvcfcold,program_revenue_1f_excluded,Program service revenue line 1f (excluded),"990-PF Pt XVI-A-1f, col (d)",2013-2016,pf_only
+progsrvcfcole,program_revenue_1f_exempt_function,Program service revenue line 1f (exempt),"990-PF Pt XVI-A-1f, col (e)",2013-2016,pf_only
+progsrvcgcold,program_revenue_1g_excluded,Program service revenue--fees and contracts from government line 1g (excluded),"990-PF Pt XVI-A-1g, col (d)",2013-2016,pf_only
+progsrvcgcole,program_revenue_1g_exempt_function,Program service revenue--fees and contracts from government line 1g (exempt),"990-PF Pt XVI-A-1g, col (e)",2013-2016,pf_only
+propexchcd,dqp_property_exchange_cd,Property exchange?,990-PF Pt VII-B-1a(1),2012-2016,pf_only
+propgndacd,s4945_propaganda_legislation_cd,Propaganda?,990-PF Pt VII-B-5a(1),2012-2016,pf_only
+pubsuprtcola,public_support_curr_yr,Public support column a,"990-PF Pt XIV-3c(2), col (a)",2012-2016,pf_only
+pubsuprtcolb,public_support_prior1,Public support column b,"990-PF Pt XIV-3c(2), col (b)",2012-2016,pf_only
+pubsuprtcolc,public_support_prior2,Public support column c,"990-PF Pt XIV-3c(2), col (c)",2012-2016,pf_only
+pubsuprtcold,public_support_prior3,Public support column d,"990-PF Pt XIV-3c(2), col (d)",2012-2016,pf_only
+pubsuprttot,public_support_4yr_total,Public support total,"990-PF Pt XIV-3c(2), col (e)",2012-2016,pf_only
+pyprsnlbnftind,paid_premiums_personal_benefit_cd,Pay premiums on personal benefit contract?,990-PF Pt VII-B-6b,2013-2016,pf_only
+qlfyasseta,qualifying_assets_curr_yr,Qualifying assets column a,"990-PF Pt XIV-3a(2), col (a)",2012-2016,pf_only
+qlfyassetb,qualifying_assets_prior1,Qualifying assets column b,"990-PF Pt XIV-3a(2), col (b)",2012-2016,pf_only
+qlfyassetc,qualifying_assets_prior2,Qualifying assets column c,"990-PF Pt XIV-3a(2), col (c)",2012-2016,pf_only
+qlfyassetd,qualifying_assets_prior3,Qualifying assets column d,"990-PF Pt XIV-3a(2), col (d)",2012-2016,pf_only
+qlfyassettot,qualifying_assets_4yr_total,Qualifying assets total,"990-PF Pt XIV-3a(2), col (e)",2012-2016,pf_only
+qlfydistriba,qualifying_distributions_curr_yr,Qualifying distributions column a,"990-PF Pt XIV-2e, col (a)",2012-2016,pf_only
+qlfydistribb,qualifying_distributions_prior1,Qualifying distributions column b,"990-PF Pt XIV-2e, col (b)",2012-2016,pf_only
+qlfydistribc,qualifying_distributions_prior2,Qualifying distributions column c,"990-PF Pt XIV-2e, col (c)",2012-2016,pf_only
+qlfydistribd,qualifying_distributions_prior3,Qualifying distributions column d,"990-PF Pt XIV-2e, col (d)",2012-2016,pf_only
+qlfydistribtot,qualifying_distributions_4yr_total,Qualifying distributions total,"990-PF Pt XIV-2e, col (e)",2012-2016,pf_only
+reimbrsmntscd,nce_org_reimbursements_cd,Reimbursements arrangements?,990-PF Pt XVII-1b(4),2013-2016,pf_only
+rentlsfacltscd,nce_org_rental_facilities_cd,Rental of facilities or other assets?,990-PF Pt XVII-1b(3),2013-2016,pf_only
+rfprsnlbnftind,received_funds_for_premiums_cd,Receive funds to pay premiums on personal benefit contract?,990-PF Pt VII-B-6a,2013-2016,pf_only
+salesasstscd,nce_org_sale_assets_cd,Sale of assets to noncharitable exempt organization?,990-PF Pt XVII-1b(1),2013-2016,pf_only
+schedbind,sched_b_required_cd,Schedule B indicator,n/a (IRS-Coded based on presence of Schedule B contributor information),2013-2016,pf_only
+sec4940notxcd,sec4940_no_tax_cd,Section 4940 – no tax,990-PF Pt VI-1b not checked,2012-2016,pf_only
+sec4940redtxcd,sec4940_reduced_tax_cd,Section 4940 – 1 % tax,990-PF Pt VI-1b checked,2012-2016,pf_only
+sect511tx,section_511_tax,Section 511 tax,990-PF Pt VI-2,2012-2016,pf_only
+sharngasstscd,nce_org_sharing_assets_cd,"Sharing of facilities, equipment, mailing lists, other assets, or paid employees?",990-PF Pt XVII-1c,2013-2016,pf_only
+subcd,subsection_cd,Subsection code,n/a (IRS-Coded),2012-2016,pf_only
+subtitleatx,subtitle_a_tax,Subtitle A tax,990-PF Pt VI-4,2012-2016,pf_only
+tax_prd,tax_period,Tax period (YYYYMM format),Top of form,2012-2016,pf_only
+tax_yr,soi_year,SOI Year,990-PF Header,2012-2016,pf_only
+taxdue,tax_due,Tax due,990-PF Pt VI-9,2013-2016,pf_only
+tfairmrktunuse,fair_mkt_value_assets_not_charitable_use,Fair market value of assets not used for charitable purposes,990-PF Pt X-1d,2012-2016,pf_only
+tfundnworth,total_fund_net_worth_eoy,Total fund net worth – e-o-y book value,"990-PF Pt II-31, col (b)",2012-2016,pf_only
+topradmnexpnsa,total_operating_admin_expenses_col_a,Total operating and administrative expenses column a,"990-PF Pt I-24, col (a)",2012-2016,pf_only
+topradmnexpnsb,total_operating_admin_expenses_col_b,Total operating and administrative expenses column b,"990-PF Pt I-24, col (b)",2012-2016,pf_only
+topradmnexpnsd,total_operating_admin_expenses_col_d,Total operating and administrative expenses column d,"990-PF Pt I-24, col (d)",2012-2016,pf_only
+totassetsend,total_assets_eoy,Total assets – e-o-y book value,"990-PF Pt II-16, col (b)",2012-2016,from_990
+totaxpyr,total_excise_tax,Total excise tax,990-PF Pt VI-5,2012-2016,pf_only
+totexcapgn,capital_gain,Net gain – sales of assets,990-PF Part IV-2 > 0,2012-2016,pf_only
+totexcapgnls,capital_gain_net_income,Capital gain net income,990-PF Pt IV-2,2013-2016,pf_only
+totexcapls,capital_loss,Net loss – sales of assets,990-PF Part IV-2 < 0,2012-2016,pf_only
+totexpnsadjnet,total_expenses_col_c,Total expenses adjusted net income,"990-PF Pt I-26, col (c)",2012-2016,pf_only
+totexpnsexempt,total_expenses_col_d,Total expenses – exempt purpose,"990-PF Pt I-26, col (d)",2012-2016,pf_only
+totexpnsnetinc,total_expenses_col_b,Total expenses net investment income,"990-PF Pt I-26, col (b)",2012-2016,pf_only
+totexpnspbks,total_expenses_col_a,Total expenses,"990-PF Pt I-26, col (a)",2012-2016,pf_only
+totinvstsec,total_investments_securities,Total investments in securities – e-o-y book value,"990-PF Pt II, Lines 10a+10b+10c, col (b)",2012-2016,pf_only
+totliabend,total_liabilities_eoy,Total liabilities – e-o-y book value,"990-PF Pt II-23, col (b)",2012-2016,from_990
+totrcptnetinc,total_revenue_col_b,Total receipts net investment income,"990-PF Pt I-12, col (b)",2012-2016,pf_only
+totrcptperbks,total_revenue_col_a,Total revenue,"990-PF Pt I-12, col (a)",2012-2016,pf_only
+totsuprtcola,total_support_curr_yr,Total support column a,"990-PF Pt XIV-3c(1), col (a)",2012-2016,pf_only
+totsuprtcolb,total_support_prior1,Total support column b,"990-PF Pt XIV-3c(1), col (b)",2012-2016,pf_only
+totsuprtcolc,total_support_prior2,Total support column c,"990-PF Pt XIV-3c(1), col (c)",2012-2016,pf_only
+totsuprtcold,total_support_prior3,Total support column d,"990-PF Pt XIV-3c(1), col (d)",2012-2016,pf_only
+totsuprttot,total_support_4yr_total,Total support total,"990-PF Pt XIV-3c(1), col (e)",2012-2016,pf_only
+transfercd,dqp_transfer_assets_cd,Transfer?,990-PF Pt VII-B-1a(5),2013-2016,pf_only
+transinccd,total_revenue_size_code,Income code,Generated based on value of total gross receipts,2012,pf_only
+travlconfmtngs,travel_conf_meetings,"Travel, conferences, and meetings","990-PF Pt I-21, col (a)",2013-2016,pf_only
+trcptadjnetinc,total_revenue_col_c,Total receipts adjusted net income,"990-PF Pt I-12, col (c)",2012-2016,pf_only
+trnsfrcashcd,nce_org_transfer_cash_cd,Transfer cash to noncharitable exempt organization?,990-PF Pt XVII-1a(1),2013-2016,pf_only
+trnsothasstscd,nce_org_transfer_other_assets_cd,Transfer other assets to noncharitable exempt organization?,990-PF Pt XVII-1a(2),2012-2016,pf_only
+txpaidf2758,tax_paid_with_form_2758,Tax paid with Form 2758 (filing extension),990-PF Pt VI-6c,2012-2016,pf_only
+txwithldsrc,tax_withheld_at_source,Tax withheld at source,990-PF Pt VI-6b,2012-2016,pf_only
+undistribincyr,undistributed_income_current_yr,Undistributed income,"990-PF Pt XIII-6f, col (d)",2012-2016,pf_only
+undistrinccd,undistributed_income_cd,Undistributed income?,990-PF Pt VII-B-2a,2012-2016,pf_only
+valassetscola,value_assets_curr_yr,Value assets column a,"990-PF Pt XIV-3a(1), col (a)",2012-2016,pf_only
+valassetscolb,value_assets_prior1,Value assets column b,"990-PF Pt XIV-3a(1), col (b)",2012-2016,pf_only
+valassetscolc,value_assets_prior2,Value assets column c,"990-PF Pt XIV-3a(1), col (c)",2012-2016,pf_only
+valassetscold,value_assets_prior3,Value assets column d,"990-PF Pt XIV-3a(1), col (d)",2012-2016,pf_only
+valassetstot,value_assets_4yr_total,Value assets total,"990-PF Pt XIV-3a(1), col (e)",2012-2016,pf_only
+valncharitassets,net_value_noncharitable_assets,Net value of noncharitable-use assets,990-PF Pt X-5,2013-2016,pf_only

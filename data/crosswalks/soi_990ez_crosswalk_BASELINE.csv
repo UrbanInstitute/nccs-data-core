@@ -1,0 +1,87 @@
+source_var,harmonized_name,description,location,years_present,source
+EIN,ein,Employer Identification Number,Form 990-EZ Header,2013-2024,from_990
+actvtynotprevrptcd,significant_new_activity_cd,Activity not previously reported?,990-EZ_Pt V-33,2013-2024,ez_only
+basisalesexpnsothr,cost_basis_other_assets,Cost or other basis and sales expenses,990-EZ_Pt I-5b,2012-2024,ez_only
+chngsinorgcd,changes_to_governing_docs_cd,Significant changes to governing docs?,990-EZ_Pt V-34,2013-2024,ez_only
+contractioncd,liquidated_terminated_cd,"Liquidation, dissolution, termination, or contraction",990-EZ_Pt V-36,2013-2024,ez_only
+costgoodsold,cost_of_goods_sold,Less: cost of goods sold,990-EZ_Pt I-7b,2012-2024,ez_only
+direxpns,gaming_fundraising_direct_expenses,Special events direct expenses,990-EZ_Pt I-6c,2012-2024,ez_only
+duesassesmnts,membership_dues_assessments,Membership dues and assessments,990-EZ_Pt I-3,2012-2024,ez_only
+efile,efile_indicator,E-file indicator,n/a,2020-2024,from_990
+ein,ein,Employer Identification Number,990-EZ Header,2012,from_990
+elf,efile_indicator,E-file indicator,n/a,2015-2019,from_990
+excds1pct509,excess_over_1pct_sec509,Amount support exceeds total (509),990-EZ Sch A_Pt III-7b(f),2017-2024,ez_only
+excds2pct170,excess_over_2pct_sec170,Amount support exceeds total (170),990-EZ Sch A_Pt II-5(f),2017-2024,ez_only
+exceeds1pct509,excess_over_1pct_sec509,Amount support exceeds total (509),990-EZ Sch A_Pt III-7b(f),2013-2016,from_990
+exceeds2pct170,excess_over_2pct_sec170,Amount support exceeds total (170),990-EZ Sch A_Pt II-5(f),2013-2016,from_990
+filedf1120polcd,filed_form_1120pol_cd,File Form 1120-POL?,990-EZ_Pt V-37b,2013-2024,ez_only
+filedf990tcd,filed_form_990t_cd,Organization Filed 990T,990-EZ_Pt V-35b,2013-2024,from_990
+gftgrntrcvd170,gifts_grants_received_sec170,Gifts grants membership fees received (170),990-EZ Sch A_Pt II-1(f),"2012, 2017-2024",ez_only
+gftgrntsrcvd170,gifts_grants_received_sec170,Gifts grants membership fees received (170),990-EZ Sch A_Pt II-1(f),2013-2016,from_990
+gnsaleofastothr,gain_loss_sales_other_assets,Gain or (loss) from sale of assets,990-EZ_Pt I-5c,2012-2024,ez_only
+grsalesminusret,gross_sales_inventory_less_returns,Gross sales of inventory,990-EZ_Pt I-7a,2012-2024,ez_only
+grsamtsalesastothr,gross_sales_other_assets,Gross amount from sale of assets,990-EZ_Pt I-5a,2012-2024,ez_only
+grsinc170,gross_income_interest_sec170,Gross income from interest etc (170),990-EZ Sch A_Pt II-8(f),2012-2024,from_990
+grsinc509,gross_income_interest_sec509,Gross income from interest etc (509),990-EZ Sch A_Pt III-10a(f),2013-2024,from_990
+grsincgaming,gross_income_gaming_activities,Gross income from gaming,990-EZ_Pt I-6a,2012-2024,from_990
+grsprft,gross_profit_inventory_sales,Gross profit (or loss) from sales of inventory,990-EZ_Pt I-7c,2012-2024,ez_only
+grspublicrcpts,gross_receipts_public_use,Gross receipts for public use of club facilities,990-EZ_Pt V-39b,2012-2024,ez_only
+grsrcptsactivities509,gross_receipts_related_activities_sec509,Gross receipts from related activities (509),990-EZ Sch A_Pt III-3(f),2013-2016,from_990
+grsrcptsactvts509,gross_receipts_related_activities_sec509,Gross receipts from related activities (509),990-EZ Sch A_Pt III-3(f),2017-2024,ez_only
+grsrcptsadmiss509,gross_receipts_admissions_sec509,Receipts from admissions merchandise etc (509),990-EZ Sch A_Pt III-2(f),"2012, 2017-2024",ez_only
+grsrcptsadmissn509,gross_receipts_admissions_sec509,Receipts from admissions merchandise etc (509),990-EZ Sch A_Pt III-2(f),2013-2016,from_990
+grsrcptsrelatd170,gross_receipts_related_activities_sec170,Gross receipts from related activities (170),990-EZ Sch A_Pt II-12,"2012, 2017-2024",ez_only
+grsrcptsrelated170,gross_receipts_related_activities_sec170,Gross receipts from related activities (170),990-EZ Sch A_Pt II-12,2013-2016,from_990
+grsrevnuefndrsng,gross_income_fundraising_events,Special events gross revenue,990-EZ_Pt I-6b,2012-2024,ez_only
+initiationfee,initiation_fees,Initiation fees and capital contributions,990-EZ_Pt V-39a,2012-2024,ez_only
+loanstoofficers,loans_to_officers_amount,Amount of loans to/from officers,990-EZ_Pt V-38b,2013-2024,ez_only
+loanstoofficerscd,loans_to_officers_cd,"Loans to/from officers, directors or trustees?",990-EZ_Pt V-38a,2013-2024,ez_only
+netincfndrsng,net_income_fundraising_events,Special events net income (or loss),990-EZ_Pt I-6d,2012-2024,from_990
+netincunrelatd170,net_ubi_sec170,Net UBI (170),990-EZ Sch A_Pt II-9(f),2017-2024,ez_only
+netincunrelatd509,net_ubi_excl_10b_sec509,Net income from UBI not in 10b (509),990-EZ Sch A_Pt III-11(f),2013-2016,from_990
+netincunreltd170,net_ubi_sec170,Net UBI (170),990-EZ Sch A_Pt II-9(f),2013-2016,from_990
+netincunreltd509,net_ubi_excl_10b_sec509,Net income from UBI not in 10b (509),990-EZ Sch A_Pt III-11(f),2017-2024,ez_only
+networthend,total_net_assets_eoy,Net assets EOY,990-EZ_Pt I-21,2013-2024,ez_only
+nonpfrea,non_pf_status_reason,Reason for non-PF status,990-EZ Sch A_Pt I-1-11,2012-2024,from_990
+othrchgsnetassetfnd,other_changes_net_assets_fund_balances,Other changes in net assets,990-EZ_Pt I-20,2012-2024,ez_only
+othrevnue,other_revenue,Other revenue - total,990-EZ_Pt I-8,2012-2024,ez_only
+othrinc170,other_income_sec170,Other income (170),990-EZ Sch A_Pt II-10(f),2013-2024,from_990
+othrinc509,other_income_sec509,Other income (509),990-EZ Sch A_Pt III-12(f),2013-2024,from_990
+othrinvstinc,investment_income,Investment income,990-EZ_Pt I-4,2012-2024,ez_only
+politicalexpend,political_expenditures,Direct or indirect political expenditures.,990-EZ_Pt V-37a,2013-2024,ez_only
+prgmservrev,program_service_revenue,Program service revenue,990-EZ_Pt I-2,2012-2024,ez_only
+prohibtdtxshltrcd,prohibited_tax_shelter_cd,Party to a prohibited tax shelter transaction?,990-EZ_Pt V-40e,2013-2024,from_990
+pubsupplesspct170,public_support_sec170,Public support (170),990-EZ Sch A_Pt II-6(f),2013-2024,from_990
+pubsupplesssub509,public_support_sec509,Public support (509),990-EZ Sch A_Pt III-8(f),2017-2024,ez_only
+pubsupplesub509,public_support_sec509,Public support (509),990-EZ Sch A_Pt III-8(f),2013-2016,from_990
+pubsuppsubtot170,public_support_subtotal_sec170,Public support subtotal (170),990-EZ Sch A_Pt II-4(f),2013-2024,from_990
+pubsuppsubtot509,public_support_subtotal_line6_sec509,Public support subtotal (509),990-EZ Sch A_Pt III-6(f),2013-2024,from_990
+rcvdfrmdisqualsub509,disqualified_persons_amts_sec509,Amounts from disqualified persons (509),990-EZ Sch A_Pt III-7a(f),2013-2024,from_990
+s4958excessbenefcd,excess_benefit_transaction_cd,Section 4958 excess benefit transactions?,990-EZ_Pt V-40b,2013-2024,ez_only
+samepubsuppsubtot170,public_support_subtotal_line4_ref_sec170,Public support from line 4 (170),990-EZ Sch A_Pt II-7(f),2013-2024,from_990
+samepubsuppsubtot509,public_support_subtotal_line6_ref_sec509,Public support from line 6 (509),990-EZ Sch A_Pt III-9(f),2013-2024,from_990
+srvcsval170,gov_services_value_sec170,Services or facilities furnished by gov (170),990-EZ Sch A_Pt II-3(f),2012-2024,from_990
+srvcsval509,gov_services_value_sec509,Services or facilities furnished by gov (509),990-EZ Sch A_Pt III-5(f),2012-2024,from_990
+subseccd,subsection_cd,Subsection code,Form 990-EZ Header,2012-2024,from_990
+subtotpub509,public_support_subtotal_line7c_sec509,Public support subtotal (509),990-EZ Sch A_Pt III-7c(f),2013-2024,from_990
+subtotsuppinc509,total_support_subtotal_sec509,Subtotal total support (509),990-EZ Sch A_Pt III-10c(f),2012-2024,from_990
+tax_pd,tax_period,Tax period,Form 990-EZ Header,2012-2016,from_990
+taxpd,tax_period,Tax period,Form 990-EZ Header,2017-2024,ez_only
+totassetsend,total_assets_eoy,Total assets e-o-y,990-EZ_Pt II-25B,2012-2024,from_990
+totcntrbs,total_contributions,"Contributions, gifts, grants, etc received",990-EZ_Pt I-1,2012-2024,ez_only
+totexcessyr,excess_or_deficit_for_year,Excess or deficit,990-EZ_Pt I-18,2012-2024,ez_only
+totexpns,total_expenses,Total expenses,990-EZ_Pt I-17,2012-2024,ez_only
+totgftgrntrcvd509,total_gifts_grants_received_sec509,Gifts grants membership fees received (509),990-EZ Sch A_Pt III-1(f),2012-2024,from_990
+totliabend,total_liabilities_eoy,Total liabilities e-o-y,990-EZ_Pt II-26B,2012-2024,from_990
+totnetassetsend,total_net_assets_eoy,Total net worth e-o-y,990-EZ_Pt II-27B,2012-2024,ez_only
+totnoforgscnt,n_orgs_supported,Number of organizations supported,990-EZ Sch A_Pt I-11h,2017-2024,ez_only
+totnooforgscnt,n_orgs_supported,Number of organizations supported,990-EZ Sch A_Pt I-11h,2013-2016,from_990
+totrevnue,total_revenue,Total revenue,990-EZ_Pt I-9,2012-2024,ez_only
+totsupp170,total_support_sec170,Total support (170),990-EZ Sch A_Pt II-11(f),2013-2016,from_990
+totsupp509,total_support_sec509,Total support (509),990-EZ Sch A_Pt III-13(f),2012-2024,from_990
+totsupport,total_support_amount,Sum of amounts of support,990-EZ Sch A_Pt I-11h(vii),2013-2024,from_990
+totsupport170,total_support_sec170,Total support (170),990-EZ Sch A_Pt II-11(f),2017-2024,ez_only
+txrevnuelevied170,tax_revenues_levied_sec170,Tax revenues levied (170),990-EZ Sch A_Pt II-2(f),2012-2024,from_990
+txrevnuelevied509,tax_revenues_levied_sec509,Tax revenues levied (509),990-EZ Sch A_Pt III-4(f),2012-2024,from_990
+unrelbusincd,unrelated_business_income_1k_cd,"UBI over $1,000?",990-EZ_Pt V-35a,2012-2024,ez_only
+unreltxincls511tx509,net_ubi_line10b_sec509,Net UBI (509),990-EZ Sch A_Pt III-10b(f),2013-2024,from_990

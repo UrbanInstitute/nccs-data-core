@@ -1,0 +1,77 @@
+name: Publish Quarto Book
+
+# Note on run time:
+#   Typical run: ~3-6 min (R package cache hit).
+#   Cold cache:  ~45 min — when the r-lib setup-r-dependencies cache is
+#   missing (caches expire after 7 days of inactivity, or whenever
+#   `cache-version` below is bumped), R packages compile from source.
+#   The next run after a cold one is back to ~3-6 min.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'data/lookup/**'
+      - '.github/workflows/publish-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.3.0'
+
+      - name: Setup R package cache
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            openxlsx
+            knitr
+            data.table
+          cache-version: 1
+
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Render Quarto book
+        run: |
+          cd docs
+          quarto render
+
+      - name: Copy quality reports
+        run: |
+          mkdir -p docs/GUIDEBOOK/quality-reports
+          cp -r docs/quality-reports/*.html docs/GUIDEBOOK/quality-reports/ 2>/dev/null || true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/GUIDEBOOK
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

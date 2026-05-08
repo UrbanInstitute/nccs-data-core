@@ -1,0 +1,248 @@
+source_var,harmonized_name,description,location,years_present
+EIN,ein,Employer Identification Number,Form 990 Header,2012-2024
+accntingfees,accounting_fees,Accounting fees,990 Core_Pt IX-11c(A),2013-2024
+accntspayableend,accounts_payable_eoy,Accounts payable and accrued expenses -- eoy,990 Core_Pt X-17(B),2013-2024
+accntsrcvblend,accounts_receivable_eoy,Accounts receivable -- eoy,990 Core_Pt X-4(B),2013-2024
+actonbehalfcd,act_on_behalf_of_issuer_cd,On behalf of issuer?,990 Core_Pt IV-24d,2013-2024
+advrtpromo,advertising_promotion,Advertising and promotion,990 Core_Pt IX-12(A),2013-2024
+awarexcessbnftcd,aware_prior_excess_benefit_cd,Prior excess benefit transaction?,990 Core_Pt IV-25b,2013-2024
+benifitsmembrs,benefits_to_members,Benefits paid to or for members,990 Core_Pt IX-4(A),2013-2024
+capitalstktrstend,capital_stock_or_trust_eoy,Capital stock or trust principal -- eoy,990 Core_Pt X-30(B),2013-2024
+ceaseoperationscd,terminated_cd,Terminated?,990 Core_Pt IV-31,2013-2024
+compltschocd,schedule_o_completed_cd,Schedule O completed?,990 Core_Pt IV-38,2013-2024
+compnsatnandothr,compensation_disqualified_persons,Compensation of disqualified persons,990 Core_Pt IX-6(A),2013-2024
+compnsatncurrofcr,compensation_current_officers,"Compensation of current officers, directors, etc",990 Core_Pt IX-5(A),2012-2024
+conduct5percentcd,partnership_activities_5pct_cd,Activities conducted thru partnership?,990 Core_Pt IV-37,2013-2024
+converconventmtng,conferences_conventions_meetings,"Conferences, conventions, meetings",990 Core_Pt IX-19(A),2013-2024
+crcounselingqstncd,credit_counseling_cd,Credit counseling?,990 Core_Pt IV-9,2013-2024
+cstbasisecur,cost_basis_securities,Sales expense -- Securities,990 Core_Pt VIII-7b(i),2012-2024
+cstbasisothr,cost_basis_other,Sales expense -- Other assets,990 Core_Pt VIII-7b(ii),2012-2024
+currfrmrcvblend,officer_receivables_eoy,"Receivables from officers, directors, etc. -- eoy",990 Core_Pt X-5(B),2013-2024
+deferedrevnuend,deferred_revenue_eoy,Deferred revenue -- eoy,990 Core_Pt X-19(B),2013-2024
+deprcatndepletn,depreciation_depletion,"Depreciation, depletion, amortization",990 Core_Pt IX-22(A),2013-2024
+dirbusnreltdcd,director_business_relationship_cd,Business relationship with organization?,990 Core_Pt IV-28a,2013-2024
+distribtodonorcd,distribution_to_donor_cd,Distribution to donor?,990 Core_Pt V-9b,2013-2024
+dnradvisedfundscd,donor_advised_funds_cd,Donor advised funds?,990 Core_Pt IV-6,2013-2024
+efile,efile_indicator,E-file indicator,n/a,2020-2024
+elf,efile_indicator,E-file indicator,n/a,2015-2019
+engageexcessbnftcd,excess_benefit_transaction_cd,Excess benefit transaction?,990 Core_Pt IV-25a,2013-2024
+escrwaccntliabend,escrow_account_liability_eoy,Escrow account liability -- eoy,990 Core_Pt X-21(B),2013-2024
+excbushldngscd,excess_business_holdings_cd,Excess business holdings?,990 Core_Pt V-8,2013-2024
+exceeds1pct509,excess_over_1pct_sec509,Amount support exceeds total (509),990 Sch A_Pt III-7b(f),2013-2024
+exceeds2pct170,excess_over_2pct_sec170,Amount support exceeds total (170),990 Sch A_Pt II-5(f),2013-2024
+exprstmntcd,nondeductible_disclosure_cd,Non-deduct. disclosure?,990 Core_Pt V-6b,2013-2024
+f1096cnt,n_form_1096,Number forms transmitted with 1096,990 Core_Pt V-1a,2013-2024
+f8282cnt,n_form_8282,Number of 8282s filed,990 Core_Pt V-7d,2013-2024
+feesforsrvcinvstmgmt,fees_for_services_investment_mgmt,Investment management fees,990 Core_Pt IX-11f(A),2013-2024
+feesforsrvclobby,fees_for_services_lobbying,Lobbying fees,990 Core_Pt IX-11d(A),2013-2024
+feesforsrvcmgmt,fees_for_services_management,Management fees,990 Core_Pt IX-11a(A),2013-2024
+feesforsrvcothr,fees_for_services_other,Other fees,990 Core_Pt IX-11g(A),2013-2024
+filedf1098ccd,filed_form_1098c_cd,Form 1098-C filed?,990 Core_Pt V-7h,2013-2024
+filedf720cd,filed_form_720_cd,Filed Form 720 for tanning,990 Core_Pt V - 14b,2013-2024
+filedf8282cd,property_disposition_8282_cd,Form 8282 property disposed of?,990 Core_Pt V-7c,2013-2024
+filedf8886tcd,filed_form_8886t_cd,Form 8886-T filed?,990 Core_Pt V-5c,2013-2024
+filedf8899cd,filed_form_8899_cd,Form 8899 filed?,990 Core_Pt V-7g,2013-2024
+filedf990tcd,filed_form_990t_cd,Form 990-T filed?,990 Core_Pt V-3b,2013-2024
+filedlieuf1041cd,filed_in_lieu_1041_cd,Form 990 in lieu of 1041?,990 Core_Pt V-12a,2013-2024
+filerqrdrtnscd,filed_employment_tax_returns_cd,Employment tax returns filed?,990 Core_Pt V-2b,2013-2024
+fmlybusnreltdcd,family_business_relationship_cd,Business relationship thru family member?,990 Core_Pt IV-28b,2013-2024
+fndsrcvdcd,received_funds_for_premiums_cd,Funds to pay premiums?,990 Core_Pt V-7e,2013-2024
+frgnacctcd,foreign_account_cd,Foreign financial account?,990 Core_Pt V-4a,2013-2024
+frgnaggragrntscd,foreign_grants_indiv_5k_cd,"More than $5000 to individuals Part IX, line 3?",990 Core_Pt IV-16,2013-2024
+frgngrntscd,foreign_grants_orgs_5k_cd,"More than $5000 to organizations Part IX, line 3?",990 Core_Pt IV-15,2013-2024
+frgnofficecd,foreign_office_cd,Foreign office?,990 Core_Pt IV-14a,2013-2024
+frgnrevexpnscd,foreign_activities_cd,"Foreign activities, etc?",990 Core_Pt IV-14b,2013-2024
+fw2gcnt,n_form_w2g,Number W-2Gs included in 1a,990 Core_Pt V-1b,2013-2024
+gftgrntsrcvd170,gifts_grants_received_sec170,Gifts grants membership fees received (170),990 Sch A_Pt II-1(f),2012-2024
+gnlsecur,net_gain_loss_securities,Net gain from sales -- Securities,990 Core_Pt VIII-7c(i),2012-2024
+gnlsothr,net_gain_loss_other,Net gain from sales -- Other assets,990 Core_Pt VIII-7c(ii),2012-2024
+grantoofficercd,grant_to_related_person_cd,Grant to related person?,990 Core_Pt IV-27,2013-2024
+grnsttoindiv,grants_to_individuals,Grants to individuals in the US,990 Core_Pt IX-2(A),2013-2024
+grntspayableend,grants_payable_eoy,Grants payable -- eoy,990 Core_Pt X-18(B),2013-2024
+grntstofrgngovt,grants_to_foreign_govt,Grants to orgs and individuals outside the US,990 Core_Pt IX-3(A),2013-2024
+grntstogovt,grants_to_govt,Grants to governments/orgs in the US,990 Core_Pt IX-1(A),2013-2024
+grsalesecur,gross_sales_securities,Gross sales -- Securities,990 Core_Pt VIII-7a(i),2012-2024
+grsalesinvent,gross_sales_inventory,Gross sales of inventory,990 Core_Pt VIII-10a,2012-2024
+grsalesothr,gross_sales_other,Gross sales -- Other assets,990 Core_Pt VIII-7a(ii),2012-2024
+grsinc170,gross_income_interest_sec170,Gross income from interest etc (170),990 Sch A_Pt II-8(f),2012-2024
+grsinc509,gross_income_interest_sec509,Gross income from interest etc (509),990 Sch A_Pt III-10a(f),2013-2024
+grsincfndrsng,gross_income_fundraising_events,Gross fundraising,990 Core_Pt VIII-8a,2012-2024
+grsincgaming,gross_income_gaming_activities,Gross income from gaming,990 Core_Pt VIII-9a,2012-2024
+grsincmembers,gross_income_members,Gross income from members,990 Core_Pt V-11a,2012-2024
+grsincother,gross_income_other,Gross income from other sources,990 Core_Pt V-11b,2012-2024
+grsrcptsactivities509,gross_receipts_related_activities_sec509,Gross receipts from related activities (509),990 Sch A_Pt III-3(f),2013-2024
+grsrcptsadmissn509,gross_receipts_admissions_sec509,Receipts from admissions merchandise etc (509),990 Sch A_Pt III-2(f),2012-2024
+grsrcptspublicuse,gross_receipts_public_use,Gross receipts amount,990 Core_Pt V-10b,2012-2024
+grsrcptsrelated170,gross_receipts_related_activities_sec170,Gross receipts from related activities (170),990 Sch A_Pt II-12,2012-2024
+grsrntsprsnl,gross_rents_personal,Gross rents -- Personal property,990 Core_Pt VIII-6a(ii),2012-2024
+grsrntsreal,gross_rents_real,Gross rents -- Real estate,990 Core_Pt VIII-6a(i),2012-2024
+hldassetsintermpermcd,donor_restricted_endowments_cd,Term or permanent endowments?,990 Core_Pt IV-10,2013-2024
+hospaudfinstmtcd,hospital_audited_attached_cd,Hospital audited financial statement included?,990 Core_Pt IV - 20b,2013-2024
+inclinfinstmtcd,included_in_consol_audited_cd,Included in consolidated financial statements?,990 Core_Pt IV - 12b,2013-2024
+infotech,information_technology,Information technology,990 Core_Pt IX-14(A),2013-2024
+initiationfees,initiation_fees,Initiation fees amount,990 Core_Pt V-10a,2012-2024
+insurance,insurance,Insurance,990 Core_Pt IX-23(A),2013-2024
+intangibleassetsend,intangible_assets_eoy,Intangible assets -- eoy,990 Core_Pt X-14(B),2013-2024
+interestamt,interest_expense,Interest expense,990 Core_Pt IX20(A),2013-2024
+intincntrlcd,related_org_controlled_cd,Related organization a controlled entity?,990 Core_Pt IV-35,2013-2024
+invntriesalesend,inventories_for_sale_eoy,Inventories for sale or use -- eoy,990 Core_Pt X-8(B),2013-2024
+invstmntinc,investment_income,Investment income,990 Core_Pt VIII-3(A),2012-2024
+invstmntsend,investments_eoy,Investments in publicly traded securities -- eoy,990 Core_Pt X-11(B),2013-2024
+invstmntsothrend,investments_other_eoy,Investments in other securities -- eoy,990 Core_Pt X-12(B),2013-2024
+invstmntsprgmend,program_related_investments_eoy,Program-related investments -- eoy,990 Core_Pt X-13(B),2013-2024
+invstproceedscd,bond_proceeds_invested_cd,Investment income?,990 Core_Pt IV-24b,2013-2024
+lbbyingactvtscd,lobbying_activities_cd,Lobbying activities?,990 Core_Pt IV-4,2013-2024
+legalfees,legal_fees,Legal fees,990 Core_Pt IX-11b(A),2013-2024
+lesscstofgoods,cost_of_goods_sold,Cost of goods sold (inventory),990 Core_Pt VIII-10b,2012-2024
+lessdirfndrsng,fundraising_events_direct_expenses,Fundraising expenses,990 Core_Pt VIII-8b,2012-2024
+lessdirgaming,gaming_activities_direct_expenses,Gaming expenses,990 Core_Pt VIII-9b,2012-2024
+lndbldgsequipend,land_bldg_equip_eoy,"Land, buildings, & equipment (net) -- eoy",990 Core_Pt X-10(B),2013-2024
+loantofficercd,loan_to_interested_person_cd,Loan to officer or DQP?,990 Core_Pt IV-26,2013-2024
+maintescrwaccntcd,escrow_account_cd,Escrow account?,990 Core_Pt IV-24c,2013-2024
+maintwrkofartcd,art_historical_collections_cd,Collections of art?,990 Core_Pt IV-8,2013-2024
+miscrev11acd,other_revenue_code_11a,Other revenue code 11a,990 Core_Pt VIII-11a,2013-2024
+miscrev11bcd,other_revenue_code_11b,Other revenue code 11b,990 Core_Pt VIII-11b,2013-2024
+miscrev11ccd,other_revenue_code_11c,Other revenue code 11c,990 Core_Pt VIII-11c,2013-2024
+miscrevtot11b,other_revenue_amount_11b,Other revenue amount 11b,990 Core_Pt VIII-11b(A),2013-2024
+miscrevtot11c,other_revenue_amount_11c,Other revenue amount 11c,990 Core_Pt VIII-11c(A),2013-2024
+miscrevtot11d,other_revenue_amount_11d,Other revenue amount 11d,990 Core_Pt VIII-11d(A),2013-2024
+miscrevtot11e,other_revenue_total_11e,Other revenue,990 Core_Pt VIII-11e(A),2012-2024
+miscrevtota,other_revenue_amount_11a,Other revenue amount 11a,990 Core_Pt VIII-11a(A),2013-2024
+netgnls,net_gain_loss_sales,Sales of assets,990 Core_Pt VIII-7d(A),2012-2024
+netincfndrsng,net_income_fundraising_events,Fundraising income,990 Core_Pt VIII-8c(A),2012-2024
+netincgaming,net_income_gaming_activities,Gaming income,990 Core_Pt VIII-9c(A),2012-2024
+netincsales,net_income_inventory_sales,Income from sales of inventory,990 Core_Pt VIII-10c(A),2012-2024
+netincunrelatd509,net_ubi_excl_10b_sec509,Net income from UBI not in 10b (509),990 Sch A_Pt III-11(f),2013-2024
+netincunreltd170,net_ubi_sec170,Net UBI (170),990 Sch A_Pt II-9(f),2013-2024
+netrntlinc,net_rental_income,Net rental income,990 Core_Pt VIII-6d(A),2012-2024
+nocontractor100kcnt,n_contractors_over_100k,Number of contractors greater than $100K,990 Core_Pt VII-B-2,2013-2024
+noemplyeesw3cnt,n_employees_w3,Number of employees,990 Core_Pt V-2a,2013-2024
+noindiv100kcnt,n_indiv_over_100k,Number individuals greater than $100K,990 Core_Pt VII-A-2,2013-2024
+nonintcashend,noninterest_cash_eoy,Cash -- non-interest bearing -- eoy,990 Core_Pt X-1(B),2013-2024
+nonpfrea,non_pf_status_reason,Reason for non-PF status,990 Sch A_Pt I-1-11,2012-2024
+notesloansrcvblend,notes_and_loans_receivable_eoy,Notes and loans receivables -- eoy,990 Core_Pt X-7(B),2013-2024
+notfydnrvalcd,notify_donor_value_cd,Quid pro quo disclosure?,990 Core_Pt V-7b,2013-2024
+occupancy,occupancy,Occupancy,990 Core_Pt IX-16(A),2013-2024
+officexpns,office_expenses,Office expenses,990 Core_Pt IX-13(A),2013-2024
+operatehosptlcd,operates_hospital_cd,Hospital?,990 Core_Pt IV-20a,2013-2024
+operateschools170cd,operates_school_sec170_cd,School?,990 Core_Pt IV-13,2013-2024
+orgtrnsfrcd,transfer_to_noncharitable_org_cd,Any transfers to exempt non-charitable org?,990 Core_Pt IV-36,2013-2024
+othrassetsend,other_assets_eoy,Other assets -- eoy,990 Core_Pt X-15(B),2013-2024
+othremplyeebenef,other_employee_benefits,Other employee benefits,990 Core_Pt IX-9(A),2013-2024
+othrexpnsa,other_expenses_24a,Other expenses 24a,990 Core_Pt IX-24a(A),2013-2024
+othrexpnsb,other_expenses_24b,Other expenses 24b,990 Core_Pt IX-24b(A),2013-2024
+othrexpnsc,other_expenses_24c,Other expenses 24c,990 Core_Pt IX-24c(A),2013-2024
+othrexpnsd,other_expenses_24d,Other expenses 24d,990 Core_Pt IX-24d(A),2013-2024
+othrexpnse,other_expenses_24e,Other expenses 24e,990 Core_Pt IX-24e(A),2013-2024
+othrexpnsf,other_expenses_24f,Other expenses 24f,990 Core_Pt IX-24f(A),2013-2024
+othrinc170,other_income_sec170,Other income (170),990 Sch A_Pt II-10(f),2013-2024
+othrinc509,other_income_sec509,Other income (509),990 Sch A_Pt III-12(f),2013-2024
+othrliabend,other_liabilities_eoy,Other liabilities -- eoy,990 Core_Pt X-25(B),2013-2024
+othrsalwages,other_salaries_wages,Other salaries and wages,990 Core_Pt IX-7(A),2012-2024
+ownsepentcd,disregarded_entity_cd,Disregarded entity?,990 Core_Pt IV-33,2013-2024
+paidinsurplusend,paid_in_surplus_eoy,Paid-in or capital surplus -- eoy,990 Core_Pt X-31(B),2013-2024
+paybletoffcrsend,payable_to_officers_eoy,"Payables to officers, directors, etc. -- eoy",990 Core_Pt X-22(B),2013-2024
+payrolltx,payroll_taxes,Payroll taxes,990 Core_Pt IX-10(A),2012-2024
+pensionplancontrb,pension_plan_contributions,Pension plan contributions,990 Core_Pt IX-8(A),2013-2024
+permrstrctnetasstsend,permanently_restricted_net_assets_eoy,Permanently restricted net assets -- eoy,990 Core_Pt X-29(B),2013-2024
+pldgegrntrcvblend,pledges_grants_receivable_eoy,Pledges and grants receivable -- eoy,990 Core_Pt X-3(B),2013-2024
+politicalactvtscd,political_activities_cd,Political activities?,990 Core_Pt IV-3,2013-2024
+premiumspaidcd,paid_premiums_personal_benefit_cd,Premiums paid?,990 Core_Pt V-7f,2013-2024
+prepaidexpnsend,prepaid_expenses_eoy,Prepaid expenses or deferred charges -- eoy,990 Core_Pt X-9(B),2013-2024
+prgmservcode2acd,program_revenue_code_2a,Program service revenue code 2a,990 Core_Pt VIII-2a,2013-2024
+prgmservcode2bcd,program_revenue_code_2b,Program service revenue code 2b,990 Core_Pt VIII-2b,2013-2024
+prgmservcode2ccd,program_revenue_code_2c,Program service revenue code 2c,990 Core_Pt VIII-2c,2013-2024
+prgmservcode2dcd,program_revenue_code_2d,Program service revenue code 2d,990 Core_Pt VIII-2d,2013-2024
+prgmservcode2ecd,program_revenue_code_2e,Program service revenue code 2e,990 Core_Pt VIII-2e,2013-2024
+profndraising,professional_fundraising_fees,Professional fundraising fees,990 Core_Pt IX-11e(A),2012-2024
+prohibtdtxshltrcd,prohibited_tax_shelter_cd,Prohibited tax shelter transaction?,990 Core_Pt V-5a,2013-2024
+providegoodscd,quid_pro_quo_contributions_cd,Quid pro quo contributions?,990 Core_Pt V-7a,2013-2024
+prptyintrcvdcd,conservation_easements_cd,Conservation easements?,990 Core_Pt IV-7,2013-2024
+prtynotifyorgcd,taxable_party_notification_cd,Taxable party notification?,990 Core_Pt V-5b,2013-2024
+pubsupplesspct170,public_support_sec170,Public support (170),990 Sch A_Pt II-6(f),2013-2024
+pubsupplesub509,public_support_sec509,Public support (509),990 Sch A_Pt III-8(f),2013-2024
+pubsuppsubtot170,public_support_subtotal_sec170,Public support subtotal (170),990 Sch A_Pt II-4(f),2013-2024
+pubsuppsubtot509,public_support_subtotal_line6_sec509,Public support subtotal (509),990 Sch A_Pt III-6(f),2013-2024
+pymtoaffiliates,payments_to_affiliates,Payments to affiliates,990 Core_Pt IX-21(A),2013-2024
+qualhlthonhnd,qualified_health_plan_reserves_on_hand,Qualified health plan reserves on hand,990 Core_Pt V - 13c,2013-2024
+qualhlthplncd,qualified_health_plan_multi_state_cd,Qualified health plan in multiple states,990 Core_Pt V - 13a,2013-2024
+qualhlthreqmntn,qualified_health_plan_reserves_required,Qualified health plan reserves required,990 Core_Pt V - 13b,2013-2024
+rcvbldisqualend,receivables_disqualified_eoy,Receivables from disqualified persons -- eoy,990 Core_Pt X-6(B),2013-2024
+rcvdfrmdisqualsub509,disqualified_persons_amts_sec509,Amounts from disqualified persons (509),990 Sch A_Pt III-7a(f),2013-2024
+rcvdpdtngcd,received_pmt_indoor_tanning_cd,Payments for indoor tanning,990 Core_Pt V - 14a,2013-2024
+recvartcd,recv_art_historical_contributions_cd,"Deductible contributions of art, etc?",990 Core_Pt IV-30,2013-2024
+recvnoncashcd,recv_noncash_contributions_cd,Deductible non-cash contributions?,990 Core_Pt IV-29,2013-2024
+reltdorgcd,related_entity_cd,Related entity?,990 Core_Pt IV-34,2013-2024
+retainedearnend,retained_earnings_eoy,Retained earnings -- eoy,990 Core_Pt X-32(B),2012-2024
+rntlexpnsprsnl,rental_expense_personal,Rental expense -- Personal property,990 Core_Pt VIII-6b(ii),2012-2024
+rntlexpnsreal,rental_expense_real,Rental expense -- Real estate,990 Core_Pt VIII-6b(i),2012-2024
+rntlincprsnl,net_rent_personal,Net rent -- Personal property,990 Core_Pt VIII-6c(ii),2012-2024
+rntlincreal,net_rent_real,Net rent -- Real estate,990 Core_Pt VIII-6c(i),2012-2024
+royaltsexpns,royalties_expense,Royalties,990 Core_Pt IX-15(A),2013-2024
+royaltsinc,royalties_income,Royalties,990 Core_Pt VIII-5(A),2012-2024
+rptgrntstogovtcd,rpt_grants_to_orgs_or_govt_cd,Grants to organizations?,990 Core_Pt IV-21,2013-2024
+rptgrntstoindvcd,rpt_grants_to_individuals_cd,Grants to individuals?,990 Core_Pt IV-22,2013-2024
+rptincfnndrsngcd,rpt_fundraising_events_15k_cd,Fundraising activities?,990 Core_Pt IV-18,2013-2024
+rptincgamingcd,rpt_gaming_income_15k_cd,Gaming?,990 Core_Pt IV-19,2013-2024
+rptinvstothsecd,rpt_investments_other_securities_cd,Investments in other securities reported?,990 Core_Pt IV-11b,2013-2024
+rptinvstprgrelcd,rpt_program_related_investments_cd,Program related investments reported?,990 Core_Pt IV-11c,2013-2024
+rptlndbldgeqptcd,rpt_land_bldg_equip_cd,Land buildings and equipment reported?,990 Core_Pt IV-11a,2013-2024
+rptothasstcd,rpt_other_assets_cd,Other assets reported?,990 Core_Pt IV-11d,2013-2024
+rptothliabcd,rpt_other_liabilities_cd,Other liabilities reported?,990 Core_Pt IV-11e,2013-2024
+rptprofndrsngfeescd,rpt_prof_fundraising_fees_cd,Professional fundraising?,990 Core_Pt IV-17,2013-2024
+rptyestocompnstncd,sched_j_required_cd,Schedule J required?,990 Core_Pt IV-23,2013-2024
+s4966distribcd,s4966_distributions_cd,Taxable distributions?,990 Core_Pt V-9a,2013-2024
+s501c3or4947a1cd,s501c3_or_4947a1_cd,Described in 501(c)(3)?,990 Core_Pt IV-1,2013-2024
+samepubsuppsubtot170,public_support_subtotal_line4_ref_sec170,Public support from line 4 (170),990 Sch A_Pt II-7(f),2013-2024
+samepubsuppsubtot509,public_support_subtotal_line6_ref_sec509,Public support from line 6 (509),990 Sch A_Pt III-9(f),2013-2024
+schdbind,sched_b_required_cd,Schedule B required?,990 Core_Pt IV-2,2013-2024
+secrdmrtgsend,secured_mortgages_eoy,Secured mortgages and notes payable -- eoy,990 Core_Pt X-23(B),2012-2024
+sellorexchcd,partial_liquidation_cd,Partial liquidation?,990 Core_Pt IV-32,2013-2024
+sepcnsldtfinstmtcd,fin48_footnote_cd,Separate consolidated financial statement,990 Core_Pt IV - 11f,2013-2024
+sepindaudfinstmtcd,obtained_separate_audited_cd,Separate audited financial statement,990 Core_Pt IV - 12a,2013-2024
+servasofficercd,business_txn_with_35pct_entity_cd,"Officer, etc. of entity with business relationship?",990 Core_Pt IV-28c,2013-2024
+solicitcntrbcd,solicit_nondeductible_contributions_cd,Non-deductible contributions?,990 Core_Pt V-6a,2013-2024
+srvcsval170,gov_services_value_sec170,Services or facilities furnished by gov (170),990 Sch A_Pt II-3(f),2012-2024
+srvcsval509,gov_services_value_sec509,Services or facilities furnished by gov (509),990 Sch A_Pt III-5(f),2012-2024
+subjto6033cd,subject_to_proxy_tax_cd,Subject to proxy tax?,990 Core_Pt IV-5,2013-2024
+subseccd,subsection_cd,Subsection code,Form 990 Header,2012-2024
+subtotpub509,public_support_subtotal_line7c_sec509,Public support subtotal (509),990 Sch A_Pt III-7c(f),2013-2024
+subtotsuppinc509,total_support_subtotal_sec509,Subtotal total support (509),990 Sch A_Pt III-10c(f),2012-2024
+svngstempinvend,savings_and_temp_investments_eoy,Savings and temporary cash investments -- eoy,990 Core_Pt X-2(B),2013-2024
+tax_pd,tax_period,Tax period,Form 990 Header,2012-2024
+temprstrctnetasstsend,temporarily_restricted_net_assets_eoy,Temporarily restricted net assets -- eoy,990 Core_Pt X-28(B),2013-2024
+totassetsend,total_assets_eoy,Total assets -- eoy,990 Core_Pt X-16(B),2012-2024
+totcntrbgfts,total_contributions,Total contributions,990 Core_Pt VIII-1h(A),2012-2024
+totcomprelatede,total_reportable_comp_from_related,Reportable compensation from related orgs,990 Core_Pt VII-A-1d(E),2013-2024
+totestcompf,total_estimated_other_compensation,Other compensation,990 Core_Pt VII-A-1d(F),2013-2024
+totfuncexpns,total_functional_expenses,Total functional expenses,990 Core_Pt IX-25(A),2012-2024
+totgftgrntrcvd509,total_gifts_grants_received_sec509,Gifts grants membership fees received (509),990 Sch A_Pt III-1(f),2012-2024
+totliabend,total_liabilities_eoy,Total liabilities -- eoy,990 Core_Pt X-26(B),2012-2024
+totnetassetend,total_net_assets_eoy,Total Net Assets -- eoy,990 Core_Pt X-33(B),2012-2024
+totnetliabastend,total_liab_and_net_assets_eoy,Total Liabilities + Net Assets -- eoy,990 Core_Pt X-34(B),2013-2024
+totnooforgscnt,n_orgs_supported,Number of organizations supported,990 Sch A_Pt I-11h,2013-2024
+totprgmrevnue,program_service_revenue,Program service revenue,990 Core_Pt VIII-2g(A),2012-2024
+totreprtabled,total_reportable_comp_from_org,Reportable compensation from organization,990 Core_Pt VII-A-1d(D),2013-2024
+totrev2acola,program_revenue_amount_2a,Program service revenue amount 2a,990 Core_Pt VIII-2a(A),2013-2024
+totrev2bcola,program_revenue_amount_2b,Program service revenue amount 2b,990 Core_Pt VIII-2b(A),2013-2024
+totrev2ccola,program_revenue_amount_2c,Program service revenue amount 2c,990 Core_Pt VIII-2c(A),2013-2024
+totrev2dcola,program_revenue_amount_2d,Program service revenue amount 2d,990 Core_Pt VIII-2d(A),2013-2024
+totrev2ecola,program_revenue_amount_2e,Program service revenue amount 2e,990 Core_Pt VIII-2e(A),2013-2024
+totrev2fcola,program_revenue_amount_2f,Program service revenue amount 2f,990 Core_Pt VIII-2f(A),2013-2024
+totrevenue,total_revenue,Total revenue,990 Core_Pt VIII-12(A),2012-2024
+totsupp170,total_support_sec170,Total support (170),990 Sch A_Pt II-11(f),2013-2024
+totsupp509,total_support_sec509,Total support (509),990 Sch A_Pt III-13(f),2012-2024
+totsupport,total_support_amount,Sum of amounts of support,990 Sch A_Pt I-11h(vii),2013-2024
+travel,travel,Travel,990 Core_Pt IX-17(A),2013-2024
+travelofpublicoffcl,travel_public_officials,Travel/entertainment expenses to public officials,990 Core_Pt IX-18(A),2013-2024
+txexmptbndcd,tax_exempt_bond_cd,Tax exempt bonds?,990 Core_Pt IV-24a,2013-2024
+txexmptbndsend,tax_exempt_bonds_eoy,Tax-exempt bond liabilities -- eoy,990 Core_Pt X-20(B),2012-2024
+txexmptbndsproceeds,tax_exempt_bonds_proceeds,Tax-exempt bond proceeds,990 Core_Pt VIII-4(A),2012-2024
+txexmptint,tax_exempt_interest,Tax exempt interest in lieu of 1041,990 Core_Pt V-12b,2013-2024
+txrevnuelevied170,tax_revenues_levied_sec170,Tax revenues levied (170),990 Sch A_Pt II-2(f),2012-2024
+txrevnuelevied509,tax_revenues_levied_sec509,Tax revenues levied (509),990 Sch A_Pt III-4(f),2012-2024
+unrelbusinccd,unrelated_business_income_1k_cd,Unrelated business income?,990 Core_Pt V-3a,2012-2024
+unreltxincls511tx509,net_ubi_line10b_sec509,Net UBI (509),990 Sch A_Pt III-10b(f),2013-2024
+unrstrctnetasstsend,unrestricted_net_assets_eoy,Unrestricted net assets -- eoy,990 Core_Pt X-27(B),2013-2024
+unsecurednotesend,unsecured_notes_eoy,Unsecured mortgages and notes payable -- eoy,990 Core_Pt X-24(B),2012-2024
+wthldngrulescd,backup_withholding_compliance_cd,Compliance with backup withholding?,990 Core_Pt V-1c,2013-2024

@@ -11,5 +11,8 @@ data/harmonized/
 data/processed/
 data/logs/
 
+# Quarto local cache
+docs/.quarto/
+
 # Claude local settings
 .claude/settings.local.json

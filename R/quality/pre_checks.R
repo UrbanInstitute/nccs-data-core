@@ -24,7 +24,9 @@ VAR_MATRIX_PATH <- function(form) {
 expected_col_count <- function(processing_year, form) {
   path <- VAR_MATRIX_PATH(form)
   if (!file.exists(path)) return(NA_integer_)
-  mx <- fread(path)
+  # header = TRUE is required: fread's auto-detection misclassifies the
+  # numeric-looking column names ("2012", "2013", ...) as a data row.
+  mx <- fread(path, header = TRUE)
   col <- as.character(processing_year)
   if (!col %in% names(mx)) return(NA_integer_)
   sum(mx[[col]] == "Y", na.rm = TRUE)
@@ -73,9 +75,15 @@ run_pre_checks_one <- function(processing_year, form, src_path = NULL, logger = 
   }
   header <- sub("^\xef\xbb\xbf", "", header, useBytes = TRUE)  # strip UTF-8 BOM
   cols <- tolower(trimws(strsplit(header, sep, fixed = TRUE)[[1]]))
-  info$n_cols <- length(cols)
+  # Trailing empty cols from trailing-comma source files (e.g., IRS 2020+ 990 csvs
+  # have 5 trailing empty headers) are informational, not duplicates. Drop them
+  # before the duplicate check; count them on `info` for visibility.
+  empty_cols <- cols == ""
+  info$n_cols          <- length(cols)
+  info$n_empty_cols    <- sum(empty_cols)
+  cols_named <- cols[!empty_cols]
 
-  dups <- unique(cols[duplicated(cols)])
+  dups <- unique(cols_named[duplicated(cols_named)])
   if (length(dups)) {
     errors <- c(errors, sprintf("Duplicate header columns: %s", paste(dups, collapse = ", ")))
   }
@@ -90,10 +98,12 @@ run_pre_checks_one <- function(processing_year, form, src_path = NULL, logger = 
   } else {
     tol <- EXPECTED_COL_COUNT_TOLERANCE
     lo  <- exp_n * (1 - tol); hi <- exp_n * (1 + tol)
-    if (length(cols) < lo || length(cols) > hi) {
+    # Compare against named cols (exclude trailing empties)
+    n_named <- length(cols_named)
+    if (n_named < lo || n_named > hi) {
       errors <- c(errors,
                   sprintf("Column count %d outside ±%.0f%% of expected %d for %s/%d",
-                          length(cols), tol * 100, exp_n, form, processing_year))
+                          n_named, tol * 100, exp_n, form, processing_year))
     }
   }
 

@@ -29,15 +29,40 @@ CROSSWALK_FOR_SERIES <- function(form) {
   )
 }
 
-# Baseline = the SAME (form, tax_year) report from a prior pipeline run,
-# archived elsewhere. Comparing different tax years against each other is
-# apples-to-oranges (different filer cohorts) and was an earlier bug.
-# Until we have run-archive infrastructure, this returns NULL and YoY check
-# reports `status = "no_baseline"`.
-BASELINE_PATH <- function(form, tax_year) NULL
+# Baseline strategy: snapshot-on-each-run. Before a run starts, every
+# `quality_{form}_{tax_year}.rds` is renamed to `.prev.rds`, overwriting any
+# previous baseline. The current run then writes fresh `.rds` files; post_checks
+# compares against the `.prev.rds` snapshot. Only one historical step is kept —
+# enough to catch deploy-time accidents (data loss, double-ingest), not
+# long-term drift.
 
 REPORT_PATH <- function(form, tax_year) {
   file.path(PATHS$logs, sprintf("quality_%s_%d.rds", form, tax_year))
+}
+
+BASELINE_PATH <- function(form, tax_year) {
+  file.path(PATHS$logs, sprintf("quality_%s_%d.prev.rds", form, tax_year))
+}
+
+#' Promote current quality RDS reports to the `.prev.rds` baseline slot, so
+#' this run can compare its output against the previous run's output.
+snapshot_prior_reports <- function(logger = NULL) {
+  current <- list.files(PATHS$logs, pattern = "^quality_.*[^v]\\.rds$",
+                        full.names = TRUE)
+  current <- current[!grepl("\\.prev\\.rds$", current)]
+  if (length(current) == 0L) {
+    if (!is.null(logger)) log4r::info(logger, "No prior reports to snapshot (first run)")
+    return(invisible(NULL))
+  }
+  for (f in current) {
+    dest <- sub("\\.rds$", ".prev.rds", f)
+    file.rename(f, dest)
+  }
+  if (!is.null(logger)) {
+    log4r::info(logger, sprintf("Snapshotted %d prior reports to .prev.rds baseline",
+                                length(current)))
+  }
+  invisible(NULL)
 }
 
 #' @param strict logical: hard-failure on schema/EIN/type errors halts the run.
@@ -47,6 +72,8 @@ run_quality <- function(harmonized_root = PATHS$harmonized,
 
   dir.create(PATHS$logs, recursive = TRUE, showWarnings = FALSE)
   logger <- create_logger(file.path(PATHS$logs, "05_quality_log.txt"))
+
+  snapshot_prior_reports(logger)
 
   tax_year_dirs <- sort(list.dirs(harmonized_root, recursive = FALSE, full.names = TRUE))
 

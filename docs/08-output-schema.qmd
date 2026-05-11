@@ -42,6 +42,16 @@ Two important conventions when interpreting NA in CORE outputs:
 
 **Vintage-padded columns are 100% NA in pre-vintage tax-year files.** When a harmonized column doesn't exist in the source extract for a given vintage (e.g., `efile_indicator` for 2012 990-EZ), the pipeline NA-fills it for schema stability. Within a single `(tax_year, form)` output file, vintage-padded columns are either 0% NA (vintage has the field) or 100% NA (vintage doesn't). Use the `years_present` column in the crosswalk to predict which.
 
+**The 2012 IRS 990 SOI extract is unusually sparse.** Per the IRS variable matrix:
+
+| Processing year | 990 source col count |
+|---|---|
+| 2012 | 62 |
+| 2013 | 245 |
+| 2014+ | 245-246 |
+
+The 2012 extract was the inaugural release of the SOI EO program and IRS published with a limited initial schema. As a result, tax_year 2008–2012 returns harmonized from the 2012 processing-year extract will have heavy NAs on most 990 columns. Tax_year 2013+ outputs sourced from 2013+ extracts will have the full ~246-col schema. This 4× schema jump between the inaugural year and the second year is much larger than typical year-over-year drift, so it's worth flagging to downstream users.
+
 **A single tax-year file is built from multiple processing-year extracts.** A given `(tax_year, form)` output is the union of all rows for that tax year across every processing-year extract the pipeline has ingested. Each contributing row's columns are filled based on the *processing-year* schema, not the tax_year. So NA rates for vintage-dependent columns within a single tax-year file depend on the mix of processing-year extracts that supplied rows to it. Pre-2013 tax years on columns added in 2013+ will have substantial NA rates that cannot be fully resolved — the IRS extracts that captured most of those filings simply didn't include the column. This is a real limitation of the source data, not a pipeline bug.
 
 ## Three "year" columns

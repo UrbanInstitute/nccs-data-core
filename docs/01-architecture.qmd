@@ -1,16 +1,92 @@
 # Architecture
 
-::: {.callout-note}
-TODO: Phased orchestrator diagram, two-pipeline structure (SOI-current vs legacy),
-checkpoint + flag flow.
-:::
+## Two parallel pipelines
 
-## Two pipelines
+`nccs-data-core` is split into two independent pipelines that produce the same family of CORE output series:
 
-- `R/run_pipeline.R` — SOI-current extracts, 2012+.
-- `R/run_legacy_pipeline.R` — raw legacy NCCS files (PZ + PF), 1989-2011. Built later.
+- **`R/run_pipeline.R`** — the SOI-current pipeline. Ingests IRS Statistics of Income annual extracts published at `irs.gov/pub/irs-soi/` from 2012 onward. **This is what's built today and what produces every artifact currently on S3.**
+- **`R/run_legacy_pipeline.R`** — pipeline for the raw legacy NCCS files (1989–2011 PZ and PF only; 2012+ files in `s3://nccsdata/legacy/core/` are NCCS+SOI hybrids and are skipped). **Not yet built.** See `docs/09-legacy-harmonization.qmd` for scope.
 
-## Phase ordering
+The two pipelines write to the same `(tax_year, form)` output grain. Where they overlap on a tax year, SOI wins (IRS authoritative for 2012+). Where SOI is absent (pre-2012), legacy fills.
 
-Download → Unpack → Pre-checks → Harmonize → Combined → Post-checks → Dictionary →
-Quality report → Promote → Upload.
+## SOI-current pipeline phases
+
+`R/run_pipeline.R` runs nine phases in sequence. Each is a standalone, idempotent script under `R/` that can also be invoked directly (`Rscript R/01_download.R`, etc.) for debugging or re-runs.
+
+```text
+                  +-------------+
+  IRS SOI page -->| 1 download  |  data/raw/soi_extracts/{processing_year}/*.zip
+                  +-------------+
+                        |
+                        v
+                  +-------------+
+                  | 2 unpack    |  data/intermediate/unpacked/{processing_year}/{form}/*.{csv,dat}
+                  +-------------+
+                        |
+                        v
+                  +-------------+
+                  | 2.5 pre-    |  reads unpacked, validates file shape against the IRS dict's
+                  |     checks  |  per-vintage var matrix. Hard-fails the run on dup headers,
+                  +-------------+  missing files, col-count tolerance.
+                        |
+                        v
+                  +-------------+
+                  | 3 harmonize |  applies FINAL crosswalk per form: rename, coalesce synonyms,
+                  +-------------+  NA-pad vintage gaps, type-coerce, derive (tax_year, is_501c3,
+                        |         is_amendment, ...), partition by tax_year.
+                        v        Output: data/intermediate/harmonized/{tax_year}/{form}/
+                  +-------------+
+                  | 4 combined  |  stacks 990 + 990-EZ on their 53 shared harmonized columns.
+                  +-------------+  Output: data/intermediate/harmonized/{tax_year}/990combined/
+                        |
+                        v
+                  +-------------+
+                  | 5 quality   |  per-(tax_year, form) post-checks: schema, EIN format,
+                  +-------------+  tax_period range, subsection whitelist, type validation,
+                        |         YoY tripwire. Writes RDS to data/logs/.
+                        v
+                  +-------------+
+                  | 6 dictionary|  per-output data dictionary CSV.
+                  +-------------+  data/processed/{tax_year}/{form}/core_*_dictionary.csv
+                        |
+                        v
+                  +-------------+
+                  | 7 render    |  per-output Quarto HTML report rendered from the RDS.
+                  +-------------+  data/processed/{tax_year}/{form}/core_*_quality.html
+                        |
+                        v
+                  +-------------+
+                  | 8 upload    |  (a) promote harmonized CSV -> processed/ so all three
+                  +-------------+  artifacts live in one dir, (b) per-tier aws s3 sync.
+```
+
+## Phase toggles
+
+Every phase has an `ENABLE_*` flag in `R/config.R::CONFIG`, plus a `--no-{phase}` CLI override on `R/run_pipeline.R`. This makes phases freely skippable for iterative work:
+
+```bash
+Rscript R/run_pipeline.R --no-download --no-unpack --years 2012 --forms 990ez --no-upload
+```
+
+A phase that's skipped via flag does not produce or check its output — downstream phases see whatever state was previously on disk. This is the intended pattern for re-running just the late phases after upstream output is already in place.
+
+## Idempotence and the "rebuild from union" semantics
+
+The pipeline is deliberately re-runnable on the same inputs without producing different outputs:
+
+- **Phase 1** skips downloads when the zip is already at the target path.
+- **Phase 2** skips unzips when the unpacked file already exists.
+- **Phase 3** reads the *union* of every `data/intermediate/unpacked/{processing_year}/{form}/` on disk and produces the harmonized output from scratch. Same input set → identical output, regardless of how many times you re-run.
+- **Phase 4** rebuilds `990combined` from the union of all `data/intermediate/harmonized/{tax_year}/{990,990ez}/`.
+- **Phases 5–7** overwrite their per-(form, tax_year) outputs each run.
+- **Phase 8** uses `aws s3 sync` which by default only transfers changed files (no `--delete`, so old S3 objects persist until manually removed).
+
+**Important consequence:** Phase 3 reading the *union* of all unpacked sources means that if you delete `data/intermediate/unpacked/2012/` between runs, the 2012 rows silently drop from the output. Treat `data/intermediate/unpacked/` as durable state. The [Developer Guide](07-developer-guide.qmd#rolling-out-a-new-processing-year-eg-2025) documents the S3 rehydration SOP for fresh-machine or new-year scenarios.
+
+## Quality gates and `STRICT_QUALITY_GATES`
+
+The pre-check phase (2.5) and post-check phase (5) both honor the `STRICT_QUALITY_GATES` flag. In strict mode, hard-failure checks (schema integrity, EIN format, type correctness, subsection whitelist, tax_period range) call `stop()` and halt the run. Soft checks (row-count YoY delta, duplicate-EIN counts) always log a warning but never abort. See `docs/05-quality-gates.qmd` for the full check catalog.
+
+## Logging
+
+Every phase writes a per-phase log to `data/logs/<step>_log.txt` via `log4r` (configured in `R/create_logger.R`). The orchestrator additionally writes `run_pipeline_log.txt` with `START / OK / SKIP / FAIL` markers and elapsed seconds per phase. On EC2 these logs upload to `s3://nccsdata/logs/core/{run_timestamp}/` for post-mortem.

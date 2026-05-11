@@ -1,8 +1,30 @@
 # nccs-data-core — SOI-current pipeline implementation plan
 
-**Status:** plan locked 2026-05-08. Subsequent edits recorded inline with date.
+**Status:** plan locked 2026-05-08, **executed and shipped 2026-05-08 → 2026-05-11**. Phases 1–9 built; full pipeline runnable via `Rscript R/run_pipeline.R`. Subsequent edits recorded inline with date.
 
 This plan covers the rebuild of `nccs-data-core` for the **current IRS SOI extracts (2012-present)**. The legacy NCCS pipeline (1989-2011) is a separate parallel build, scoped out below.
+
+## What got built vs. what the plan called for
+
+Differences between the May 8 plan and the 2026-05-11 codebase, recorded for accuracy:
+
+- **Universal columns expanded.** Plan §2 / §5 didn't anticipate `extract_year`, `is_amendment`, `source_form`, `soi_year`. All four now live in every output where applicable. See `docs/08-output-schema.qmd`.
+- **`is_501c3` is strict boolean** (NA subsection → FALSE, not NA). Documented in the same place.
+- **EIN format is hyphenated `XX-XXXXXXX`** (not bare 9-digit). Forces character type on CSV re-read so `fread` can't strip leading zeros.
+- **`data/lookups/` was added back.** Initial plan §9 dropped `08-lookup-tables.qmd` on the assumption CORE had no lookups. In practice some columns (`subsection_cd`, `non_pf_status_reason`, ...) are integer-coded categoricals that need authoritative code→label mappings. Per-column lookup CSVs live in `data/lookups/`, sourced from IRM / IRS Pub 557 / form instructions.
+- **AWS upload uses the AWS CLI via `system2()`**, not the originally-implied `paws::s3$put_object`. Native batching/concurrency/retry; matches the existing `R/aws_s3_sync.R` wrapper.
+- **`tests/` directory added.** 32 transform unit tests in `tests/test_transforms.R`.
+- **Rehydrate-from-S3 SOP** for fresh-machine and new-year runs documented in `docs/07-developer-guide.qmd` and `docs/10-ec2-batch-processing.qmd`.
+- **`embed-resources: true` kept in the Quarto report template.** Each HTML is ~1.9 MB, total 113 MB for 60 reports — but each file is self-contained. Externalizing assets saves ~95% on disk + transfer but breaks portability. Sized-for-S3 batched upload is the operational fix; gzip-on-upload is queued as future work.
+
+Real data findings the plan didn't anticipate, all captured in `docs/08-output-schema.qmd`:
+
+- **2012 IRS 990 extract is unusually sparse** — 62 source cols vs ~245 for 2013+. The schema 4×'d between the inaugural year and the next.
+- **§4947(a)(1) non-exempt charitable trusts** show up in 990-PF (`subsection_cd = 92`, `is_501c3 = FALSE`, ~6% of rows). "990-PF = 501(c)(3) private foundation" assumption is wrong.
+- **`non_pf_status_reason` codes 9–16 don't match the visible Schedule A** — SOI uses an IRS-internal classification distinct from the form's line numbering. Awaiting documentation; see `TODO.md`.
+- **Three different "year" columns** on every output: `tax_year` (fiscal period end), `soi_year` (IRS calendar-year-of-activity, 990-PF-only), `extract_year` (processing-year provenance).
+- **2012 source files use `tax_prd`; 2013+ use `tax_pd` / `taxpd`.** Crosswalk had to gain `tax_prd` as a 2012 synonym for both 990 and 990-EZ.
+- **IRS extract URL pattern changed in 2018** (`eofinextract` → `eoextract`) and the EZ form-tag varies across years (`990ez` / `EZ` / `ez` / `990EZ`). 2017–2019 has no 990-PF extract (publication gap). Handled by an explicit per-(year, form) filename-stem table in `R/config.R::SOI_FILENAME_STEMS`.
 
 ## 1. Decisions recap
 
@@ -322,16 +344,20 @@ EC2 role grants:
 - **2017–2019 990-PF:** permanent gap, no imputation.
 - **990-EZ historical (pre-2012):** unrecoverable from any source; the `990ez` series is current-only.
 
-## 13. Build phases (suggested ordering)
+## 13. Build phases (as built, 2026-05-08 → 2026-05-11)
 
-1. **Scaffold + config:** create `R/config.R`, `R/data.R`, empty Quarto stubs, delete old scripts.
-2. **Download + unpack:** `01_download.R`, `02_unpack.R`. End-to-end smoke test for one (year, form).
-3. **Transforms:** flesh out `R/transforms/`. Unit-test against a small sample CSV.
-4. **Harmonize:** `03_harmonize.R`. Verify output schema matches FINAL crosswalk for each form.
-5. **Combined derivation:** `04_derive_combined.R`. Sanity-check stack on one tax year.
-6. **Quality framework:** pre-checks, post-checks, RDS report data.
-7. **Dictionary + render:** `06_dictionary.R`, `07_render_report.R`. Adapt Quarto template.
-8. **Upload:** `08_upload.R`. Per-tier `ENABLE_UPLOAD_*` flags.
-9. **Orchestrator:** `R/run_pipeline.R` ties it all together with checkpoint + flag logic.
-10. **EC2 wiring:** `scripts/run_pipeline.sh` + IAM.
-11. **Documentation pass:** fill Quarto book chapters.
+| # | Phase | Status | Commit |
+|---|---|---|---|
+| 1 | Scaffold + config (`R/config.R`, `R/data.R`, Quarto stubs, old scripts removed) | ✅ done | ee7b77c |
+| 2 | Download + unpack (`R/01_download.R`, `R/02_unpack.R`) | ✅ done | ee7b77c |
+| 3 | Transforms (six pure functions under `R/transforms/`, 32 unit tests) | ✅ done | ee7b77c |
+| 4 | Harmonize (`R/03_harmonize.R`) — crosswalk apply, synonym coalesce, vintage NA-pad, transforms, partition | ✅ done | ee7b77c |
+| 5 | Combined derivation (`R/04_derive_combined.R`) | ✅ done | bf45e6f |
+| 6 | Quality framework (`R/05_quality.R`, `R/quality/{pre,post}_checks.R`, `R/quality/stat_helpers.R`) | ✅ done | 40b9d63, 27f2b0d, ff7019e |
+| 7 | Dictionary + render (`R/06_dictionary.R`, `R/07_render_report.R`, rewritten `docs/quality_report_template.qmd`) | ✅ done | 6dc626d |
+| 8 | Upload (`R/08_upload.R`) — promote + `aws s3 sync` per-tier | ✅ done | b375a0d |
+| 9 | Orchestrator (`R/run_pipeline.R`) — wires phases 1–8 with CLI overrides and pre-checks bridge | ✅ done | 7d29c7a |
+| 10 | EC2 wiring (`scripts/run_pipeline.sh` + IAM) | ⏳ pending | — |
+| 11 | Documentation prose pass (Quarto chapters) | ⏳ partial | 52541ad (rehydrate SOP); architecture + transforms-reference filled 2026-05-11 |
+
+Outstanding work and known debt are tracked in `TODO.md` at the repo root.

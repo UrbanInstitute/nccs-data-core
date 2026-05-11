@@ -1,14 +1,83 @@
 # Transforms Reference
 
-::: {.callout-note}
-TODO: For each `R/transforms/*.R` file, document the pure function it exposes,
-input/output contract, and edge cases.
-:::
+The six pure column-transform functions in `R/transforms/`. Each:
 
-## Planned transforms
+- Takes a `data.table` (and column names or list of column names for the multi-column transforms).
+- Mutates the data.table in place via `:=` or `data.table::set`, returns it invisibly.
+- Takes an optional `log4r` logger; logs warnings on per-row failures, no logging if `NULL`.
+- Is unit-tested in `tests/test_transforms.R`.
 
-- `tax_period.R` — parse `TAXPER` (6-char `YYYYMM`) into `tax_year` (int) and `tax_month` (int).
-- `ein.R` — zero-pad to 9 chars, validate numeric-castable.
-- `subsection.R` — integer coercion + validate against `KNOWN_SUBSECTION_CODES`; derive `is_501c3 = (subsection == 3)` indicator column.
-- `financial_amounts.R` — numeric coercion, NA on parse failure, log failure counts.
-- `indicators.R` — `_cd` columns: {Y,1,T,TRUE} → TRUE, {N,0,F,FALSE} → FALSE, else NA.
+## `R/transforms/tax_period.R`
+
+`transform_tax_period(dt, logger = NULL, tax_year_bounds = tax_year_range())`
+
+Parses the 6-char `YYYYMM` source `tax_period` field into integer `tax_year` and `tax_month` derived columns. Keeps `tax_period` as character (preserves leading zeros).
+
+Validates: 6 digits, `tax_year` in `[1989, current_year+1]`, `tax_month` in `[1, 12]`. Invalid rows → NA on the derived cols (the source `tax_period` is preserved as-is), counted in the log warning.
+
+## `R/transforms/ein.R`
+
+`transform_ein(dt, logger = NULL)`
+
+Normalizes EINs to the canonical IRS display format `XX-XXXXXXX` (10 chars, hyphen between digits 2 and 3). Strips any embedded hyphens and whitespace in the source, zero-pads to 9 digits, then inserts the hyphen.
+
+The hyphen forces character typing on CSV re-read (so `fread` can't auto-detect as integer and strip leading zeros). Invalid sources (non-numeric, empty) → NA.
+
+## `R/transforms/subsection.R`
+
+`transform_subsection_cd(dt, logger = NULL)`
+
+Coerces `subsection_cd` to integer, validates against `KNOWN_SUBSECTION_CODES` (loaded from `data/lookups/subsection_codes.csv`). Unknown codes → NA on `subsection_cd`.
+
+Also derives the `is_501c3` boolean column: `TRUE` iff `subsection_cd == 3`, **strict** (NA subsection → `is_501c3 = FALSE`, never NA). Strictness avoids three-valued logic for downstream filters.
+
+## `R/transforms/financial_amounts.R`
+
+`transform_financial_amounts(dt, cols, logger = NULL)`
+
+Coerces a vector of column names to numeric. Per cell: strips `$` and commas, converts parens-wrapped values (e.g., `(500)`) to negatives, treats empty / `"-"` as NA.
+
+Parse failures per column are counted and logged. Already-numeric columns are skipped (the harmonized columns coming from `fread` are usually already numeric; this transform handles the `2012` `.dat` case where everything reads as character).
+
+System-boundary check: stops with an error if any column name in `cols` isn't present in `dt`.
+
+## `R/transforms/indicators.R`
+
+`transform_indicators(dt, cols, logger = NULL)`
+
+Coerces a vector of column names to logical. Per cell:
+
+- `{Y, y, 1, T, TRUE, true, True}` → `TRUE`
+- `{N, n, 0, F, FALSE, false, False}` → `FALSE`
+- Anything else (including empty, NA) → `NA`
+
+Used by `R/03_harmonize.R` to sweep all harmonized columns ending in `_cd` (the IRS convention for yes/no indicators), except for `subsection_cd` which is an integer-coded categorical, not a binary indicator.
+
+## `R/transforms/efile_indicator.R`
+
+`transform_efile_indicator(dt, logger = NULL)`
+
+The IRS e-file indicator (source `elf` 2015–2019, `efile` 2020+) uses values `E` (electronic) and `P` (paper), not `Y`/`N`. This transform maps:
+
+- `E` / `e` → `TRUE`
+- `P` / `p` → `FALSE`
+- Anything else → `NA`
+
+Wired into `apply_transforms()` by column name (alongside `ein`, `tax_period`, `subsection_cd`) so it bypasses the generic `_cd` indicator sweep — `efile_indicator` doesn't carry the `_cd` suffix in our harmonized naming.
+
+## Dispatch in `R/03_harmonize.R`
+
+After the crosswalk renames source vars to harmonized names, `apply_transforms()` dispatches in this order:
+
+1. `transform_tax_period(dt)` — by name
+2. `transform_ein(dt)` — by name
+3. `transform_subsection_cd(dt)` — by name; derives `is_501c3`
+4. `transform_efile_indicator(dt)` — by name
+5. `transform_indicators(dt, cols = grep("_cd$", names(dt)))` minus `subsection_cd` — by suffix
+6. `transform_financial_amounts(dt, cols = everything_else)` — everything not consumed above
+
+Order matters only for step 5/6 (suffix sweep must exclude the identity cols handled by 1–4) and for step 3 (which produces `is_501c3`, used downstream by quality checks).
+
+## Testing
+
+`Rscript tests/test_transforms.R` runs all 32 unit tests against synthetic data.tables (no real CSV reads). Targets: each transform's happy path, NA propagation, edge cases (empty, whitespace, malformed values), and boundary errors for multi-column transforms.

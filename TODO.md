@@ -1,0 +1,39 @@
+# TODO
+
+Outstanding work and known gaps as of 2026-05-11 (end of Phase 9, full SOI-current pipeline shipping).
+
+## Pipeline / code
+
+- [ ] **Phase 10: `scripts/run_pipeline.sh`** — thin shell wrapper around `Rscript R/run_pipeline.R "$@"` for cron / EC2 entry points. Plus a small bump to `scripts/setup_ec2.sh` for any newly-required system deps.
+- [ ] **`run_legacy_pipeline.R`** — parallel pipeline for raw legacy NCCS files (1989–2011 PZ + PF only; 2012+ files in `s3://nccsdata/legacy/core/` are NCCS+SOI hybrids and should be skipped). Will need its own crosswalk-builder scripts; the BASELINE/OVERRIDES/FINAL pattern applies. Document in `docs/09-legacy-harmonization.qmd` once built.
+- [ ] **Render parallelization** — phase 7 takes ~8 sec per Quarto subprocess. For a full 13-year × 3-form sweep that's 25–30 min. Wrap `run_render_reports()` in `parallel::mclapply` to cut to ~5 min on a multicore EC2 instance.
+- [ ] **gzip-on-upload for HTML** — each quality HTML is ~1.9 MB because of `embed-resources: true`. Transfer cost reducible 5–10× by gzip-compressing during phase 8 (`aws s3 cp --content-encoding gzip`).
+- [ ] **Pipeline-run archive for richer YoY** — current YoY tripwire compares against a single `quality_*.prev.rds` snapshot promoted at run start (catches most regressions). Longer-term drift analysis would benefit from a timestamped archive at `s3://nccsdata/logs/core/{run_timestamp}/` retained for multiple runs.
+
+## Crosswalks / lookups
+
+- [ ] **`data/lookups/non_pf_status_reason_codes.csv`** — SOI's `nonpfrea` field is an IRS-internal classification that diverges from the visible Schedule A line numbering. Codes 9–16 appear in the data without documented meanings (Schedule A only enumerates lines 1–12). Cross-check against `nccs-data-bmf` for any prior NCCS investigation, or pursue IRS SOI internal docs.
+- [ ] **Historical forms archive** — fetch every prior year's Form 990 / 990-EZ / 990-PF + Schedule A PDF + instructions, save to `s3://nccsdata/raw/core/forms/{tax_year}/`, publish on the NCCS website as a permanent citable record (IRS occasionally removes old forms from `irs.gov/pub/irs-prior/`).
+- [ ] **2013+ source-var name verification** — the 2012 990 / 990-EZ vintages use `tax_prd` for tax period; later vintages use `tax_pd` or `taxpd`. Confirm the 2013–2016 990 source actually uses `tax_pd` (currently assumed) once that processing year is harmonized.
+
+## Refactors / debt
+
+- [ ] **Deduplicate `is_blank` helper** — currently defined in `R/quality/stat_helpers.R`, `R/quality/post_checks.R`, and `R/06_dictionary.R`. Extract into a shared util.
+- [ ] **Deduplicate `CROSSWALK_FOR_SERIES`** — defined in `R/05_quality.R` and `R/06_dictionary.R` (both with the 990combined-uses-990-crosswalk rule). Move to `R/data.R` or `R/utils.R`.
+- [ ] **Stray file: `data/raw/14eofinextract990pf.csv`** at the top of `data/raw/` (not under `soi_extracts/`). Leftover from early exploration; move into `data/raw/soi_extracts/2014/990pf/` or delete.
+- [ ] **`data/raw/core_pf/`** — contains NCCS legacy 990-PF CSVs (1989–2007 + a 2019 hybrid). Fine to leave for the future legacy pipeline; just be aware.
+
+## Tests
+
+- [ ] **Tests beyond transforms** — `tests/test_transforms.R` has 32 unit tests for the 6 transforms. Phases 1, 2, 3 (crosswalk apply), 4, 5 (validators), 6, 7, 8 have no automated tests. Smoke-tested only via the full pipeline run.
+
+## Documentation
+
+- [ ] **Quarto chapter prose pass** — most chapters are populated but some have terse TODO sections (`09-legacy-harmonization.qmd` is mostly a placeholder; `01-architecture.qmd` and `03-transforms-reference.qmd` are minimal).
+- [ ] **Publish the rendered Quarto book** to S3 or GitHub Pages so external users can browse it without checking out the repo.
+
+## Data findings to validate or chase
+
+- [ ] **`nonpfrea` code 9 is 42% of 2018 990-EZ filers.** If code 9 really means "agricultural research organization" per the visible Schedule A, this is implausibly high. Most likely SOI's `nonpfrea` is an IRS-internal classification that doesn't 1:1 map to Schedule A line numbers. Awaiting institutional clarity (see `data/lookups/` TODO above).
+- [ ] **2017–2019 990-PF gap** — IRS published no 990-PF extract for these processing years. Currently handled by NA-return from `build_soi_url()` (download phase logs a skip). No special imputation. Worth a note in the output schema doc that PF tax-year coverage for the 2017–2019 *filing-year* window is sparse.
+- [ ] **Cross-form §4947(a) trust appearance** — §4947(a)(1) trusts treated as private foundations show up in 990-PF (~6% of rows with `subsection_cd = 92`). Need to verify whether any analogous category appears in 990 or 990-EZ for the years we haven't yet harmonized.

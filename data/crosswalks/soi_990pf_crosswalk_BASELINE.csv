@@ -139,7 +139,7 @@ SHARNGASSTSCD,nce_org_sharing_assets_cd,"Sharing of facilities, equipment, maili
 SUBCD,subsection_cd,Subsection code,n/a (IRS-Coded),2020-2024,pf_only
 SUBTITLEATX,subtitle_a_tax,Subtitle A tax,990-PF Pt V-4,2020-2024,pf_only
 TAXDUE,tax_due,Tax due,990-PF Pt V-9,2020-2024,pf_only
-TAX_PRD,tax_period,Tax period (YYYYMM format),Top of form,2020-2024,pf_only
+TAX_PRD,tax_period,Tax period (YYYYMM format),Top of form,2020-2024,from_990
 TAX_YR,soi_year,SOI Year,990-PF Header,2020-2024,pf_only
 TFAIRMRKTUNUSE,fair_mkt_value_assets_not_charitable_use,Fair market value of assets not used for charitable purposes,990-PF Pt IX-1d,2020-2024,pf_only
 TFUNDNWORTH,total_fund_net_worth_eoy,Total fund net worth – e-o-y book value,"990-PF Pt II-31, col (b)",2020-2024,pf_only
@@ -320,7 +320,7 @@ sect511tx,section_511_tax,Section 511 tax,990-PF Pt VI-2,2012-2016,pf_only
 sharngasstscd,nce_org_sharing_assets_cd,"Sharing of facilities, equipment, mailing lists, other assets, or paid employees?",990-PF Pt XVII-1c,2013-2016,pf_only
 subcd,subsection_cd,Subsection code,n/a (IRS-Coded),2012-2016,pf_only
 subtitleatx,subtitle_a_tax,Subtitle A tax,990-PF Pt VI-4,2012-2016,pf_only
-tax_prd,tax_period,Tax period (YYYYMM format),Top of form,2012-2016,pf_only
+tax_prd,tax_period,Tax period (YYYYMM format),Top of form,2012-2016,from_990
 tax_yr,soi_year,SOI Year,990-PF Header,2012-2016,pf_only
 taxdue,tax_due,Tax due,990-PF Pt VI-9,2013-2016,pf_only
 tfairmrktunuse,fair_mkt_value_assets_not_charitable_use,Fair market value of assets not used for charitable purposes,990-PF Pt X-1d,2012-2016,pf_only

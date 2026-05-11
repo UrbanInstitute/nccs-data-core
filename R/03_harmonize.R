@@ -50,8 +50,11 @@ read_source <- function(processing_year, form, logger) {
   src <- files[1]
   fmt <- SOURCE_FORMAT_FROM_PATH(src)
   log4r::info(logger, sprintf("READ %s (sep='%s')", src, fmt$sep))
+  # fill = TRUE: tolerate malformed rows (one IRS .dat file has a single bad
+  # row that would otherwise truncate the read mid-file — e.g., 2014 990
+  # stopped at row 2980 of 299,405 before this flag).
   dt <- fread(src, sep = fmt$sep, header = TRUE, na.strings = c("", "NA", "."),
-              colClasses = "character")
+              colClasses = "character", fill = TRUE)
   setnames(dt, tolower(names(dt)))
   dt
 }

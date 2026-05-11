@@ -76,14 +76,18 @@ check("indicator mapping", identical(dt$efile_cd, expected))
 
 # ----- efile_indicator -----
 cat("\n[efile_indicator]\n")
-dt <- data.table(efile_indicator = c("E", "P", "e", "p", "Y", "", NA))
+dt <- data.table(efile_indicator = c("E", "P", "e", "p", "Y", "N", "1", "0", "X", "", NA))
 transform_efile_indicator(dt)
 check("E -> TRUE",        identical(dt$efile_indicator[1], TRUE))
 check("P -> FALSE",       identical(dt$efile_indicator[2], FALSE))
 check("lowercase e/p ok", identical(dt$efile_indicator[3:4], c(TRUE, FALSE)))
-check("unknown -> NA",    is.na(dt$efile_indicator[5]))
-check("empty -> NA",      is.na(dt$efile_indicator[6]))
-check("NA in -> NA out",  is.na(dt$efile_indicator[7]))
+check("Y -> TRUE",        identical(dt$efile_indicator[5], TRUE))
+check("N -> FALSE",       identical(dt$efile_indicator[6], FALSE))
+check("'1' -> TRUE",      identical(dt$efile_indicator[7], TRUE))
+check("'0' -> FALSE",     identical(dt$efile_indicator[8], FALSE))
+check("unknown 'X' -> NA",is.na(dt$efile_indicator[9]))
+check("empty -> NA",      is.na(dt$efile_indicator[10]))
+check("NA in -> NA out",  is.na(dt$efile_indicator[11]))
 
 # ----- boundary: missing-column errors -----
 cat("\n[boundary]\n")

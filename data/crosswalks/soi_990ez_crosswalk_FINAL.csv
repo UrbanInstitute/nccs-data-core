@@ -65,7 +65,7 @@ srvcsval509,gov_services_value_sec509,Services or facilities furnished by gov (5
 subseccd,subsection_cd,Subsection code,Form 990-EZ Header,2012-2024,from_990
 subtotpub509,public_support_subtotal_line7c_sec509,Public support subtotal (509),990-EZ Sch A_Pt III-7c(f),2013-2024,from_990
 subtotsuppinc509,total_support_subtotal_sec509,Subtotal total support (509),990-EZ Sch A_Pt III-10c(f),2012-2024,from_990
-tax_pd,tax_period,Tax period,Form 990-EZ Header,2013-2016,from_990
+tax_pd,tax_period,Tax period,Form 990-EZ Header,"2013,2016",from_990
 taxpd,tax_period,Tax period,Form 990-EZ Header,2017-2024,ez_only
 totassetsend,total_assets_eoy,Total assets e-o-y,990-EZ_Pt II-25B,2012-2024,from_990
 totcntrbs,total_contributions,"Contributions, gifts, grants, etc received",990-EZ_Pt I-1,2012-2024,ez_only
@@ -86,3 +86,5 @@ txrevnuelevied509,tax_revenues_levied_sec509,Tax revenues levied (509),990-EZ Sc
 unrelbusincd,unrelated_business_income_1k_cd,"UBI over $1,000?",990-EZ_Pt V-35a,2012-2024,ez_only
 unreltxincls511tx509,net_ubi_line10b_sec509,Net UBI (509),990-EZ Sch A_Pt III-10b(f),2013-2024,from_990
 tax_prd,tax_period,Tax period,Form 990-EZ Header,2012,from_990
+taxprd,tax_period,Tax period,Form 990-EZ Header,2014,from_990
+a_tax_prd,tax_period,Tax period,Form 990-EZ Header,2015,from_990

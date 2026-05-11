@@ -27,7 +27,7 @@ DIVIDNDSAMT,dividends,Dividends,"990-PF Pt I Line 4, col (a)",2020-2024,pf_only
 DVDNDSINTD,dividends_interest_excluded,Dividends and interest from securities (excluded),"990-PF Pt XV-A-4, col (d)",2020-2024,pf_only
 DVDNDSINTE,dividends_interest_exempt_function,Dividends and interest from securities (exempt),"990-PF Pt XV-A-4, col (e)",2020-2024,pf_only
 EIN,ein,Employer Identification Number,"Form 990-PF, Item A",2020-2024,from_990
-ELF,efile_indicator,E-file indicator,n/a,2020-2024,from_990
+ELF,efile_indicator,E-file indicator,n/a,"2015,2020-2024",from_990
 ENDWMNTSCOLA,endowments_curr_yr,Endowments column a,"990-PF Pt XIII-3b, col (a)",2020-2024,pf_only
 ENDWMNTSCOLB,endowments_prior1,Endowments column b,"990-PF Pt XIII-3b, col (b)",2020-2024,pf_only
 ENDWMNTSCOLC,endowments_prior2,Endowments column c,"990-PF Pt XIII-3b, col (c)",2020-2024,pf_only
@@ -210,7 +210,7 @@ dividndsamt,dividends,Dividends,"990-PF Pt I Line 4, col (a)",2012-2016,pf_only
 dvdndsintd,dividends_interest_excluded,Dividends and interest from securities (excluded),"990-PF Pt XVI-A-4, col (d)",2013-2016,pf_only
 dvdndsinte,dividends_interest_exempt_function,Dividends and interest from securities (exempt),"990-PF Pt XVI-A-4, col (e)",2013-2016,pf_only
 ein,ein,Employer Identification Number,"Form 990-PF, Item A",2012-2016,from_990
-elf,efile_indicator,E-file indicator,n/a,2015-2016,from_990
+ELFCD,efile_indicator,E-file indicator,n/a,2016,from_990
 endwmntscola,endowments_curr_yr,Endowments column a,"990-PF Pt XIV-3b, col (a)",2012-2016,pf_only
 endwmntscolb,endowments_prior1,Endowments column b,"990-PF Pt XIV-3b, col (b)",2012-2016,pf_only
 endwmntscolc,endowments_prior2,Endowments column c,"990-PF Pt XIV-3b, col (c)",2012-2016,pf_only

@@ -28,6 +28,16 @@ Per `(tax_year, form)`:
 - Row-count plausibility: ±20% vs prior-year same `(tax_year, form)` (warn).
 - Null rates within historical bounds (warn).
 
+## Completeness metric
+
+The report's `overall_completeness` is **vintage-aware**: per-cohort `(extract_year, source_form)` completeness over the harmonized columns expected for that vintage (from the crosswalk's `years_present` field), then row-count-weighted across cohorts.
+
+A clean run produces 100% completeness across all outputs — because IRS uses `0`-not-NA for financial fields, every expected column is populated. The metric therefore functions as a **pipeline-integrity tripwire**: any drop below 100% indicates the pipeline lost rows or columns for some vintage cohort.
+
+The raw `overall_completeness_raw` field is preserved on the report for transparency — it computes the simple all-cols/all-rows fraction without vintage adjustment, useful for spotting NA-pad ratio drift across years.
+
+Per-cohort breakdown is in `summary_stats$completeness_by_cohort`.
+
 ## Strict mode
 
 `STRICT_QUALITY_GATES = TRUE` aborts on schema, EIN, and type failures.

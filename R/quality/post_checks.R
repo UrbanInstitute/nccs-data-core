@@ -25,6 +25,97 @@ EIN_FORMAT_REGEX     <- "^[0-9]{2}-[0-9]{7}$"
 TAX_PERIOD_REGEX     <- "^[0-9]{6}$"
 ROW_COUNT_TOLERANCE  <- 0.20   # ±20% vs prior year (soft)
 
+# Universal pipeline columns expected in every output regardless of vintage.
+UNIVERSAL_COLS <- c("ein", "tax_period", "tax_year", "tax_month", "subsection_cd",
+                    "is_501c3", "extract_year", "is_amendment", "soi_year",
+                    "source_form")
+
+#' Parse a "years_present" cell from a crosswalk row into an integer vector.
+#' Handles "2012", "2012-2024", "2017,2020-2022".
+parse_years_present <- function(s) {
+  if (is.null(s) || is.na(s) || !nzchar(s)) return(integer(0))
+  parts <- trimws(strsplit(s, ",")[[1]])
+  unlist(lapply(parts, function(p) {
+    if (grepl("-", p, fixed = TRUE)) {
+      rng <- suppressWarnings(as.integer(strsplit(p, "-", fixed = TRUE)[[1]]))
+      if (any(is.na(rng))) return(integer(0))
+      seq.int(rng[1], rng[2])
+    } else {
+      as.integer(p)
+    }
+  }))
+}
+
+#' Harmonized column names expected for (source-form, extract_year) per the
+#' FINAL crosswalk's `years_present` field. Crosswalk synonyms collapse: a
+#' harmonized name is expected if ANY of its source vars covers extract_year.
+expected_harmonized_cols <- function(xwalk, extract_year) {
+  if (!"years_present" %in% names(xwalk)) return(unique(xwalk$harmonized_name))
+  in_year <- vapply(xwalk$years_present,
+                    function(s) extract_year %in% parse_years_present(s),
+                    logical(1))
+  unique(xwalk$harmonized_name[in_year])
+}
+
+#' Vintage-aware overall completeness. Computes per-cohort completeness over
+#' the harmonized columns expected for that cohort's (extract_year, source_form)
+#' vintage, then row-count-weights across cohorts.
+compute_vintage_aware_completeness <- function(dt, form) {
+  if (!"extract_year" %in% names(dt)) {
+    return(list(overall = NA_real_, per_cohort = list()))
+  }
+  is_combined <- identical(form, "990combined")
+  if (is_combined && !"source_form" %in% names(dt)) {
+    return(list(overall = NA_real_, per_cohort = list()))
+  }
+
+  shared_cols <- if (is_combined) {
+    x990   <- fread(CROSSWALK_FILES[["990"]])
+    x990ez <- fread(CROSSWALK_FILES[["990ez"]])
+    intersect(unique(x990$harmonized_name), unique(x990ez$harmonized_name))
+  } else NULL
+
+  cohorts <- if (is_combined) unique(dt[, .(extract_year, source_form)])
+             else             unique(dt[, .(extract_year)])[, source_form := form][]
+
+  per_cohort <- list()
+  for (i in seq_len(nrow(cohorts))) {
+    ey <- cohorts$extract_year[i]
+    sf <- cohorts$source_form[i]
+    if (is.na(ey) || is.na(sf)) next
+    sub <- if (is_combined) dt[extract_year == ey & source_form == sf]
+           else             dt[extract_year == ey]
+    if (nrow(sub) == 0L) next
+
+    xw_path <- CROSSWALK_FILES[[sf]]
+    if (is.null(xw_path)) next
+    xw <- fread(xw_path)
+    expected <- expected_harmonized_cols(xw, ey)
+    if (is_combined) expected <- intersect(expected, shared_cols)
+    expected <- intersect(union(expected, UNIVERSAL_COLS), names(sub))
+    if (length(expected) == 0L) next
+
+    is_blank <- function(x) if (is.character(x)) is.na(x) | x == "" else is.na(x)
+    comps <- vapply(expected,
+                    function(c) 100 * sum(!is_blank(sub[[c]])) / nrow(sub),
+                    numeric(1))
+    per_cohort[[length(per_cohort) + 1L]] <- list(
+      extract_year     = ey,
+      source_form      = sf,
+      n_rows           = nrow(sub),
+      n_expected_cols  = length(expected),
+      completeness_pct = round(mean(comps), 2)
+    )
+  }
+
+  if (length(per_cohort) == 0L) return(list(overall = NA_real_, per_cohort = list()))
+
+  weights <- vapply(per_cohort, function(x) x$n_rows, numeric(1))
+  comps   <- vapply(per_cohort, function(x) x$completeness_pct, numeric(1))
+  list(overall = round(weighted.mean(comps, weights), 2),
+       per_cohort = per_cohort)
+}
+
 # ---- Crosswalk-driven category derivation ----
 
 #' Parse `location` from FINAL crosswalk into a coarse category key.
@@ -199,7 +290,7 @@ run_post_checks <- function(dt, form, tax_year, xwalk_path,
 
   yoy <- check_row_count_vs_prior(n_rows, baseline_path)
 
-  # Per-column completeness
+  # Per-column completeness (raw, all-rows / all-cols)
   col_comp <- lapply(names(dt), function(nm) {
     x <- dt[[nm]]
     stats <- calc_completeness_stats(x, n_rows)
@@ -207,8 +298,14 @@ run_post_checks <- function(dt, form, tax_year, xwalk_path,
     stats
   })
   names(col_comp) <- names(dt)
-  overall_completeness <- round(mean(sapply(col_comp,
-                                            function(c) c$completeness_pct)), 2)
+  overall_completeness_raw <- round(mean(sapply(col_comp,
+                                                function(c) c$completeness_pct)), 2)
+
+  # Vintage-aware completeness (default headline metric): per-cohort completeness
+  # over only the columns expected for that (extract_year, source_form) vintage,
+  # then row-count-weighted across cohorts.
+  vintage_completeness <- compute_vintage_aware_completeness(dt, form)
+  overall_completeness <- vintage_completeness$overall
 
   # Category reports from crosswalk location
   cats <- build_categories(dt, xwalk_path)
@@ -238,7 +335,9 @@ run_post_checks <- function(dt, form, tax_year, xwalk_path,
     tax_year             = tax_year,
     row_count            = n_rows,
     column_count         = n_cols,
-    overall_completeness = overall_completeness,
+    overall_completeness        = overall_completeness,
+    overall_completeness_raw    = overall_completeness_raw,
+    completeness_by_cohort      = vintage_completeness$per_cohort,
     row_preservation     = NA,   # filled in by validate_step caller if mid-pipeline
     summary_stats = list(
       unique_eins                   = data.table::uniqueN(dt$ein[!is.na(dt$ein)]),

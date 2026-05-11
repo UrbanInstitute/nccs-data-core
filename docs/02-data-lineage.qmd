@@ -1,0 +1,20 @@
+# Data Lineage
+
+::: {.callout-note}
+TODO: Diagram of source (IRS SOI / legacy NCCS) → raw → unpacked → harmonized →
+processed, with S3 paths at each tier.
+:::
+
+## Tiers
+
+| Tier | Local | S3 |
+|---|---|---|
+| Raw | `data/raw/soi_extracts/{processing_year}/{form}/` | `s3://nccsdata/raw/core/soi-extracts/{processing_year}/{form}/` |
+| Legacy raw | (read-only) | `s3://nccsdata/legacy/core/` |
+| Unpacked | `data/intermediate/unpacked/{processing_year}/{form}/` | `s3://nccsdata/intermediate/core/unpacked/...` |
+| Harmonized | `data/intermediate/harmonized/{tax_year}/{form}/` | `s3://nccsdata/intermediate/core/harmonized/...` |
+| Processed | `data/processed/{tax_year}/{form}/` | `s3://nccsdata/processed/core/{tax_year}/{form}/` |
+| Logs | `data/logs/` | `s3://nccsdata/logs/core/{run_timestamp}/` |
+
+Raw + unpacked are partitioned by **processing year** (when IRS published the extract).
+Harmonized + processed are partitioned by **tax year** (`substr(tax_period, 1, 4)`).

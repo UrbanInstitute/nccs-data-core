@@ -1,0 +1,16 @@
+# Architecture
+
+::: {.callout-note}
+TODO: Phased orchestrator diagram, two-pipeline structure (SOI-current vs legacy),
+checkpoint + flag flow.
+:::
+
+## Two pipelines
+
+- `R/run_pipeline.R` — SOI-current extracts, 2012+.
+- `R/run_legacy_pipeline.R` — raw legacy NCCS files (PZ + PF), 1989-2011. Built later.
+
+## Phase ordering
+
+Download → Unpack → Pre-checks → Harmonize → Combined → Post-checks → Dictionary →
+Quality report → Promote → Upload.

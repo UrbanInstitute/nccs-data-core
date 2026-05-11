@@ -1,0 +1,26 @@
+# Configuration
+
+::: {.callout-note}
+TODO: Full reference for `R/config.R` and `R/data.R`.
+:::
+
+## Phase toggles (`R/config.R::CONFIG`)
+
+`ENABLE_DOWNLOAD`, `ENABLE_UNPACK`, `ENABLE_HARMONIZE`, `ENABLE_COMBINED`,
+`ENABLE_QUALITY`, `ENABLE_DICTIONARY`, `ENABLE_RENDER_REPORT`, `ENABLE_S3_UPLOAD`,
+plus per-tier `ENABLE_UPLOAD_{RAW,INTERMEDIATE,PROCESSED,LOGS}`.
+
+`STRICT_QUALITY_GATES`, `ENABLE_CHECKPOINTS` control failure and skip behavior.
+
+## Year window
+
+`EARLIEST_YEAR = 2012L`, `LATEST_YEAR` bumped each release.
+
+## Forms
+
+`FORMS = c("990", "990ez", "990pf")`; `990combined` is derived in phase 5.
+
+## IRS URL template
+
+`build_soi_url(processing_year, form)` returns the IRS SOI zip URL. Pattern:
+`https://www.irs.gov/pub/irs-soi/{YY}eoextract{FORM_TAG}.zip`.

@@ -11,10 +11,5 @@ data/harmonized/
 data/processed/
 data/logs/
 
-# Stale per-session artifacts
-data/pf_hrmn.db
-data/pf_test.csv
-data/crosswalks/pf_xwalk_test.csv
-
 # Claude local settings
 .claude/settings.local.json

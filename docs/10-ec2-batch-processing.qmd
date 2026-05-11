@@ -1,0 +1,25 @@
+# EC2 Batch Processing
+
+::: {.callout-note}
+TODO: Full EC2 bootstrap, IAM setup, and batch entry-point walkthrough.
+:::
+
+## Bootstrap
+
+`scripts/setup_ec2.sh` installs R, system deps, and the required CRAN packages:
+`data.table`, `arrow`, `aws.s3`, `paws`, `openxlsx`, `rio`, `here`, `purrr`,
+`stringr`, `lubridate`, `jsonlite`, `quarto`, `duckdb`, `DBI`, `log4r`,
+`tidyverse`, `data.validator`, `assertr`.
+
+## Entry point
+
+```bash
+scripts/run_pipeline.sh --years 2012-2024 --forms 990,990ez,990pf [--no-upload] [--strict]
+```
+
+## IAM
+
+EC2 instance role needs:
+
+- `s3:GetObject` on `gt990datalake-rawdata` (downstream BMF inputs).
+- `s3:GetObject`, `s3:PutObject`, `s3:ListBucket` on `nccsdata`.

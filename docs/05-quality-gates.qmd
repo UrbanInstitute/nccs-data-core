@@ -1,0 +1,33 @@
+# Quality Gates
+
+::: {.callout-note}
+TODO: Document every check in `R/quality/pre_checks.R` and `R/quality/post_checks.R`,
+plus the `STRICT_QUALITY_GATES` flag behavior.
+:::
+
+## Pre-checks (before harmonization)
+
+Per `(processing_year, form)`:
+
+- File exists and non-empty.
+- Header row present.
+- Column count within ±5% of expected per-vintage value.
+- Row count > 0.
+- No duplicate header column names.
+
+## Post-checks (after harmonization)
+
+Per `(tax_year, form)`:
+
+- Schema: every harmonized column from FINAL crosswalk is present.
+- Type: numeric / logical / character as declared; tax_year in `[1989, current_year + 1]`.
+- EIN format: 9 digits, no nulls, no duplicates.
+- `tax_period` format: 6 chars, parseable.
+- Subsection codes in `KNOWN_SUBSECTION_CODES`.
+- Row-count plausibility: ±20% vs prior-year same `(tax_year, form)` (warn).
+- Null rates within historical bounds (warn).
+
+## Strict mode
+
+`STRICT_QUALITY_GATES = TRUE` aborts on schema, EIN, and type failures.
+Soft checks (row-count delta, null rate) always warn, never abort.

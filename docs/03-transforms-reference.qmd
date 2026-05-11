@@ -1,0 +1,14 @@
+# Transforms Reference
+
+::: {.callout-note}
+TODO: For each `R/transforms/*.R` file, document the pure function it exposes,
+input/output contract, and edge cases.
+:::
+
+## Planned transforms
+
+- `tax_period.R` — parse `TAXPER` (6-char `YYYYMM`) into `tax_year` (int) and `tax_month` (int).
+- `ein.R` — zero-pad to 9 chars, validate numeric-castable.
+- `subsection.R` — integer coercion + validate against `KNOWN_SUBSECTION_CODES`; derive `is_501c3 = (subsection == 3)` indicator column.
+- `financial_amounts.R` — numeric coercion, NA on parse failure, log failure counts.
+- `indicators.R` — `_cd` columns: {Y,1,T,TRUE} → TRUE, {N,0,F,FALSE} → FALSE, else NA.

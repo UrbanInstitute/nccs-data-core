@@ -58,6 +58,7 @@ nccs-data-core/
 │   └── draft_990pf_crosswalk.R            # done
 ├── data/
 │   ├── crosswalks/                 # tracked: BASELINE/OVERRIDES/FINAL CSVs (never delete OVERRIDES without permission)
+│   ├── lookups/                    # tracked: per-coded-column reference CSVs (code, label, irc_ref, source, confidence)
 │   ├── raw/                        # gitignored
 │   ├── intermediate/               # gitignored
 │   ├── processed/                  # gitignored
@@ -101,7 +102,9 @@ All paths under `s3://nccsdata/`:
 raw/core/
   soi-extracts/{processing_year}/{form}/    # IRS zips, KEPT FOREVER
                                             # e.g., raw/core/soi-extracts/2024/990/24eoextract990.zip
-  nccs-legacy/...                           # legacy NCCS files (later phase)
+
+legacy/core/                                # raw legacy NCCS files (consumed by run_legacy_pipeline.R, later phase)
+                                            # e.g., legacy/core/nccs-core-2010-501c3-charities-pz.csv
 
 intermediate/core/
   unpacked/{processing_year}/{form}/        # post-unzip CSVs / .dat (still in IRS vintage layout)
@@ -162,7 +165,7 @@ Orchestrator: `R/run_pipeline.R` with flags `ENABLE_DOWNLOAD`, `ENABLE_UNPACK`, 
 - `tax_period.R`: parse `YYYYMM` (6 chars), keep as character; derive `tax_year` (int 4-digit), `tax_month` (int 1-12).
 - `indicators.R`: normalize `_cd` columns. Map {Y, y, 1, T, TRUE} → TRUE; {N, n, 0, F, FALSE} → FALSE; everything else → NA. Use suffix lookup against crosswalk.
 - `financial_amounts.R`: numeric coercion. Log row count of parse failures per column. Empty/whitespace → NA.
-- `subsection.R`: integer coercion + validation against known subsection codes (1-92, plus a few special values).
+- `subsection.R`: integer coercion + validation against known subsection codes (1-92, plus a few special values). Also derives the `is_501c3` indicator column (`subsection == 3`) added to every output. This preserves the 501C3/501CE disaggregation that was a partition key in the legacy NCCS files — see decision #5 (subsection is a column, not a partition).
 
 ## 6. `990combined` derivation (`04_derive_combined.R`)
 
@@ -277,9 +280,11 @@ Update `docs/_quarto.yml`:
 
 Scaffold all chapters as empty `.qmd` stubs at start of pipeline build. Fill incrementally as features land. Stub each chapter with a one-line purpose description and a `TODO` callout — keeps the book renderable from day 1.
 
-Drop BMF chapters that don't apply: `04-dimension-tables.qmd` (no dimensions in CORE), `08-lookup-tables.qmd` (no lookups), `11-master-bmf.qmd` (no master per decision).
+Drop BMF chapters that don't apply: `04-dimension-tables.qmd` (no dimensions in CORE), `11-master-bmf.qmd` (no master per decision).
 
-Add CORE-specific chapters: `04-crosswalks.qmd` (BASELINE/OVERRIDES/FINAL workflow), `08-output-schema.qmd` (auto-generated harmonized column reference per form).
+Add CORE-specific chapters: `04-crosswalks.qmd` (BASELINE/OVERRIDES/FINAL workflow), `08-output-schema.qmd` (harmonized column reference, NA semantics, and lookup-table convention).
+
+> **Lookup-table convention (reintroduced 2026-05-11):** initial plan dropped BMF's `08-lookup-tables.qmd` on the assumption CORE had no lookups. In practice some columns (`subsection_cd`, `non_pf_status_reason`, ...) are integer-coded categoricals that need authoritative code→label mappings. Per-column lookup CSVs live in `data/lookups/`, sourced from IRM / IRS Pub 557 / form instructions, with `confidence` field per row. Maintained independently from `nccs-data-bmf`'s parallel copies — both repos derive from the same IRM upstream; periodic cross-check, no silent divergence.
 
 ## 10. EC2 batch orchestration
 

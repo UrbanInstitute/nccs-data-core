@@ -19,10 +19,10 @@
 #'
 #' @export
 create_logger <- function(logfile_path) {
-  my_console_appender = log4r::console_appender(layout = default_log_layout())
-  my_file_appender = log4r::file_appender(logfile_path, 
-                                          append = TRUE, 
-                                          layout = default_log_layout())
+  my_console_appender = log4r::console_appender(layout = log4r::default_log_layout())
+  my_file_appender = log4r::file_appender(logfile_path,
+                                          append = TRUE,
+                                          layout = log4r::default_log_layout())
   my_logger <- log4r::logger(
     threshold = "INFO",
     appenders = list(my_console_appender, my_file_appender)

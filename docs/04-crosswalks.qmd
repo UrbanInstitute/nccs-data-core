@@ -1,0 +1,30 @@
+# Crosswalks
+
+::: {.callout-note}
+TODO: BASELINE / OVERRIDES / FINAL workflow walkthrough with diagrams.
+:::
+
+## File set per form
+
+For each of `990`, `990ez`, `990pf`:
+
+- `data/crosswalks/soi_<form>_crosswalk_BASELINE.csv` — algorithmic draft, regenerable, **overwritten by script**.
+- `data/crosswalks/soi_<form>_crosswalk_OVERRIDES.csv` — full editable copy, **never overwritten by script**. User edits in place.
+- `data/crosswalks/soi_<form>_crosswalk_FINAL.csv` — equals OVERRIDES verbatim. **Consumed by the pipeline.**
+
+## Why three files
+
+The split protects manual mapping work. Re-running `scripts/draft_<form>_crosswalk.R`
+regenerates BASELINE and reports drift between BASELINE and OVERRIDES so the user can
+review changes — but never silently overwrites manual edits.
+
+## Cross-form alignment
+
+The 990 and 990-EZ FINAL crosswalks share 53 harmonized column names. This shared
+subset drives the `990combined` series.
+
+| Form | Source vars | Unique harmonized | Cross-form aligned |
+|---|---|---|---|
+| 990    | 247 | 246 | 53 shared with 990-EZ |
+| 990-EZ | 86  | 71  | 53 shared with 990    |
+| 990-PF | 363 | 182 | 21 shared with 990 (mostly header / identity) |

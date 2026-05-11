@@ -1,0 +1,24 @@
+# CORE Data Pipeline Guide
+
+The `nccs-data-core` pipeline produces NCCS's CORE Series: harmonized panels of select
+Form 990 / 990-EZ / 990-PF fields, built from IRS Statistics of Income (SOI) extracts
+(2012-present) and raw legacy NCCS files (1989-2011).
+
+::: {.callout-note}
+TODO: Overview, audience, and how to navigate this book.
+:::
+
+## Outputs
+
+Per `(tax_year, form)` CSV plus a per-output data dictionary and quality report:
+
+- `990` — full 990 schedule, 990 filers only.
+- `990ez` — full 990-EZ schedule, current-only (no pre-2012 source).
+- `990pf` — full 990-PF schedule, private foundations.
+- `990combined` — 990 + 990-EZ stacked on the 53 shared harmonized columns.
+
+## Where to start
+
+- New contributor → [Developer Guide](07-developer-guide.qmd)
+- Looking up a column → [Output Schema](08-output-schema.qmd) or [Crosswalks](04-crosswalks.qmd)
+- Running the pipeline → [Configuration](06-configuration.qmd) and [EC2 Batch Processing](10-ec2-batch-processing.qmd)

@@ -1,0 +1,36 @@
+# Developer Guide
+
+::: {.callout-note}
+TODO: Local setup, common workflows, debugging tips.
+:::
+
+## Local quick-iterate
+
+```bash
+Rscript R/run_pipeline.R --years 2024 --forms 990ez --no-upload
+```
+
+990-EZ is the smallest extract; fastest end-to-end loop.
+
+## Editing a crosswalk
+
+1. Edit `data/crosswalks/soi_<form>_crosswalk_OVERRIDES.csv` in place. Save.
+2. Re-run `scripts/draft_<form>_crosswalk.R` to regenerate BASELINE and report drift.
+3. FINAL is rewritten from OVERRIDES verbatim.
+
+**Never delete OVERRIDES without explicit user permission.**
+
+## Rolling out a new tax year
+
+1. Bump `LATEST_YEAR` in `R/config.R`.
+2. Run the pipeline. Pre/post checks flag any schema drift.
+
+## Re-rendering a quality report without re-harmonizing
+
+```bash
+Rscript R/07_render_report.R --rds data/logs/quality_990_2023.rds
+```
+
+## Skipping phases
+
+Set `ENABLE_DOWNLOAD = FALSE` (etc.) to re-use existing intermediate files.

@@ -1,0 +1,27 @@
+# Legacy Harmonization
+
+::: {.callout-note}
+TODO: Document `run_legacy_pipeline.R` once it exists. Scoped to raw legacy NCCS
+files (1989-2011 PZ/PF only); 2012+ NCCS+SOI hybrid files in `s3://nccsdata/legacy/core/`
+are skipped.
+:::
+
+## Scope
+
+- **In:** raw legacy NCCS `*-PZ` (501c3 + 501ce, unioned) and `*-PF` files, 1989-2011.
+- **Out:** 2012+ NCCS+SOI hybrid files (those years are covered by the SOI-current pipeline).
+- **Unrecoverable:** there is no pure 990-EZ source pre-2012.
+
+## Series mapping
+
+| Series | 1989-2011 | 2012+ |
+|---|---|---|
+| `990` | (none) | IRS `eoextract990` |
+| `990ez` | (none) | IRS `eoextractEZ` |
+| `990pf` | raw legacy `*-PF` | IRS `eoextractPF` |
+| `990combined` | raw legacy `*-PZ` (union of 501c3 + 501ce) | derived: stack IRS 990 + EZ on shared cols |
+
+## Subsection as column, not partition
+
+Legacy files partition by 501C3 vs 501CE. The harmonized output keeps `subsection`
+and `is_501c3` as columns instead, so the 990combined series is a single panel.

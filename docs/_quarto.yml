@@ -3,8 +3,8 @@ project:
   output-dir: GUIDEBOOK
 
 book:
-  title: "BMF Data Pipeline Guide"
-  output-file: "bmf-pipeline-guide"
+  title: "CORE Data Pipeline Guide"
+  output-file: "core-pipeline-guide"
   author:
     - "Jesse Lecy"
     - "Thiyaghessan"
@@ -17,14 +17,13 @@ book:
     - 01-architecture.qmd
     - 02-data-lineage.qmd
     - 03-transforms-reference.qmd
-    - 04-dimension-tables.qmd
+    - 04-crosswalks.qmd
     - 05-quality-gates.qmd
     - 06-configuration.qmd
     - 07-developer-guide.qmd
-    - 08-lookup-tables.qmd
+    - 08-output-schema.qmd
     - 09-legacy-harmonization.qmd
     - 10-ec2-batch-processing.qmd
-    - 11-master-bmf.qmd
 
 format:
   html:

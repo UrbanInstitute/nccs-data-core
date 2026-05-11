@@ -1,0 +1,78 @@
+# Output Schema
+
+::: {.callout-note}
+TODO: Auto-generated harmonized column reference per form, populated from FINAL
+crosswalks at book build time.
+:::
+
+## Per-output dictionary
+
+Each `(tax_year, form)` output has a companion dictionary at
+`processed/core/{tax_year}/{form}/core_{tax_year}_{form}_dictionary.csv`:
+
+| col | source |
+|---|---|
+| `harmonized_name` | FINAL crosswalk |
+| `description` | FINAL crosswalk |
+| `source_var` | FINAL crosswalk (synonyms joined with `\|`) |
+| `source_location` | FINAL crosswalk |
+| `data_type` | inferred from harmonized output |
+| `n_rows` | output |
+| `n_nonnull` | output |
+| `null_pct` | derived |
+| `n_distinct` | output |
+| `min_value` | numeric only |
+| `max_value` | numeric only |
+| `years_present` | FINAL crosswalk |
+
+## Lookup tables for coded columns
+
+Categorical-coded columns (integer codes like `subsection_cd`, `non_pf_status_reason`) have companion lookup CSVs in `data/lookups/`. Each lookup file has columns `code, label, irc_ref, source, confidence`.
+
+- **`subsection_codes.csv`** — IRS-internal EO subsection codes, verified against IRM 25.7.1 Exhibit 25.7.1-4. Maintained independently from the parallel lookup in `nccs-data-bmf`; both should derive from the same IRM upstream. Cross-check periodically — divergences should be investigated, not silently retained.
+- **`non_pf_status_reason_codes.csv`** *(to be built)* — SOI's encoding diverges from Schedule A's visible line numbers; codes 9–16 currently lack documented meanings. Cross-reference the archived Schedule A PDF for the tax year of interest (`s3://nccsdata/raw/core/forms/{tax_year}/f990sa_{tax_year}.pdf`).
+
+When adding a new coded column, follow the same pattern: build the lookup from an authoritative source (IRM, IRS Pub 557, or the form's instructions PDF) and mark each row's `confidence` as `verified` / `inferred` / `unknown`.
+
+## NA semantics
+
+Two important conventions when interpreting NA in CORE outputs:
+
+**Financial fields use 0 instead of NA.** The IRS SOI extract fills `0` for every financial column on every row, regardless of whether the organization actually engaged in the activity. So `gross_income_gaming_activities = 0` could mean either "didn't run gaming" or "ran gaming and grossed $0." Do not assume `is.na(x)` finds missing data on financial columns — use `x > 0` to identify orgs that reported activity.
+
+**Vintage-padded columns are 100% NA in pre-vintage tax-year files.** When a harmonized column doesn't exist in the source extract for a given vintage (e.g., `efile_indicator` for 2012 990-EZ), the pipeline NA-fills it for schema stability. Within a single `(tax_year, form)` output file, vintage-padded columns are either 0% NA (vintage has the field) or 100% NA (vintage doesn't). Use the `years_present` column in the crosswalk to predict which.
+
+**A single tax-year file is built from multiple processing-year extracts.** A given `(tax_year, form)` output is the union of all rows for that tax year across every processing-year extract the pipeline has ingested. Each contributing row's columns are filled based on the *processing-year* schema, not the tax_year. So NA rates for vintage-dependent columns within a single tax-year file depend on the mix of processing-year extracts that supplied rows to it. Pre-2013 tax years on columns added in 2013+ will have substantial NA rates that cannot be fully resolved — the IRS extracts that captured most of those filings simply didn't include the column. This is a real limitation of the source data, not a pipeline bug.
+
+## Three "year" columns
+
+Every CORE output has at least two year columns, and 990-PF has a third. They mean different things — pick deliberately when grouping or joining.
+
+| Column | Source | Meaning | Forms |
+|---|---|---|---|
+| `tax_year` | Pipeline-derived (`substr(tax_period, 1, 4)`) | Calendar year the fiscal year **ended**. The partition key. | All |
+| `soi_year` | IRS-assigned (`TAX_YR` / `tax_yr`) | Calendar year covering **most of the filer's activity** per IRS SOI convention. Differs from `tax_year` by 1 for non-calendar-year filers ending before December. | 990-PF only |
+| `extract_year` | Pipeline-added | Year the IRS SOI extract that contained this row was **processed and published**. Provenance, not a fiscal concept. | All |
+
+For calendar-year filers (~84% of 990-PF in tax_year 2011), `soi_year = tax_year`. For fiscal-year filers ending Jan–Nov, `soi_year = tax_year - 1`.
+
+Use `tax_year` for strict fiscal-period-end groupings; use `soi_year` for IRS's calendar-year activity proxy.
+
+## Universal columns
+
+Present in every output:
+
+- `ein` — 9-digit EIN, hyphenated as `XX-XXXXXXX`. The hyphen forces character typing on CSV re-read so leading zeros survive.
+- `tax_period` — 6-char `YYYYMM` (preserved as character).
+- `tax_year` — int, derived from `substr(tax_period, 1, 4)`.
+- `tax_month` — int 1–12.
+- `subsection_cd` — IRC EO subsection code (1–93 per IRM 25.7.1). See `data/lookups/subsection_codes.csv`.
+- `is_501c3` — boolean, `subsection_cd == 3`. Replaces the legacy 501C3/501CE partition.
+- `extract_year` — int, processing year of the IRS SOI extract that supplied this row.
+- `is_amendment` — boolean, TRUE if the same `(ein, tax_period)` appears in an earlier `extract_year`.
+
+## `is_501c3` is not always TRUE in 990-PF
+
+About 6% of 990-PF rows are **§4947(a)(1) non-exempt charitable trusts treated as private foundations** (`subsection_cd = 92`, `is_501c3 = FALSE`). They file 990-PF because IRC treats them as private foundations for excise-tax purposes, but they are not 501(c)(3) exempt organizations. The `is_501c3` column makes this distinction queryable without requiring users to memorize subsection codes.
+
+§4947(a) trusts may also appear in 990 or 990-EZ in theory; they are absent from the tax_year-2011 sample but the schema accommodates them if they appear in other vintages.

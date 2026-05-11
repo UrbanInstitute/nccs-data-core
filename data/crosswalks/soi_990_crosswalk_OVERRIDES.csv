@@ -209,7 +209,8 @@ subseccd,subsection_cd,Subsection code,Form 990 Header,2012-2024
 subtotpub509,public_support_subtotal_line7c_sec509,Public support subtotal (509),990 Sch A_Pt III-7c(f),2013-2024
 subtotsuppinc509,total_support_subtotal_sec509,Subtotal total support (509),990 Sch A_Pt III-10c(f),2012-2024
 svngstempinvend,savings_and_temp_investments_eoy,Savings and temporary cash investments -- eoy,990 Core_Pt X-2(B),2013-2024
-tax_pd,tax_period,Tax period,Form 990 Header,2012-2024
+tax_pd,tax_period,Tax period,Form 990 Header,2013-2024
+tax_prd,tax_period,Tax period,Form 990 Header,2012
 temprstrctnetasstsend,temporarily_restricted_net_assets_eoy,Temporarily restricted net assets -- eoy,990 Core_Pt X-28(B),2013-2024
 totassetsend,total_assets_eoy,Total assets -- eoy,990 Core_Pt X-16(B),2012-2024
 totcntrbgfts,total_contributions,Total contributions,990 Core_Pt VIII-1h(A),2012-2024

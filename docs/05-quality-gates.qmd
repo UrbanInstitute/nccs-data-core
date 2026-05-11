@@ -1,9 +1,10 @@
 # Quality Gates
 
-::: {.callout-note}
-TODO: Document every check in `R/quality/pre_checks.R` and `R/quality/post_checks.R`,
-plus the `STRICT_QUALITY_GATES` flag behavior.
-:::
+Built in Phase 6 (2026-05-11). Entry points:
+- `R/quality/pre_checks.R::run_pre_checks_one()` — runs against an unpacked source file.
+- `R/quality/post_checks.R::run_post_checks()` — runs against a harmonized data.table.
+- `R/05_quality.R::run_quality()` — orchestrates post-checks across every `(form, tax_year)` output, writes RDS per `(form, tax_year)` to `data/logs/`.
+- `R/quality/stat_helpers.R` — eight reusable type-specific stat calculators (completeness, numeric, character, code, boolean, date, plus column / category report builders).
 
 ## Pre-checks (before harmonization)
 
@@ -30,4 +31,12 @@ Per `(tax_year, form)`:
 ## Strict mode
 
 `STRICT_QUALITY_GATES = TRUE` aborts on schema, EIN, and type failures.
-Soft checks (row-count delta, null rate) always warn, never abort.
+Soft checks (row-count delta, null rate, duplicate EINs) always warn, never abort.
+
+## Duplicate EINs are soft, not hard
+
+Same `(ein, tax_period)` filed twice in one extract is a legitimate amendment-within-year and is preserved in the output. `is_amendment` (set in harmonize) flags cross-extract duplicates; within-extract duplicates surface in `summary_stats$duplicate_eins` but do not fail the gate.
+
+## Year-over-year delta is run-archive based, not tax-year shift
+
+The plan's "±20% vs prior year" check compares the *same `(form, tax_year)`* against the report from a prior pipeline run, not against a different tax_year. Until pipeline-run archive infrastructure exists, this check returns `status = "no_baseline"` and is a no-op.

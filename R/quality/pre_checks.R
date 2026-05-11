@@ -1,159 +1,119 @@
-# ============================================================================
-# pre_checks.R
-# Pre-transformation quality validation for raw BMF data
-# ============================================================================
+# R/quality/pre_checks.R
+# Pre-harmonization validation for unpacked IRS SOI source files.
+# Runs per (processing_year, form). Per IMPLEMENTATION_PLAN.md §7:
+#   - file exists and non-empty
+#   - header row present
+#   - column count within ±EXPECTED_COL_COUNT_TOLERANCE of per-vintage expected
+#   - row count > 0
+#   - no duplicate header column names
 
-# ============================================================================
-# Module Constants
-# ============================================================================
+suppressPackageStartupMessages({
+  library(data.table)
+  library(here)
+})
 
-# Expected columns in raw BMF file
-BMF_REQUIRED_COLUMNS <- c(
-  "EIN", "NAME", "ICO", "STREET", "CITY", "STATE", "ZIP",
-  "GROUP", "SUBSECTION", "AFFILIATION", "CLASSIFICATION",
-  "RULING", "DEDUCTIBILITY", "FOUNDATION", "ACTIVITY",
-  "ORGANIZATION", "STATUS", "TAX_PERIOD", "ASSET_CD",
-  "INCOME_CD", "FILING_REQ_CD", "PF_FILING_REQ_CD",
-  "ASSET_AMT", "INCOME_AMT", "REVENUE_AMT", "NTEE_CD",
-  "SORT_NAME", "ACCT_PD", "REGION", "RYEAR", "ID"
-)
+VAR_MATRIX_PATH <- function(form) {
+  tag <- switch(form, "990" = "990", "990ez" = "990EZ", "990pf" = "990PF",
+                stop(sprintf("Unknown form '%s'", form)))
+  here::here("data", "raw", "soi_dictionaries", sprintf("_var_matrix_%s.csv", tag))
+}
 
-# Minimum columns required after legacy BMF harmonization. These are the only
-# current-schema columns that appear (under their legacy aliases) in every
-# 501CX-NONPROFIT-PX dictionary from 1989-2016. See data/crosswalks/XWALK-BMF-V2.0.csv.
-BMF_LEGACY_MIN_COLUMNS <- c(
-  "EIN", "NAME", "CITY", "STATE", "ZIP", "SUBSECTION", "NTEE_CD"
-)
+#' Expected column count for a (processing_year, form) per the IRS dictionary's var matrix.
+#' Returns NA if the matrix file or the year column is absent — caller treats NA as
+#' "no expectation, skip the column-count tolerance check."
+expected_col_count <- function(processing_year, form) {
+  path <- VAR_MATRIX_PATH(form)
+  if (!file.exists(path)) return(NA_integer_)
+  mx <- fread(path)
+  col <- as.character(processing_year)
+  if (!col %in% names(mx)) return(NA_integer_)
+  sum(mx[[col]] == "Y", na.rm = TRUE)
+}
 
-# ============================================================================
-# Pre-Check Functions
-# ============================================================================
+#' Run pre-checks for one unpacked source file.
+#' @param processing_year integer
+#' @param form character: "990" | "990ez" | "990pf"
+#' @param src_path optional explicit path to the unpacked file; if NULL, discovered
+#'   under data/intermediate/unpacked/{processing_year}/{form}/
+#' @param logger optional log4r logger
+#' @return list(passed = bool, errors = character, warnings = character, info = list)
+run_pre_checks_one <- function(processing_year, form, src_path = NULL, logger = NULL) {
 
-#' Validate Raw BMF Structure
-#'
-#' @description
-#' Validates that the raw BMF data has the expected structure before
-#' transformation. Checks for required columns, and basic data quality 
-#' indicators.
-#' 
-#' @details
-#' Failure only occurs if the required columns aren't present
-#' 
-#'
-#' @param dt data.table raw BMF data
-#' @param required_cols character vector of required column names
-#' @param strict logical if TRUE, stop on validation failures; if FALSE,
-#'   return validation results without stopping
-#'
-#' @return list with validation results:
-#'   \itemize{
-#'     \item passed - logical overall pass/fail
-#'     \item row_count - numeric actual row count
-#'     \item missing_columns - character vector of missing required columns
-#'     \item extra_columns - character vector of unexpected columns
-#'     \item duplicate_eins - numeric count of duplicate EINs
-#'     \item null_counts - named numeric vector of NULL counts per required column
-#'   }
-#'
-#' @examples
-#' \dontrun{
-#' results <- validate_raw_bmf_structure(bmf_raw)
-#' if (!results$passed) {
-#'   stop("BMF validation failed")
-#' }
-#' }
-#'
-#' @export
-validate_raw_bmf_structure <- function(dt,
-                                       required_cols = BMF_REQUIRED_COLUMNS,
-                                       strict = TRUE) {
+  errors   <- character()
+  warnings <- character()
+  info     <- list(processing_year = processing_year, form = form)
 
-  results <- list(
-    passed = TRUE,
-    timestamp = Sys.time(),
-    row_count = nrow(dt),
-    column_count = ncol(dt),
-    missing_columns = character(0),
-    extra_columns = character(0),
-    duplicate_eins = 0L,
-    null_counts = integer(0),
-    messages = character(0)
-  )
+  if (is.null(src_path)) {
+    src_dir <- here::here("data", "intermediate", "unpacked", processing_year, form)
+    files <- list.files(src_dir, pattern = "\\.(csv|dat)$", full.names = TRUE)
+    if (length(files) == 0L) {
+      errors <- c(errors, sprintf("No unpacked file found under %s", src_dir))
+      return(list(passed = FALSE, errors = errors, warnings = warnings, info = info))
+    }
+    src_path <- files[1]
+  }
+  info$src_path <- src_path
 
-  # Check 1: Required columns exist
-  results$missing_columns <- setdiff(required_cols, names(dt))
-  if (length(results$missing_columns) > 0) {
-    msg <- sprintf(
-      "Missing required columns: %s",
-      paste(results$missing_columns, collapse = ", ")
-    )
-    results$messages <- c(results$messages, msg)
-    results$passed <- FALSE
+  # 1. File exists and non-empty
+  if (!file.exists(src_path)) {
+    errors <- c(errors, sprintf("File does not exist: %s", src_path))
+    return(list(passed = FALSE, errors = errors, warnings = warnings, info = info))
+  }
+  sz <- file.info(src_path)$size
+  info$file_size_bytes <- sz
+  if (sz == 0L) errors <- c(errors, "File is empty")
+
+  # 2 & 5. Header row present + no duplicate header column names
+  sep <- if (processing_year <= 2012L) " " else ","
+  header <- tryCatch(readLines(src_path, n = 1L, warn = FALSE),
+                     error = function(e) { errors <<- c(errors, sprintf("Failed to read header: %s", conditionMessage(e))); NA_character_ })
+  if (length(header) == 0L || is.na(header) || !nzchar(header)) {
+    errors <- c(errors, "Header row missing or empty")
+    return(list(passed = FALSE, errors = errors, warnings = warnings, info = info))
+  }
+  header <- sub("^\xef\xbb\xbf", "", header, useBytes = TRUE)  # strip UTF-8 BOM
+  cols <- tolower(trimws(strsplit(header, sep, fixed = TRUE)[[1]]))
+  info$n_cols <- length(cols)
+
+  dups <- unique(cols[duplicated(cols)])
+  if (length(dups)) {
+    errors <- c(errors, sprintf("Duplicate header columns: %s", paste(dups, collapse = ", ")))
   }
 
-  # Check 2: Extra columns (informational, not a failure)
-  results$extra_columns <- setdiff(names(dt), required_cols)
-  if (length(results$extra_columns) > 0) {
-    msg <- sprintf(
-      "Found %d extra columns: %s",
-      length(results$extra_columns),
-      paste(head(results$extra_columns, 5), collapse = ", ")
-    )
-    results$messages <- c(results$messages, msg)
-    # Not a failure, just informational
-  }
-
-  # Check 3: Duplicate EINs
-  if ("EIN" %in% names(dt)) {
-    results$duplicate_eins <- nrow(dt) - data.table::uniqueN(dt$EIN)
-    if (results$duplicate_eins > 0) {
-      msg <- sprintf(
-        "Found %s duplicate EIN values",
-        format(results$duplicate_eins, big.mark = ",")
-      )
-      results$messages <- c(results$messages, msg)
-      # Duplicates may be expected (e.g., multiple regional files with overlap)
+  # 3. Column count within ±tolerance of per-vintage expected
+  exp_n <- expected_col_count(processing_year, form)
+  info$expected_n_cols <- exp_n
+  if (is.na(exp_n)) {
+    warnings <- c(warnings,
+                  sprintf("No expected column count available for %s/%d; skipping tolerance check",
+                          form, processing_year))
+  } else {
+    tol <- EXPECTED_COL_COUNT_TOLERANCE
+    lo  <- exp_n * (1 - tol); hi <- exp_n * (1 + tol)
+    if (length(cols) < lo || length(cols) > hi) {
+      errors <- c(errors,
+                  sprintf("Column count %d outside ±%.0f%% of expected %d for %s/%d",
+                          length(cols), tol * 100, exp_n, form, processing_year))
     }
   }
 
-  # Check 4: NULL counts for required columns
-  present_required <- intersect(required_cols, names(dt))
-  results$null_counts <- sapply(present_required, function(col) {
-    sum(is.na(dt[[col]]) | dt[[col]] == "")
-  })
+  # 4. Row count > 0  (cheap: wc -l minus header)
+  n_rows <- tryCatch(
+    as.integer(sub(" .*", "", system2("wc", args = c("-l", shQuote(src_path)), stdout = TRUE))) - 1L,
+    error = function(e) NA_integer_)
+  info$n_rows <- n_rows
+  if (is.na(n_rows) || n_rows < 1L) errors <- c(errors, "File has no data rows")
 
-  # Log results
-  message("========================================")
-  message("PRE-TRANSFORMATION VALIDATION RESULTS")
-  message("========================================")
-  message(sprintf("Timestamp: %s", results$timestamp))
-  message(sprintf("Row count: %s", format(results$row_count, big.mark = ",")))
-  message(sprintf("Column count: %d", results$column_count))
-  message(sprintf("Missing columns: %d", length(results$missing_columns)))
-  message(sprintf("Duplicate EINs: %s", format(results$duplicate_eins, big.mark = ",")))
-
-  # Log high NULL counts (>10%)
-  high_nulls <- results$null_counts[results$null_counts > (nrow(dt) * 0.1)]
-  if (length(high_nulls) > 0) {
-    message("Columns with >10% missing values:")
-    for (col in names(high_nulls)) {
-      pct <- 100 * high_nulls[col] / nrow(dt)
-      message(sprintf("  - %s: %s (%.1f%%)",
-                      col,
-                      format(high_nulls[col], big.mark = ","),
-                      pct))
-    }
+  passed <- length(errors) == 0L
+  if (!is.null(logger)) {
+    log4r::info(logger, sprintf("pre_checks %s/%d: cols=%d (exp=%s) rows=%s passed=%s",
+                                form, processing_year, length(cols),
+                                if (is.na(exp_n)) "?" else as.character(exp_n),
+                                if (is.na(n_rows)) "?" else format(n_rows, big.mark = ","),
+                                passed))
+    for (e in errors)   log4r::error(logger, sprintf("  ERR  %s", e))
+    for (w in warnings) log4r::warn(logger,  sprintf("  WARN %s", w))
   }
 
-  message(sprintf("OVERALL: %s", ifelse(results$passed, "PASSED", "FAILED")))
-  message("========================================")
-
-  if (!results$passed && strict) {
-    stop(paste(
-      "Pre-transformation validation failed:",
-      paste(results$messages, collapse = "; ")
-    ))
-  }
-
-  return(results)
+  list(passed = passed, errors = errors, warnings = warnings, info = info)
 }

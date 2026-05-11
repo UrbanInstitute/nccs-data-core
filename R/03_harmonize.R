@@ -48,7 +48,7 @@ read_source <- function(processing_year, form, logger) {
                                 src_dir, basename(files[1])))
   }
   src <- files[1]
-  fmt <- SOURCE_FORMAT(processing_year)
+  fmt <- SOURCE_FORMAT_FROM_PATH(src)
   log4r::info(logger, sprintf("READ %s (sep='%s')", src, fmt$sep))
   dt <- fread(src, sep = fmt$sep, header = TRUE, na.strings = c("", "NA", "."),
               colClasses = "character")

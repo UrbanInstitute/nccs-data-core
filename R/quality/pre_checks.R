@@ -66,7 +66,7 @@ run_pre_checks_one <- function(processing_year, form, src_path = NULL, logger = 
   if (sz == 0L) errors <- c(errors, "File is empty")
 
   # 2 & 5. Header row present + no duplicate header column names
-  sep <- if (processing_year <= 2012L) " " else ","
+  sep <- SOURCE_FORMAT_FROM_PATH(src_path)$sep
   header <- tryCatch(readLines(src_path, n = 1L, warn = FALSE),
                      error = function(e) { errors <<- c(errors, sprintf("Failed to read header: %s", conditionMessage(e))); NA_character_ })
   if (length(header) == 0L || is.na(header) || !nzchar(header)) {

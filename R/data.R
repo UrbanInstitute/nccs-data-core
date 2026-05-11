@@ -19,16 +19,29 @@ CROSSWALK_FILES <- list(
   "990pf"  = "data/crosswalks/soi_990pf_crosswalk_FINAL.csv"
 )
 
-# ---- Source-format quirks by processing year ----
-# 2012 extract: space-delimited .dat files with header.
-# 2013+ extracts: comma-delimited CSV with header.
+# ---- Source-format quirks by file extension ----
+# 2012-2017 IRS SOI extracts are space-delimited .dat files (the "eofinextract"
+# program). 2018+ are comma-delimited .csv (the "eoextract" program). Detect
+# from extension rather than year so the rule survives future URL/format drift.
 
-SOURCE_FORMAT <- function(processing_year) {
-  if (processing_year <= 2012L) {
-    list(sep = " ", ext = "dat")
-  } else {
-    list(sep = ",", ext = "csv")
+SOURCE_FORMAT_FROM_PATH <- function(path) {
+  ext <- tolower(tools::file_ext(path))
+  if (ext == "dat") list(sep = " ", ext = "dat")
+  else              list(sep = ",", ext = "csv")
+}
+
+# Backwards-compat shim for legacy call sites. Resolves the form's unpacked file
+# under the standard intermediate path and inspects its extension. Returns the
+# old-style list shape.
+SOURCE_FORMAT <- function(processing_year, form = NULL) {
+  if (!is.null(form)) {
+    src_dir <- file.path("data", "intermediate", "unpacked", processing_year, form)
+    files <- list.files(src_dir, pattern = "\\.(csv|dat)$", full.names = TRUE)
+    if (length(files)) return(SOURCE_FORMAT_FROM_PATH(files[1]))
   }
+  # Fallback by year if no path available yet
+  if (processing_year <= 2017L) list(sep = " ", ext = "dat")
+  else                          list(sep = ",", ext = "csv")
 }
 
 # ---- Expected source column counts per (processing_year, form) ----

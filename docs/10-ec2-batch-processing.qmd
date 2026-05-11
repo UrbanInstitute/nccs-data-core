@@ -17,6 +17,17 @@ TODO: Full EC2 bootstrap, IAM setup, and batch entry-point walkthrough.
 scripts/run_pipeline.sh --years 2012-2024 --forms 990,990ez,990pf [--no-upload] [--strict]
 ```
 
+## Rehydrate intermediate state before running
+
+When running on a fresh EC2 instance (or any environment where `data/intermediate/unpacked/` doesn't already contain every prior processing year), pull state from S3 first — the harmonize step builds each output from the union of all unpacked sources on disk, so missing prior years drop silently:
+
+```bash
+aws s3 sync s3://nccsdata/intermediate/core/unpacked/ data/intermediate/unpacked/
+aws s3 sync s3://nccsdata/raw/core/soi-extracts/      data/raw/soi_extracts/
+```
+
+See [Developer Guide](07-developer-guide.qmd#rolling-out-a-new-processing-year-eg-2025) for the full SOP.
+
 ## IAM
 
 EC2 instance role needs:

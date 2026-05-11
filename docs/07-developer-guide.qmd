@@ -20,10 +20,36 @@ Rscript R/run_pipeline.R --years 2024 --forms 990ez --no-upload
 
 **Never delete OVERRIDES without explicit user permission.**
 
-## Rolling out a new tax year
+## Rolling out a new processing year (e.g. 2025+)
 
-1. Bump `LATEST_YEAR` in `R/config.R`.
-2. Run the pipeline. Pre/post checks flag any schema drift.
+**Critical step before running the pipeline: hydrate `data/intermediate/unpacked/` from S3 first.**
+
+The harmonize step rebuilds each `(tax_year, form)` output from the union of **every** `data/intermediate/unpacked/{processing_year}/{form}/` directory on disk. If a previous processing year's unpacked file is missing locally, its rows silently drop from the output. This isn't a bug — it's the intentional rebuild-from-current-state design — but it means you must restore the durable state before adding new data.
+
+**SOP for adding a new processing-year extract (e.g. when 2025 lands):**
+
+```bash
+# 1. Pull every prior processing year's unpacked source from S3 to local disk.
+#    aws s3 sync only copies files that aren't already local, so this is cheap
+#    on subsequent runs.
+aws s3 sync s3://nccsdata/intermediate/core/unpacked/ data/intermediate/unpacked/
+
+# 2. (Optional but recommended) Also rehydrate raw zips, in case unpack needs
+#    to be re-run.
+aws s3 sync s3://nccsdata/raw/core/soi-extracts/ data/raw/soi_extracts/
+
+# 3. Bump LATEST_YEAR in R/config.R if appropriate, and add the new
+#    (year, filename_stem) row to SOI_FILENAME_STEMS for each form
+#    (URL pattern drifts year-to-year; verify against the IRS SOI page).
+
+# 4. Run the pipeline. Phase 1 will fetch the new year's extract; phase 3
+#    will rebuild every (tax_year, form) output as the union of all extracts.
+Rscript R/run_pipeline.R --years 2012-2025 --forms 990,990ez,990pf --strict
+```
+
+**Why this matters:** rerunning the pipeline against a partially-hydrated `data/intermediate/unpacked/` will silently drop rows for the missing processing years. The output files get rewritten with fewer rows; no error, no warning. Always rehydrate first.
+
+**Quick sanity check after rehydration:** confirm the row counts in the new harmonized output are *at least* as large as the prior run for every `(tax_year, form)` pair. The phase-5 YoY check (against `quality_*.prev.rds` snapshots) will warn if any partition shrank by more than 20%.
 
 ## Re-rendering a quality report without re-harmonizing
 

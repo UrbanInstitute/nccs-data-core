@@ -4,7 +4,7 @@ Outstanding work and known gaps as of 2026-05-11 (end of Phase 9, full SOI-curre
 
 ## Pipeline / code
 
-- [ ] **Phase 10: `scripts/run_pipeline.sh`** — thin shell wrapper around `Rscript R/run_pipeline.R "$@"` for cron / EC2 entry points. Plus a small bump to `scripts/setup_ec2.sh` for any newly-required system deps.
+- [x] **Phase 10: `scripts/run_pipeline.sh`** — thin wrapper around `Rscript --vanilla R/run_pipeline.R "$@"` with tee'd per-run console log under `data/logs/`. `scripts/setup_ec2.sh` adapted from its BMF-flavored copy: corrected the URL/S3-verify path, expanded the R-package install list (`paws`, `rio`, `log4r`, `tidyverse`, `data.validator`, `assertr`), added `poppler-utils` for `pdftotext`.
 - [ ] **`run_legacy_pipeline.R`** — parallel pipeline for raw legacy NCCS files (1989–2011 PZ + PF only; 2012+ files in `s3://nccsdata/legacy/core/` are NCCS+SOI hybrids and should be skipped). Will need its own crosswalk-builder scripts; the BASELINE/OVERRIDES/FINAL pattern applies. Document in `docs/09-legacy-harmonization.qmd` once built.
 - [ ] **Render parallelization** — phase 7 takes ~8 sec per Quarto subprocess. For a full 13-year × 3-form sweep that's 25–30 min. Wrap `run_render_reports()` in `parallel::mclapply` to cut to ~5 min on a multicore EC2 instance.
 - [ ] **gzip-on-upload for HTML** — each quality HTML is ~1.9 MB because of `embed-resources: true`. Transfer cost reducible 5–10× by gzip-compressing during phase 8 (`aws s3 cp --content-encoding gzip`).

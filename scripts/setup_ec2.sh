@@ -3,13 +3,14 @@
 # setup_ec2.sh
 #
 # One-shot bootstrap for a fresh Ubuntu 22.04 EC2 instance to run the
-# nccs-data-bmf legacy pipeline batch (scripts/run_all_legacy.sh).
+# nccs-data-core CORE-series pipeline (scripts/run_pipeline.sh).
 #
 # Installs:
 #   - System libraries needed by R packages (curl/ssl/xml2/font stack, cmake)
+#   - poppler-utils (provides pdftotext, used for ad-hoc form text extraction)
 #   - R + R development headers
 #   - Quarto CLI (for quality-report HTML rendering)
-#   - AWS CLI v2 (for IAM-role verification and SKIP_EXISTING checks)
+#   - AWS CLI v2 (for IAM-role verification and S3 sync in phase 8)
 #   - All R packages required by the pipeline
 #
 # AWS credentials are NOT configured here. Either:
@@ -17,7 +18,7 @@
 #   - run `aws configure` / set AWS_* env vars after this script.
 #
 # Usage (on the EC2 box, from anywhere):
-#   curl -sSL https://raw.githubusercontent.com/UrbanInstitute/nccs-data-bmf/main/scripts/setup_ec2.sh | bash
+#   curl -sSL https://raw.githubusercontent.com/UrbanInstitute/nccs-data-core/main/scripts/setup_ec2.sh | bash
 # or, after cloning:
 #   bash scripts/setup_ec2.sh
 # ============================================================================
@@ -36,7 +37,8 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
   libcurl4-openssl-dev libssl-dev libxml2-dev \
   libfontconfig1-dev libharfbuzz-dev libfribidi-dev \
   libpng-dev libtiff5-dev libjpeg-dev libfreetype6-dev \
-  libgit2-dev unzip curl ca-certificates
+  libgit2-dev unzip curl ca-certificates \
+  poppler-utils
 
 log "Installing AWS CLI v2 (if not already present)"
 if ! command -v aws >/dev/null 2>&1; then
@@ -62,9 +64,9 @@ fi
 
 log "Installing R packages"
 Rscript --vanilla -e '
-  pkgs <- c("data.table","arrow","aws.s3","openxlsx","here",
+  pkgs <- c("data.table","arrow","aws.s3","paws","openxlsx","rio","here",
             "purrr","stringr","lubridate","jsonlite","quarto",
-            "duckdb","DBI")
+            "duckdb","DBI","log4r","tidyverse","data.validator","assertr")
   to_install <- setdiff(pkgs, rownames(installed.packages()))
   if (length(to_install) > 0) {
     install.packages(to_install, repos = "https://cloud.r-project.org",
@@ -81,10 +83,10 @@ log "Verifying AWS access"
 if aws sts get-caller-identity >/dev/null 2>&1; then
   identity="$(aws sts get-caller-identity --query Arn --output text)"
   echo "AWS identity: $identity"
-  if aws s3 ls s3://nccsdata/legacy/bmf/ >/dev/null 2>&1; then
-    echo "S3 read access to s3://nccsdata/legacy/bmf/ OK"
+  if aws s3 ls s3://nccsdata/raw/core/soi-extracts/ >/dev/null 2>&1; then
+    echo "S3 read access to s3://nccsdata/raw/core/soi-extracts/ OK"
   else
-    echo "WARNING: cannot list s3://nccsdata/legacy/bmf/ — check IAM permissions" >&2
+    echo "WARNING: cannot list s3://nccsdata/raw/core/soi-extracts/ — check IAM permissions" >&2
   fi
 else
   cat >&2 <<'EOF'
@@ -98,4 +100,5 @@ fi
 
 log "Setup complete"
 echo "Next:"
-echo "  cd <repo> && bash scripts/run_all_legacy.sh"
+echo "  cd <repo> && bash scripts/run_pipeline.sh"
+echo "  (see scripts/run_pipeline.sh and R/run_pipeline.R for available flags)"

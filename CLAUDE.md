@@ -50,7 +50,7 @@ Rscript R/01_data_harmonize.R
 
 Required R packages (see `scripts/setup_ec2.sh` for the EC2 bootstrap): `data.table`, `arrow`, `aws.s3`, `paws`, `openxlsx`, `rio`, `here`, `purrr`, `stringr`, `lubridate`, `jsonlite`, `quarto`, `duckdb`, `DBI`, `log4r`, `tidyverse`, `data.validator`, `assertr`. AWS credentials must be available (IAM role on EC2, or `aws configure` / `AWS_*` env vars) for any script that touches S3 — most of them do.
 
-> **Note on `scripts/run_master.sh` and `scripts/run_all_legacy.sh`:** these reference `R/run_master_pipeline.R`, `R/run_legacy_pipeline.R`, and `R/config.R`, which do not exist in this repo. They appear to belong to the sibling `nccs-data-bmf` pipeline (the URL inside `setup_ec2.sh` points there explicitly). Do not assume they run in this repo without first checking that the referenced R files exist.
+For cron / EC2 entry points, use `bash scripts/run_pipeline.sh [flags]` — a thin `--vanilla` wrapper that tees a timestamped console log to `data/logs/` and propagates the R exit code.
 
 ## Conventions worth knowing
 

@@ -31,7 +31,12 @@ run_pipeline(
 Or from the shell:
 
 ```bash
+# Direct: same flags as the R entry point
 Rscript R/run_pipeline.R --years 2012-2024 --forms 990,990ez,990pf --strict
+
+# Wrapper: hermetic --vanilla invocation + timestamped console log, designed
+# for cron / EC2 entry points. Flags are forwarded verbatim.
+bash scripts/run_pipeline.sh --years 2012-2024 --forms 990,990ez,990pf --strict
 ```
 
 CLI flags: `--years`, `--forms`, `--strict` / `--no-strict`, `--upload` / `--no-upload`, plus `--no-{download,unpack,harmonize,combined,quality,dictionary,render}` to skip individual phases. See `R/run_pipeline.R` for the full list.

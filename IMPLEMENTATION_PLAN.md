@@ -357,7 +357,7 @@ EC2 role grants:
 | 7 | Dictionary + render (`R/06_dictionary.R`, `R/07_render_report.R`, rewritten `docs/quality_report_template.qmd`) | ✅ done | 6dc626d |
 | 8 | Upload (`R/08_upload.R`) — promote + `aws s3 sync` per-tier | ✅ done | b375a0d |
 | 9 | Orchestrator (`R/run_pipeline.R`) — wires phases 1–8 with CLI overrides and pre-checks bridge | ✅ done | 7d29c7a |
-| 10 | EC2 wiring (`scripts/run_pipeline.sh` + IAM) | ⏳ pending | — |
+| 10 | EC2 wiring (`scripts/run_pipeline.sh` + `setup_ec2.sh` refresh) | ✅ done | (this commit) |
 | 11 | Documentation prose pass (Quarto chapters) | ⏳ partial | 52541ad (rehydrate SOP); architecture + transforms-reference filled 2026-05-11 |
 
 Outstanding work and known debt are tracked in `TODO.md` at the repo root.

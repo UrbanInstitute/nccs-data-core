@@ -1,0 +1,18 @@
+code,label,irc_ref,source,confidence
+0,Not specified,,SOI extract default for blank/unchecked,verified
+1,Church or association of churches,170(b)(1)(A)(i),Schedule A Part I line 1 (2011 numbering),verified
+2,School,170(b)(1)(A)(ii),Schedule A Part I line 2 (2011 numbering),verified
+3,Hospital or cooperative hospital service organization,170(b)(1)(A)(iii),Schedule A Part I line 3 (2011 numbering),verified
+4,Medical research organization operated with a hospital,170(b)(1)(A)(iii),Schedule A Part I line 4 (2011 numbering),verified
+5,Operated for benefit of college/university owned by government,170(b)(1)(A)(iv),Schedule A Part I line 5 (2011 numbering),verified
+6,Federal/state/local government or governmental unit,170(b)(1)(A)(v),Schedule A Part I line 6 (2011 numbering),verified
+7,Publicly supported organization,170(b)(1)(A)(vi),Schedule A Part I line 7 (2011 numbering),verified
+8,Community trust,170(b)(1)(A)(vi),Schedule A Part I line 8 (2011 numbering),verified
+9,Gross-receipts publicly supported organization,509(a)(2),Schedule A Part I line 9 (2011 numbering),verified
+10,Public safety testing organization,509(a)(4),Schedule A Part I line 10 (2011 numbering),verified
+11,Supporting organization (type unspecified),509(a)(3),Schedule A Part I line 11 (2011 numbering); subtype not recorded,verified
+12,"Supporting organization, Type I",509(a)(3),Schedule A Part I line 11a (2011 numbering),verified
+13,"Supporting organization, Type II",509(a)(3),Schedule A Part I line 11b (2011 numbering),verified
+14,"Supporting organization, Type III functionally integrated",509(a)(3),Schedule A Part I line 11c (2011 numbering),verified
+15,"Supporting organization, Type III non-functionally integrated",509(a)(3),Schedule A Part I line 11d (2011 numbering),verified
+16,Unknown / undocumented,,Rare (~1k rows across 13 years); possibly transitional or written-determination overflow,unknown

@@ -52,6 +52,14 @@ The py2021 IRS 990 extract under-populates a cluster of yes/no indicator (`_cd`)
 
 The py2014 990 `.dat` file has one malformed row around row 2,980. `fread` default behavior would truncate the read at the bad row, returning ~2,978 of the 299,405 rows. The pipeline sets `fill = TRUE` in `read_source()` to tolerate this without truncating; the malformed row's values become NA but the remaining 299K rows are read intact.
 
+## `non_pf_status_reason` uses pre-2016 Schedule A line numbering
+
+The `non_pf_status_reason` column (source `nonpfrea`) is SOI's encoding of which line a filer checked in Schedule A Part I ("Reason for Public Charity Status"). The IRS revised Schedule A in 2016 to add "agricultural research organization" at line 9, shifting `509(a)(2)` from line 9 to line 10 and the rest of the list downstream. **SOI did not re-encode `nonpfrea` after the form revision.** Code 9 in the data continues to mean `509(a)(2)` (gross-receipts public charity), not "agricultural research organization" as the current form's line numbering would suggest.
+
+The fingerprint of this in the data: code 9 grows smoothly from ~34% of 990-EZ filers in tax_year 2010 to ~50% in tax_year 2024, with **no step change at the 2016 form-revision boundary**. If SOI had migrated to the new numbering in 2016, we'd see a discontinuity. Code 10 (which would be the new home of `509(a)(2)` under the post-2016 numbering) stays at near-zero rows throughout the entire range — fully consistent with the pre-2016 interpretation where code 10 = public-safety testing (`509(a)(4)`), which is genuinely rare.
+
+The full code mapping (verified against the 2011 Schedule A instructions in `data/raw/forms/i990sa_2011.pdf` and the 2010–2024 data distribution) lives in `data/lookups/non_pf_status_reason_codes.csv`. Code 16 (≤1,089 rows across 13 years) lacks a clean Schedule A line mapping and is flagged `confidence = unknown`.
+
 ## 1/2 binary encoding on selected indicator columns (py2022+)
 
 Two binary indicator columns shifted their value encoding from Y/N (or 1/0) to **1 = yes, 2 = no** in recent vintages:

@@ -19,6 +19,20 @@ CROSSWALK_FILES <- list(
   "990pf"  = "data/crosswalks/soi_990pf_crosswalk_FINAL.csv"
 )
 
+#' Resolve the crosswalk file path for a CORE output series. The `990combined`
+#' series is built from the 990 + 990-EZ shared schema; its dictionary and
+#' quality reports use the 990 crosswalk (the 990's row covers all 53 shared
+#' harmonized names).
+CROSSWALK_FOR_SERIES <- function(form) {
+  switch(form,
+    "990"         = CROSSWALK_FILES[["990"]],
+    "990ez"       = CROSSWALK_FILES[["990ez"]],
+    "990pf"       = CROSSWALK_FILES[["990pf"]],
+    "990combined" = CROSSWALK_FILES[["990"]],
+    stop(sprintf("No crosswalk for form '%s'", form))
+  )
+}
+
 # ---- Source-format quirks by file extension ----
 # 2012-2017 IRS SOI extracts are space-delimited .dat files (the "eofinextract"
 # program). 2018+ are comma-delimited .csv (the "eoextract" program). Detect

@@ -18,8 +18,8 @@ Outstanding work and known gaps as of 2026-05-11 (end of Phase 9, full SOI-curre
 
 ## Refactors / debt
 
-- [ ] **Deduplicate `is_blank` helper** — currently defined in `R/quality/stat_helpers.R`, `R/quality/post_checks.R`, and `R/06_dictionary.R`. Extract into a shared util.
-- [ ] **Deduplicate `CROSSWALK_FOR_SERIES`** — defined in `R/05_quality.R` and `R/06_dictionary.R` (both with the 990combined-uses-990-crosswalk rule). Move to `R/data.R` or `R/utils.R`.
+- [x] **Deduplicate `is_blank` helper** — single function definition in `R/utils.R`; `R/quality/post_checks.R` and `R/06_dictionary.R` now source utils.R and call it. (TODO note had three locations; only two were live — the `R/quality/stat_helpers.R` reference was stale.)
+- [x] **Deduplicate `CROSSWALK_FOR_SERIES`** — single definition in `R/data.R` alongside `CROSSWALK_FILES`. `R/05_quality.R` and `R/06_dictionary.R` already source data.R, so no new source lines needed.
 - [ ] **Stray file: `data/raw/14eofinextract990pf.csv`** at the top of `data/raw/` (not under `soi_extracts/`). Leftover from early exploration; move into `data/raw/soi_extracts/2014/990pf/` or delete.
 - [ ] **`data/raw/core_pf/`** — contains NCCS legacy 990-PF CSVs (1989–2007 + a 2019 hybrid). Fine to leave for the future legacy pipeline; just be aware.
 

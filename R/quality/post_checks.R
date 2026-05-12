@@ -19,6 +19,7 @@ suppressPackageStartupMessages({
   library(here)
 })
 
+source(here::here("R", "utils.R"))
 source(here::here("R", "quality", "stat_helpers.R"))
 
 EIN_FORMAT_REGEX     <- "^[0-9]{2}-[0-9]{7}$"
@@ -95,7 +96,7 @@ compute_vintage_aware_completeness <- function(dt, form) {
     expected <- intersect(union(expected, UNIVERSAL_COLS), names(sub))
     if (length(expected) == 0L) next
 
-    is_blank <- function(x) if (is.character(x)) is.na(x) | x == "" else is.na(x)
+    # is_blank() comes from R/utils.R, sourced at the top of this file.
     comps <- vapply(expected,
                     function(c) 100 * sum(!is_blank(sub[[c]])) / nrow(sub),
                     numeric(1))

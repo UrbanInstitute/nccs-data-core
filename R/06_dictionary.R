@@ -10,6 +10,7 @@ suppressPackageStartupMessages({
 
 source(here("R", "config.R"))
 source(here("R", "data.R"))
+source(here("R", "utils.R"))
 source(here("R", "create_logger.R"))
 
 # Universal pipeline-added columns that don't have a crosswalk row but should
@@ -30,16 +31,6 @@ UNIVERSAL_DICTIONARY_ROWS <- function() {
     source_var      = NA_character_,
     source_location = "pipeline-derived",
     years_present   = "all"
-  )
-}
-
-CROSSWALK_FOR_SERIES <- function(form) {
-  switch(form,
-    "990"         = CROSSWALK_FILES[["990"]],
-    "990ez"       = CROSSWALK_FILES[["990ez"]],
-    "990pf"       = CROSSWALK_FILES[["990pf"]],
-    "990combined" = CROSSWALK_FILES[["990"]],
-    stop(sprintf("No crosswalk for form '%s'", form))
   )
 }
 
@@ -72,15 +63,15 @@ build_dictionary_one <- function(dt, form, tax_year, xwalk_path, logger = NULL) 
   per_col <- rbindlist(lapply(names(dt), function(nm) {
     x <- dt[[nm]]
     is_num <- is.numeric(x)
-    is_blank <- if (is.character(x)) is.na(x) | x == "" else is.na(x)
-    n_nonnull <- sum(!is_blank)
+    blanks <- is_blank(x)
+    n_nonnull <- sum(!blanks)
     data.table(
       harmonized_name = nm,
       data_type       = infer_dictionary_type(x),
       n_rows          = length(x),
       n_nonnull       = n_nonnull,
       null_pct        = round(100 * (1 - n_nonnull / length(x)), 2),
-      n_distinct      = data.table::uniqueN(x[!is_blank]),
+      n_distinct      = data.table::uniqueN(x[!blanks]),
       min_value       = if (is_num) suppressWarnings(min(x, na.rm = TRUE)) else NA_real_,
       max_value       = if (is_num) suppressWarnings(max(x, na.rm = TRUE)) else NA_real_
     )

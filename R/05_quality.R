@@ -16,18 +16,9 @@ source(here("R", "create_logger.R"))
 source(here("R", "quality", "pre_checks.R"))
 source(here("R", "quality", "post_checks.R"))
 
-# Crosswalk to use for each output series. 990combined uses 990's crosswalk
-# (the shared schema is its 53-col intersect with 990ez; 990's row covers all
-# of those harmonized names).
-CROSSWALK_FOR_SERIES <- function(form) {
-  switch(form,
-    "990"         = CROSSWALK_FILES[["990"]],
-    "990ez"       = CROSSWALK_FILES[["990ez"]],
-    "990pf"       = CROSSWALK_FILES[["990pf"]],
-    "990combined" = CROSSWALK_FILES[["990"]],
-    stop(sprintf("No crosswalk for form '%s'", form))
-  )
-}
+# CROSSWALK_FOR_SERIES is defined in R/data.R (sourced above) — the 990combined
+# series shares the 990 crosswalk because its schema is the 990 + 990-EZ
+# intersect (53 cols), all of which appear in the 990 crosswalk.
 
 # Baseline strategy: snapshot-on-each-run. Before a run starts, every
 # `quality_{form}_{tax_year}.rds` is renamed to `.prev.rds`, overwriting any

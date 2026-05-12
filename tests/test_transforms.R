@@ -16,7 +16,12 @@ source(here("R", "transforms", "financial_amounts.R"))
 source(here("R", "transforms", "indicators.R"))
 source(here("R", "transforms", "efile_indicator.R"))
 
-PASS <- 0L; FAIL <- 0L
+# Counters are kept module-global so the run_all.R harness can accumulate
+# results across files. When this file is run standalone via Rscript the
+# counters start fresh; when sourced from the harness they extend whatever
+# tally is already in the global env.
+if (!exists("PASS")) PASS <- 0L
+if (!exists("FAIL")) FAIL <- 0L
 check <- function(label, expr) {
   ok <- tryCatch(isTRUE(expr), error = function(e) FALSE)
   if (ok) { PASS <<- PASS + 1L; cat("  ok  ", label, "\n") }
@@ -97,5 +102,9 @@ check("financial errors on missing col",
 check("indicators errors on missing col",
       inherits(tryCatch(transform_indicators(dt, "nope"), error = identity), "error"))
 
-cat(sprintf("\n%d passed, %d failed\n", PASS, FAIL))
-if (FAIL > 0L) quit(status = 1L)
+# Print the standalone summary + exit only when not running under the
+# run_all.R harness (which manages its own aggregate output and exit code).
+if (!exists("TEST_RUN_ALL", envir = globalenv())) {
+  cat(sprintf("\n%d passed, %d failed\n", PASS, FAIL))
+  if (FAIL > 0L) quit(status = 1L)
+}

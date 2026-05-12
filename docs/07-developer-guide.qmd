@@ -86,6 +86,30 @@ Real-world compression on the embed-resources quality reports is ~3× (1.9 MB �
 
 Trade-off: `aws s3 cp` and the S3 web console return the *compressed* bytes — analysts pulling reports through those tools get a gzipped blob with `.html` extension and have to `gunzip` manually. Set `ENABLE_GZIP_HTML_UPLOAD = FALSE` in `R/config.R` for the single-pass uncompressed upload if that UX is more important for your use case than the transfer savings.
 
+## Running the test suite
+
+Unit tests live in `tests/`, one file per pipeline phase (or set of helpers). Each file uses a lightweight `check(label, expr)` framework — no `testthat` dependency. To run everything from the repo root:
+
+```bash
+Rscript tests/run_all.R
+```
+
+Or from inside RStudio / an R session:
+
+```r
+source("tests/run_all.R")
+```
+
+The harness prints per-file PASS / FAIL counts and a combined total. From a shell it exits with status 1 if any test failed (cron / CI-friendly); from an interactive session it does not call `quit()`.
+
+Individual test files also run standalone:
+
+```bash
+Rscript tests/test_harmonize.R
+```
+
+Coverage is **Tier 1 + Tier 2**: phases 2.5, 3, 4, 5, 6 (pure data-shape and validator logic). Phases 1, 2, 7, 8 are subprocess-bound (network / fread / Quarto / aws CLI) and not unit-tested — they are smoke-tested via the full pipeline run.
+
 ## Skipping phases
 
 Set `ENABLE_DOWNLOAD = FALSE` (etc.) to re-use existing intermediate files.

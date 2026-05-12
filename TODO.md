@@ -25,7 +25,13 @@ Outstanding work and known gaps as of 2026-05-11 (end of Phase 9, full SOI-curre
 
 ## Tests
 
-- [ ] **Tests beyond transforms** — `tests/test_transforms.R` has 32 unit tests for the 6 transforms. Phases 1, 2, 3 (crosswalk apply), 4, 5 (validators), 6, 7, 8 have no automated tests. Smoke-tested only via the full pipeline run.
+- [x] **Tests beyond transforms (Tier 1 + Tier 2)** — five new test files cover the pure logic of phases 2.5, 3, 4, 5, 6:
+      `tests/test_harmonize.R` (apply_crosswalk: rename, coalesce synonyms, NA-pad, required-col guard, case-insensitive match),
+      `tests/test_combined.R` (project_to_shared + shared_990_990ez_cols integration check against actual crosswalks),
+      `tests/test_dictionary.R` (build_dictionary_one: per-column stats, synonym collapse, Inf→NA cleanup, UNIVERSAL_DICTIONARY_ROWS injection),
+      `tests/test_pre_checks.R` (file-level validators: missing/empty/header-only files, duplicate headers, trailing-empty quirk, BOM stripping, expected_col_count),
+      `tests/test_post_checks.R` (parse_years_present, expected_harmonized_cols, EIN/tax_period/subsection/type validators, row-count tripwire).
+      `tests/run_all.R` is the top-level harness (`Rscript tests/run_all.R` or `source("tests/run_all.R")` from RStudio). Total: 161 tests across 6 files, ~2.2 sec wall. Phase 1, 2, 7, 8 still uncovered — they're subprocess-bound (network / fread / Quarto / aws CLI) and unit-test ROI is low; smoke-tested via the full pipeline run.
 
 ## Documentation
 

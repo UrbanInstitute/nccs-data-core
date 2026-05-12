@@ -63,7 +63,13 @@ Nine phases, each as a standalone script under `R/`, all wired together by `R/ru
 | 7 | `07_render_report.R` | Renders the Quarto template `docs/quality_report_template.qmd` to HTML per `(form, tax_year)`. |
 | 8 | `08_upload.R` | Promotes harmonized CSVs into `data/processed/{tax_year}/{form}/`, then per-tier `aws s3 sync` to `s3://nccsdata/`. |
 
-`R/transforms/` holds six pure column-transform functions (`tax_period`, `ein`, `subsection`, `financial_amounts`, `indicators`, `efile_indicator`). Tests in `tests/test_transforms.R` (32 unit tests, run with `Rscript tests/test_transforms.R`).
+`R/transforms/` holds six pure column-transform functions (`tax_period`, `ein`, `subsection`, `financial_amounts`, `indicators`, `efile_indicator`). The test suite lives under `tests/` — six files, 161 total tests covering transforms, crosswalk apply, combined-derivation, dictionary, and pre/post-check validators. Run everything via the harness:
+
+```bash
+Rscript tests/run_all.R          # exits nonzero on failure
+```
+
+Or `source("tests/run_all.R")` from RStudio. Individual files also run standalone, e.g. `Rscript tests/test_harmonize.R`.
 
 ## Repo layout
 

@@ -28,3 +28,7 @@ subset drives the `990combined` series.
 | 990    | 247 | 246 | 53 shared with 990-EZ |
 | 990-EZ | 86  | 71  | 53 shared with 990    |
 | 990-PF | 363 | 182 | 21 shared with 990 (mostly header / identity) |
+
+## Source-vintage variants and typos
+
+Some source-variable names drift between processing years, and the py2015 990 / 990-EZ files contain a small set of headers with `Y`-for-`1` and `N`-for-`2` typos. The OVERRIDES handle these by listing each variant or typo'd source name as a separate row pointing at the same harmonized name; `apply_crosswalk()` in `R/03_harmonize.R` coalesces synonyms into a single output column. See `docs/11-upstream-source-quirks.qmd` for the documented vintage-by-vintage variants and the typo mapping table.

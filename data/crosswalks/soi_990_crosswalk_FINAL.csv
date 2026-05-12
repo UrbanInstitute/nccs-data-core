@@ -247,3 +247,9 @@ unreltxincls511tx509,net_ubi_line10b_sec509,Net UBI (509),990 Sch A_Pt III-10b(f
 unrstrctnetasstsend,unrestricted_net_assets_eoy,Unrestricted net assets -- eoy,990 Core_Pt X-27(B),2013-2024
 unsecurednotesend,unsecured_notes_eoy,Unsecured mortgages and notes payable -- eoy,990 Core_Pt X-24(B),2012-2024
 wthldngrulescd,backup_withholding_compliance_cd,Compliance with backup withholding?,990 Core_Pt V-1c,2013-2024
+s50yc3or4947aycd,s501c3_or_4947a1_cd,Described in 501(c)(3)? (2015 typo: Y for 1),990 Core_Pt IV-1,2015
+operateschoolsy70cd,operates_school_sec170_cd,School? (2015 typo: Y for 1),990 Core_Pt IV-13,2015
+filedf8n8ncd,property_disposition_8282_cd,Form 8282 property disposed of? (2015 typo: N for 2),990 Core_Pt V-7c,2015
+filedfy098ccd,filed_form_1098c_cd,Form 1098-C filed? (2015 typo: Y for 1),990 Core_Pt V-7h,2015
+filedlieufy04ycd,filed_in_lieu_1041_cd,Form 990 in lieu of 1041? (2015 typo: Y for 1),990 Core_Pt V-12a,2015
+filedf7n0cd,filed_form_720_cd,Filed Form 720 for tanning (2015 typo: N for 2),990 Core_Pt V-14b,2015

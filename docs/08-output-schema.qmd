@@ -54,6 +54,15 @@ The 2012 extract was the inaugural release of the SOI EO program and IRS publish
 
 **A single tax-year file is built from multiple processing-year extracts.** A given `(tax_year, form)` output is the union of all rows for that tax year across every processing-year extract the pipeline has ingested. Each contributing row's columns are filled based on the *processing-year* schema, not the tax_year. So NA rates for vintage-dependent columns within a single tax-year file depend on the mix of processing-year extracts that supplied rows to it. Pre-2013 tax years on columns added in 2013+ will have substantial NA rates that cannot be fully resolved — the IRS extracts that captured most of those filings simply didn't include the column. This is a real limitation of the source data, not a pipeline bug.
 
+**Tax_year 2021 990 has a single-vintage gap on 28 indicator columns.** The py2021 IRS 990 extract is populated for fewer rows than usual on a cluster of yes/no indicator (`_cd`) columns. Coverage recovers partially in py2022 and fully in py2023+, so most affected rows in the tax_year 2021 output (which is built mainly from py2021) carry NA where py2020 and py2023 would carry Y/N. Two patterns within the cluster:
+
+- *Deep drop, then recovery* — ~17% complete in 2021, ~88% in 2022, 100% in 2023. 18 columns including `donor_restricted_endowments_cd`, `business_txn_with_35pct_entity_cd`, `excess_business_holdings_cd`, `filed_form_8886t_cd`, `filed_form_720_cd`, `filed_in_lieu_1041_cd`, `hospital_audited_attached_cd`, `nondeductible_disclosure_cd`, `act_on_behalf_of_issuer_cd`, `escrow_account_cd`, `bond_proceeds_invested_cd`, `notify_donor_value_cd`, `distribution_to_donor_cd`, `s4966_distributions_cd`, `filed_form_990t_cd`, `filed_form_8899_cd`, `filed_form_1098c_cd`.
+- *Shallow drop, then recovery* — ~65–85% complete in 2021, ~94–97% in 2022, 100% in 2023. 9 columns: `received_funds_for_premiums_cd`, `paid_premiums_personal_benefit_cd`, `backup_withholding_compliance_cd`, `filed_employment_tax_returns_cd`, `property_disposition_8282_cd`, `quid_pro_quo_contributions_cd`, `transfer_to_noncharitable_org_cd`, `lobbying_activities_cd`, `excess_benefit_transaction_cd`, `aware_prior_excess_benefit_cd`.
+
+One outlier, `qualified_health_plan_multi_state_cd`, drops in 2021 (~14%) **and** stays sparse in 2022 (~3%), recovering only partially in 2023 (~88%) — a different shape that suggests a column rename or definition change in the IRS extract rather than a publication gap.
+
+This is an upstream SOI-extract pattern, not a harmonization bug. Downstream uses of 2021 990 indicator columns should treat NA on these fields as "value not published in the extract," not as "filer left it blank." For longitudinal comparisons spanning 2021, prefer columns that don't appear in the affected cluster, or aggregate across multiple tax years to dilute the gap.
+
 ## Three "year" columns
 
 Every CORE output has at least two year columns, and 990-PF has a third. They mean different things — pick deliberately when grouping or joining.

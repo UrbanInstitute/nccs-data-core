@@ -14,7 +14,7 @@ Outstanding work and known gaps as of 2026-05-11 (end of Phase 9, full SOI-curre
 
 - [ ] **`data/lookups/non_pf_status_reason_codes.csv`** — SOI's `nonpfrea` field is an IRS-internal classification that diverges from the visible Schedule A line numbering. Codes 9–16 appear in the data without documented meanings (Schedule A only enumerates lines 1–12). Cross-check against `nccs-data-bmf` for any prior NCCS investigation, or pursue IRS SOI internal docs.
 - [ ] **Historical forms archive** — fetch every prior year's Form 990 / 990-EZ / 990-PF + Schedule A PDF + instructions, save to `s3://nccsdata/raw/core/forms/{tax_year}/`, publish on the NCCS website as a permanent citable record (IRS occasionally removes old forms from `irs.gov/pub/irs-prior/`).
-- [ ] **2013+ source-var name verification** — the 2012 990 / 990-EZ vintages use `tax_prd` for tax period; later vintages use `tax_pd` or `taxpd`. Confirm the 2013–2016 990 source actually uses `tax_pd` (currently assumed) once that processing year is harmonized.
+- [x] **2013+ source-var name verification** — full pipeline run 2026-05-11 surfaced and resolved the actual drift: 990 cycles `tax_prd` (py2012, py2014, py2015) / `tax_pd` elsewhere; 990-EZ has five variants. All variants mapped in OVERRIDES; documented in `docs/11-upstream-source-quirks.qmd` ("`tax_period` source column name drifts across years").
 
 ## Refactors / debt
 
@@ -35,5 +35,5 @@ Outstanding work and known gaps as of 2026-05-11 (end of Phase 9, full SOI-curre
 ## Data findings to validate or chase
 
 - [ ] **`nonpfrea` code 9 is 42% of 2018 990-EZ filers.** If code 9 really means "agricultural research organization" per the visible Schedule A, this is implausibly high. Most likely SOI's `nonpfrea` is an IRS-internal classification that doesn't 1:1 map to Schedule A line numbers. Awaiting institutional clarity (see `data/lookups/` TODO above).
-- [ ] **2017–2019 990-PF gap** — IRS published no 990-PF extract for these processing years. Currently handled by NA-return from `build_soi_url()` (download phase logs a skip). No special imputation. Worth a note in the output schema doc that PF tax-year coverage for the 2017–2019 *filing-year* window is sparse.
+- [x] **2017–2019 990-PF gap** — IRS published no 990-PF extract for these processing years. Currently handled by NA-return from `build_soi_url()` (download phase logs a skip). Documented in `docs/11-upstream-source-quirks.qmd` ("Missing 990-PF publications for py2017, py2018, py2019"); resulting low row counts for tax_years 2016–2018 in 990-PF outputs are expected.
 - [ ] **Cross-form §4947(a) trust appearance** — §4947(a)(1) trusts treated as private foundations show up in 990-PF (~6% of rows with `subsection_cd = 92`). Need to verify whether any analogous category appears in 990 or 990-EZ for the years we haven't yet harmonized.

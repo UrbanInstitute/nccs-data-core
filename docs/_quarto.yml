@@ -24,6 +24,7 @@ book:
     - 08-output-schema.qmd
     - 09-legacy-harmonization.qmd
     - 10-ec2-batch-processing.qmd
+    - 11-upstream-source-quirks.qmd
 
 format:
   html:

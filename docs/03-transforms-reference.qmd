@@ -48,8 +48,10 @@ System-boundary check: stops with an error if any column name in `cols` isn't pr
 Coerces a vector of column names to logical. Per cell:
 
 - `{Y, y, 1, T, TRUE, true, True}` → `TRUE`
-- `{N, n, 0, F, FALSE, false, False}` → `FALSE`
+- `{N, n, 0, 2, F, FALSE, false, False}` → `FALSE`
 - Anything else (including empty, NA) → `NA`
+
+`"2"` is in the FALSE set because IRS shifted some binary `_cd` columns to a `1 = yes, 2 = no` encoding in recent vintages (e.g. `hospital_audited_attached_cd` in py2022, `qualified_health_plan_multi_state_cd` in py2023). The widening is safe because real integer-code columns in the SOI extract are renamed off the `_cd` suffix at the crosswalk stage (e.g. `prgmservcode2acd` → `program_revenue_code_2a`) and therefore bypass this transform. See `docs/11-upstream-source-quirks.qmd` → "1/2 binary encoding on selected indicator columns (py2022+)" for the trigger that would require revisiting this rule.
 
 Used by `R/03_harmonize.R` to sweep all harmonized columns ending in `_cd` (the IRS convention for yes/no indicators), except for `subsection_cd` which is an integer-coded categorical, not a binary indicator.
 
@@ -57,10 +59,18 @@ Used by `R/03_harmonize.R` to sweep all harmonized columns ending in `_cd` (the 
 
 `transform_efile_indicator(dt, logger = NULL)`
 
-The IRS e-file indicator (source `elf` 2015–2019, `efile` 2020+) uses values `E` (electronic) and `P` (paper), not `Y`/`N`. This transform maps:
+The IRS e-file indicator uses inconsistent values across vintages. The harmonized source-column name also drifts: 990 + 990-EZ use `elf` in py2015–py2019, `e-file` (hyphenated) in py2020 of 990-EZ only, and `efile` from py2020/py2021 onward. 990-PF uses `ELF` everywhere except py2016, which uses `ELFCD`. All variants are mapped to `efile_indicator` in the crosswalk OVERRIDES.
 
-- `E` / `e` → `TRUE`
-- `P` / `p` → `FALSE`
+Value encoding by vintage:
+
+- py2015 990 + 990-EZ: `E` (electronic) / `P` (paper)
+- py2016–py2017 990 + 990-EZ: `Y` / `N`
+- py2018+: `E` / `P` again
+
+The transform accepts all observed encodings plus boolean-like spellings:
+
+- TRUE set: `{E, e, Y, y, 1, T, TRUE, true, True}`
+- FALSE set: `{P, p, N, n, 0, F, FALSE, false, False}`
 - Anything else → `NA`
 
 Wired into `apply_transforms()` by column name (alongside `ein`, `tax_period`, `subsection_cd`) so it bypasses the generic `_cd` indicator sweep — `efile_indicator` doesn't carry the `_cd` suffix in our harmonized naming.

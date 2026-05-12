@@ -7,7 +7,8 @@ contractioncd,liquidated_terminated_cd,"Liquidation, dissolution, termination, o
 costgoodsold,cost_of_goods_sold,Less: cost of goods sold,990-EZ_Pt I-7b,2012-2024,ez_only
 direxpns,gaming_fundraising_direct_expenses,Special events direct expenses,990-EZ_Pt I-6c,2012-2024,ez_only
 duesassesmnts,membership_dues_assessments,Membership dues and assessments,990-EZ_Pt I-3,2012-2024,ez_only
-efile,efile_indicator,E-file indicator,n/a,2020-2024,from_990
+efile,efile_indicator,E-file indicator,n/a,2021-2024,from_990
+e-file,efile_indicator,E-file indicator,n/a,2020,from_990
 ein,ein,Employer Identification Number,990-EZ Header,2012,from_990
 elf,efile_indicator,E-file indicator,n/a,2015-2019,from_990
 excds1pct509,excess_over_1pct_sec509,Amount support exceeds total (509),990-EZ Sch A_Pt III-7b(f),2017-2024,ez_only
@@ -88,3 +89,4 @@ unreltxincls511tx509,net_ubi_line10b_sec509,Net UBI (509),990-EZ Sch A_Pt III-10
 tax_prd,tax_period,Tax period,Form 990-EZ Header,2012,from_990
 taxprd,tax_period,Tax period,Form 990-EZ Header,2014,from_990
 a_tax_prd,tax_period,Tax period,Form 990-EZ Header,2015,from_990
+filedfyyn0polcd,filed_form_1120pol_cd,File Form 1120-POL? (2015 typo: Y for 1 and N for 2),990-EZ_Pt V-37b,2015,from_990

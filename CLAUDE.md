@@ -58,3 +58,14 @@ Required R packages (see `scripts/setup_ec2.sh` for the EC2 bootstrap): `data.ta
 - Logging is routed through `create_logger("data/logs/<step>_log.txt")`. Don't `print()` or `message()` for pipeline-level events — use the returned logger so output lands in the per-step log file.
 - `data/raw/`, `data/harmonized/`, `data/processed/`, `data/logs/` are gitignored (large CSVs); only `data/crosswalks/` is tracked.
 - Tax-year partitioning is based on the first 4 chars of TAXPER, not the calendar year a file was published. Don't conflate the two when reading or writing.
+
+## Triaging pipeline run output
+
+When the user pastes `run_pipeline` console output, log4r logs, or other multi-phase pipeline traces, treat triage as a deliberate, verify-as-you-go task — not a fast skim. Logs here are long and easy to misread.
+
+- **Read the log at least twice before concluding.** First pass: inventory phases, hard/soft failures, warning counts. Second pass: look for what the first pass missed — silent mismatches that still `passed=TRUE`, off-by-ones between phases, framings that overreach (one bad year ≠ regime change).
+- **Distinguish facts from inferences.** A fact is a literal log line. An inference is anything derived ("column X is empty", "Y is a typo of Z", "the dip starts in 2018"). Before reporting an inference as a finding: verify it (read the source file, grep the crosswalk, query the harmonized output, inspect the var matrix). If you can't verify, label it explicitly as inference and say what would confirm it.
+- **Quote exact numbers.** Paraphrased counts drift; the user is reading the same log.
+- **Don't propose fixes for unverified findings.** If the conclusion hasn't been verified against code or data, the fix it implies hasn't either.
+- **Consult `docs/log-triage-gotchas.md` before drawing conclusions** — it lists known log-shape quirks in this pipeline that look like bugs but aren't.
+- **Maintain `docs/log-triage-gotchas.md` as you go.** If triage surfaces a new log-shape quirk worth remembering, or an existing entry becomes stale (pipeline change, schema change, fixed quirk), update the gotchas doc in the same turn — don't defer.

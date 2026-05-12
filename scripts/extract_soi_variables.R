@@ -18,6 +18,10 @@ parse_form_sheet <- function(path, sheet, year, form) {
   if (is.na(hdr)) return(NULL)
   body <- raw[(hdr + 1L):.N]
   body <- body[!is.na(body[[1]]) & nzchar(trimws(as.character(body[[1]])))]
+  # Drop footnote rows: real SOI variable names start with an alphanumeric;
+  # the IRS occasionally tucks an asterisk-prefixed note ("*Element locations ...")
+  # below the variable list, which would otherwise be ingested as a variable.
+  body <- body[grepl("^[A-Za-z0-9_]", trimws(as.character(body[[1]])))]
   if (nrow(body) == 0) return(NULL)
   data.table(
     year = year,
@@ -50,6 +54,7 @@ parse_2012 <- function(path) {
     if (is.na(hdr)) next
     body <- block[(hdr + 1L):.N]
     body <- body[!is.na(body[[1]]) & nzchar(trimws(as.character(body[[1]])))]
+    body <- body[grepl("^[A-Za-z0-9_]", trimws(as.character(body[[1]])))]
     if (nrow(body) == 0) next
     out[[length(out) + 1L]] <- data.table(
       year = 2012L,

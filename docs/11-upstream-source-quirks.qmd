@@ -1,0 +1,85 @@
+# Upstream Source-File Quirks
+
+The IRS Statistics of Income (SOI) Tax-Exempt Organization extracts have accumulated systematic oddities over the years — header typos, file-format changes, missing publications, single-vintage coverage gaps. The pipeline compensates for each of them, but downstream users of CORE outputs benefit from knowing what was wrong upstream so that (a) anomalies in the harmonized data can be traced to a known cause rather than assumed to be a pipeline bug, and (b) longitudinal comparisons across affected years can be reasoned about explicitly.
+
+Entries here describe what the source file does, how the pipeline handles it, and where to look in the code/config to adjust if the situation changes.
+
+## 2015 header typos: Y substituted for `1`, N substituted for `2`
+
+In the py2015 IRS source files, several column-name headers have the letters `Y` and `N` substituted for the digits `1` and `2`, consistently in both directions. The substitution affects 6 columns in `15eofinextract990.dat` and 1 column in `15eofinextractEZ.dat`. Mechanism is unclear (plausibly a typed-on-keypad data-entry artifact or a font-mapping bug at IRS); the substitution is internally consistent and one-to-one, which is why harmonization can recover the affected columns without ambiguity.
+
+| Form | Typo'd source header | Canonical header (other years) | Harmonized name |
+|---|---|---|---|
+| 990 | `s50Yc3or4947aYcd` | `s501c3or4947a1cd` | `s501c3_or_4947a1_cd` |
+| 990 | `operateschoolsY70cd` | `operateschools170cd` | `operates_school_sec170_cd` |
+| 990 | `filedf8N8Ncd` | `filedf8282cd` | `property_disposition_8282_cd` |
+| 990 | `filedfY098ccd` | `filedf1098ccd` | `filed_form_1098c_cd` |
+| 990 | `filedlieufY04Ycd` | `filedlieuf1041cd` | `filed_in_lieu_1041_cd` |
+| 990 | `filedf7N0cd` | `filedf720cd` | `filed_form_720_cd` |
+| 990-EZ | `filedfYYN0polcd` | `filedf1120polcd` | `filed_form_1120pol_cd` |
+
+The pipeline handles these by adding the typo'd source variants as additional rows in `soi_990_crosswalk_OVERRIDES.csv` and `soi_990ez_crosswalk_OVERRIDES.csv`, each pointing at the same harmonized name as the canonical (other-vintage) source variant. The harmonize step's coalescing logic (multiple source vars → same harmonized name → first non-null wins) merges them into a single column in the output. Rows present only in py2015 take the typo'd value; rows from other vintages take the canonical value. Both end up populated in the tax_year output regardless of which processing-year extract supplied them.
+
+## Source-file format boundary: `.dat` (space-delimited) → `.csv` (comma-delimited) at 2017→2018
+
+py2012–py2017 extracts are space-delimited `.dat` files; py2018+ extracts are comma-delimited `.csv` files. The pipeline detects which by file extension, not by year, so the cutover is robust to IRS changing the year-of-cutover convention again. See `R/data.R` → `SOURCE_FORMAT_FROM_PATH()`.
+
+## Missing 990-PF publications for py2017, py2018, py2019
+
+The IRS did not publish a 990-PF extract for processing years 2017, 2018, or 2019. This produces expected low row counts in 990-PF tax-year outputs for tax_years 2016–2018, because most 990-PF forms for those tax years would have come from the missing processing years. The pipeline treats absent extracts as `SKIP no published extract` (visible in phase 1 logs) and continues; downstream tax-year outputs for the affected years are smaller than the surrounding years but otherwise correct.
+
+## `tax_period` source column name drifts across years
+
+The source column carrying tax period varies erratically: 990 cycles between `tax_prd` (py2012, py2014, py2015) and `tax_pd` (everywhere else); 990-EZ has five variants across years (`tax_prd`, `tax_pd`, `taxprd`, `a_tax_prd`, `taxpd`); 990-PF stays consistent at `TAX_PRD`. All variants map to the same `tax_period` harmonized column in the OVERRIDES files.
+
+## `elf` (e-file indicator) source column name drifts
+
+Three different names in three consecutive years of 990-EZ:
+
+- py2019: `elf`
+- py2020: `e-file` (hyphenated)
+- py2021–py2024: `efile`
+
+All three map to `efile_indicator` in the OVERRIDES. The py2020 hyphenated variant was missed in the initial crosswalk and added retrospectively after surfacing in a full pipeline run.
+
+A separate one-off rename: py2016 990-PF uses `ELFCD` for the same indicator (every other 990-PF vintage uses `ELF`).
+
+## Single-vintage coverage gap: 28 indicator columns in py2021 990
+
+The py2021 IRS 990 extract under-populates a cluster of yes/no indicator (`_cd`) columns. Coverage recovers partially in py2022 and fully in py2023+. See `docs/08-output-schema.qmd` → "Tax_year 2021 990 has a single-vintage gap on 28 indicator columns" for the full column list and patterns.
+
+## Malformed-row truncation in py2014 990
+
+The py2014 990 `.dat` file has one malformed row around row 2,980. `fread` default behavior would truncate the read at the bad row, returning ~2,978 of the 299,405 rows. The pipeline sets `fill = TRUE` in `read_source()` to tolerate this without truncating; the malformed row's values become NA but the remaining 299K rows are read intact.
+
+## 1/2 binary encoding on selected indicator columns (py2022+)
+
+Two binary indicator columns shifted their value encoding from Y/N (or 1/0) to **1 = yes, 2 = no** in recent vintages:
+
+- `hospital_audited_attached_cd` (source: `hospaudfinstmtcd`) — surfaced in py2022 990 with 2,355 `"1"` and 1,245 `"2"` values, ~97% empty.
+- `qualified_health_plan_multi_state_cd` (source: `qualhlthplncd`) — surfaced in py2023 990 with 20 `"1"` and 4,788 `"2"` values, ~98.5% empty.
+
+Both are unambiguously binary questions in the underlying form (audited financial statements attached? multi-state health plan?), and the directional yes/no skew in each is consistent with `1 = yes, 2 = no` (audit attachment skews yes; multi-state health plans skew overwhelmingly no).
+
+The pipeline handles this by including `"2"` in the `INDICATOR_FALSE` set of `R/transforms/indicators.R`. This is a global widening — it applies to every `_cd`-suffixed harmonized column — rather than a per-column override, on the rationale that:
+
+1. The two affected columns are not unique cases; IRS may extend the 1/2 encoding to additional binary `_cd` columns in future vintages without notice. A global rule covers them automatically.
+2. Real integer-code columns in the SOI extract (e.g. program service codes, miscellaneous revenue codes) are **renamed off the `_cd` suffix at the crosswalk stage** (`prgmservcode2acd` → `program_revenue_code_2a`, etc.) and therefore bypass `transform_indicators` entirely. So no existing column is at risk of being miscoded by the widened rule.
+
+**Revisit if:** a `_cd`-suffixed harmonized column is ever introduced that uses trinary encoding (e.g. 0 = no, 1 = yes, 2 = unknown). The rule above would then silently miscode `"2"` as FALSE for that column. The fix in that case would be either (a) rename the new column off the `_cd` suffix at the crosswalk stage, matching how integer-code columns are already handled, or (b) switch to a per-column override list.
+
+## Trailing-empty header columns in py2020+ CSVs
+
+py2020+ `.csv` extracts have trailing commas in their header rows, which `fread` interprets as additional empty-named columns. For 990 py2020, that's 5 trailing empties (`v247`–`v251`); for 990-EZ py2020, 1 trailing empty (`v73`). Pre-checks ignore empty-named columns when counting against the expected vintage column count; the harmonize step drops them as unmapped. They are not real data columns.
+
+---
+
+## Adding a new entry
+
+When a pipeline run surfaces a new upstream quirk, add a section here describing:
+
+1. **What the source file does** — concrete observation (specific column name / value / row count, with year / form).
+2. **How the pipeline handles it** — which file got the fix (crosswalk OVERRIDES, transform, config, reader option), and the principle behind it.
+3. **How to widen the handling** if the same quirk recurs in a future vintage.
+
+Keep each entry self-contained — a user troubleshooting an anomaly should be able to land on one section and confirm whether their observation matches a known cause without reading the whole chapter.

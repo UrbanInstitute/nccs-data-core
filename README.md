@@ -134,4 +134,6 @@ See [Developer Guide](docs/07-developer-guide.qmd) for the full SOP.
 
 ## Documentation
 
-Full docs are a Quarto book under `docs/`. Render with `quarto render docs/`. See `IMPLEMENTATION_PLAN.md` for the design rationale and build history. Outstanding work and known gaps are tracked in `TODO.md`.
+Full docs are a Quarto book under `docs/`, published to GitHub Pages at <https://urbaninstitute.github.io/nccs-data-core/> on every push to `main` that touches `docs/`, `data/lookups/`, or the workflow file itself (see `.github/workflows/publish-docs.yml`). To preview locally before pushing: `quarto render docs/` then open `docs/GUIDEBOOK/index.html`.
+
+See `IMPLEMENTATION_PLAN.md` for the design rationale and build history. Outstanding work and known gaps are tracked in `TODO.md`.

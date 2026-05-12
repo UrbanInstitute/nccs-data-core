@@ -36,7 +36,7 @@ Outstanding work and known gaps as of 2026-05-11 (end of Phase 9, full SOI-curre
 ## Documentation
 
 - [x] **Quarto chapter prose pass** (2026-05-12) — `09-legacy-harmonization.qmd` expanded from 27 to 95 lines (scope, source-data inventory, locked-in decisions, planned design mirroring BMF, open design questions); `06-configuration.qmd` expanded from 26 to 107 lines (full reference for phase toggles, paths, S3 layout, IRS URL patterns, env vars, R/data.R constants); `01-architecture.qmd` got a top-of-page framing paragraph and a sibling-chapter index. `03-transforms-reference.qmd` was already filled during the 2026-05-12 indicator/efile work and didn't need this pass.
-- [ ] **Publish the rendered Quarto book** to S3 or GitHub Pages so external users can browse it without checking out the repo.
+- [x] **Publish the rendered Quarto book** (2026-05-12) — already done. `.github/workflows/publish-docs.yml` renders the book on every push to `main` that touches `docs/`, `data/lookups/`, or the workflow file, and deploys to GitHub Pages. Live at <https://urbaninstitute.github.io/nccs-data-core/>. Two small workflow cleanups this session: fixed the path filter typo (`data/lookup/**` → `data/lookups/**` plural) so lookup-only edits actually retrigger the build, and removed a dead `cp -r docs/quality-reports/*.html` step that was masked by `|| true` (quality reports live under `data/processed/`, not in the repo).
 
 ## Data findings to validate or chase
 

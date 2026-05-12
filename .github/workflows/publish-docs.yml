@@ -13,7 +13,7 @@ on:
       - main
     paths:
       - 'docs/**'
-      - 'data/lookup/**'
+      - 'data/lookups/**'
       - '.github/workflows/publish-docs.yml'
   workflow_dispatch:
 
@@ -54,11 +54,6 @@ jobs:
         run: |
           cd docs
           quarto render
-
-      - name: Copy quality reports
-        run: |
-          mkdir -p docs/GUIDEBOOK/quality-reports
-          cp -r docs/quality-reports/*.html docs/GUIDEBOOK/quality-reports/ 2>/dev/null || true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

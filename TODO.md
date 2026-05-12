@@ -35,7 +35,7 @@ Outstanding work and known gaps as of 2026-05-11 (end of Phase 9, full SOI-curre
 
 ## Documentation
 
-- [ ] **Quarto chapter prose pass** — most chapters are populated but some have terse TODO sections (`09-legacy-harmonization.qmd` is mostly a placeholder; `01-architecture.qmd` and `03-transforms-reference.qmd` are minimal).
+- [x] **Quarto chapter prose pass** (2026-05-12) — `09-legacy-harmonization.qmd` expanded from 27 to 95 lines (scope, source-data inventory, locked-in decisions, planned design mirroring BMF, open design questions); `06-configuration.qmd` expanded from 26 to 107 lines (full reference for phase toggles, paths, S3 layout, IRS URL patterns, env vars, R/data.R constants); `01-architecture.qmd` got a top-of-page framing paragraph and a sibling-chapter index. `03-transforms-reference.qmd` was already filled during the 2026-05-12 indicator/efile work and didn't need this pass.
 - [ ] **Publish the rendered Quarto book** to S3 or GitHub Pages so external users can browse it without checking out the repo.
 
 ## Data findings to validate or chase

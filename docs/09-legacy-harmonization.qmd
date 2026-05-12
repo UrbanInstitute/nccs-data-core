@@ -1,27 +1,95 @@
 # Legacy Harmonization
 
-::: {.callout-note}
-TODO: Document `run_legacy_pipeline.R` once it exists. Scoped to raw legacy NCCS
-files (1989-2011 PZ/PF only); 2012+ NCCS+SOI hybrid files in `s3://nccsdata/legacy/core/`
-are skipped.
-:::
+This chapter covers the **legacy CORE pipeline** for pre-2012 NCCS files. It is currently *planned, not built* — the SOI-current pipeline (`R/run_pipeline.R`) is what actually runs today. The eventual entry point will be `R/run_legacy_pipeline.R`. This chapter documents the scope, the source-data shape, and the design decisions already locked in so that the build, when it happens, doesn't relitigate them.
 
-## Scope
+## Why a separate pipeline
 
-- **In:** raw legacy NCCS `*-PZ` (501c3 + 501ce, unioned) and `*-PF` files, 1989-2011.
-- **Out:** 2012+ NCCS+SOI hybrid files (those years are covered by the SOI-current pipeline).
-- **Unrecoverable:** there is no pure 990-EZ source pre-2012.
+The pre-2012 NCCS files have a different structural shape from the IRS SOI extracts:
 
-## Series mapping
+- **Different partition scheme.** Legacy files split charities into `501C3` (501(c)(3) only) and `501CE` (everything else), with parallel `*-PZ` (full-form 990) and `*-PF` (private foundation 990-PF) variants. The SOI-current pipeline uses `subsection_cd` and `is_501c3` as data columns rather than partition keys, so partitioning has to be unwound at ingest.
+- **Different schema.** Legacy column inventory (per the 2026-05-08 audit) varies from 104–276 columns per file depending on vintage, with significant schema expansions in 1997 and 2008. Column names are heavily abbreviated NCCS legacy strings (e.g. `ACCNTSPAYABLEEND`, `EXGRROOT`, `LBEBOYEstimate`) rather than IRS SOI names. The crosswalk surface is therefore disjoint from the SOI crosswalks; reusing the existing FINAL crosswalks won't work.
+- **No 990-EZ source.** The IRS did not separately publish a 990-EZ extract before 2012. Pre-2012 990-EZ filings exist in the NCCS PZ data interleaved with 990 filings, identifiable only by the `EZ` form-type indicator in a metadata column. Whether to surface them as part of the `990combined` series or as their own series is an open design call.
 
-| Series | 1989-2011 | 2012+ |
+The two pipelines write to the same `(tax_year, form)` output grain so analysts can read across them, but they cannot share an orchestrator or a crosswalk.
+
+## Source-data inventory
+
+The audit captured in the `project_legacy_inventory` memory entry found:
+
+| Series | Years available | Source | Note |
+|---|---|---|---|
+| **PZ** (501c3 + 501ce) | 1989–2019 | `s3://nccsdata/legacy/core/` | 2012+ are NCCS+SOI hybrids — skip |
+| **PF** | 1989–2015, 2019 | `s3://nccsdata/legacy/core/` | 2016/2017/2018 missing from bucket |
+| **PC** | 2012–2019 only | `s3://nccsdata/legacy/core/` | PC scope didn't exist pre-2012 — out of legacy scope |
+
+Column-count history confirms the schema instability:
+
+| Era | PZ cols | PF cols | What changed |
+|---|---|---|---|
+| 1989–1996 | 104–117 | 105–121 | Compact original schema |
+| 1997 | ~164–167 | — | Major schema expansion |
+| 1998–2011 | 140–276 (variable) | ~170–223 | Year-to-year drift; needs per-vintage crosswalk |
+| 2012+ | 152–168 (PZ) | ~170 (PF) | NCCS + SOI hybrid — handled by SOI-current pipeline |
+
+The 2012+ files in the bucket are not raw legacy data — they're NCCS metadata merged with SOI-derived financial columns. The SOI side of that merge is reproducible from `irs.gov/pub/irs-soi/`, so the legacy pipeline scope strictly stops at 2011.
+
+## Scope decisions (locked in)
+
+- **In scope:** raw legacy `*-PZ` (union of 501C3 + 501CE) and `*-PF` files, **1989–2011 only**.
+- **Out of scope:** the 2012+ NCCS+SOI hybrid files in the same bucket. Those years are covered by the SOI-current pipeline, which goes back to the IRS source instead of the hybrid intermediary.
+- **Unrecoverable:** standalone 990-EZ panel pre-2012. The IRS never published one; the EZ rows that exist sit inside the PZ files.
+
+## Series mapping (planned)
+
+| Series | Pre-2012 source | 2012+ source |
 |---|---|---|
-| `990` | (none) | IRS `eoextract990` |
-| `990ez` | (none) | IRS `eoextractEZ` |
-| `990pf` | raw legacy `*-PF` | IRS `eoextractPF` |
-| `990combined` | raw legacy `*-PZ` (union of 501c3 + 501ce) | derived: stack IRS 990 + EZ on shared cols |
+| `990` | (none — pre-2012 990 rows live inside legacy PZ along with 990-EZ rows) | IRS `eoextract990` (SOI-current) |
+| `990ez` | (none as standalone) | IRS `eoextract990EZ` (SOI-current) |
+| `990pf` | raw legacy `*-PF` | IRS `eoextract990PF` (SOI-current) |
+| `990combined` | raw legacy `*-PZ` (501C3 ∪ 501CE) | derived from 990 + 990-EZ on shared 53 cols |
 
-## Subsection as column, not partition
+The legacy pipeline does *not* attempt to demultiplex pre-2012 PZ rows into separate `990` and `990ez` series — there isn't enough signal in the data to do so reliably across vintages. Instead, all pre-2012 full-form filings land in `990combined` regardless of whether they were filed on Form 990 or 990-EZ.
 
-Legacy files partition by 501C3 vs 501CE. The harmonized output keeps `subsection`
-and `is_501c3` as columns instead, so the 990combined series is a single panel.
+## `subsection` as column, not partition
+
+Legacy files use the `*-PZ` filename split to separate 501C3 from 501CE filings. The harmonized output drops that filename-level distinction and keeps `subsection_cd` + `is_501c3` as ordinary columns. The legacy pipeline at ingest time will:
+
+1. Read both `501C3-*` and `501CE-*` files for the year.
+2. Union them with `data.table::rbindlist(..., fill = TRUE, use.names = TRUE)`.
+3. Map the source `SUBSECCD` (or analog) into the harmonized `subsection_cd` integer column.
+4. Derive `is_501c3 := subsection_cd == 3L` strict-boolean (matching SOI-current semantics).
+
+The result is a single panel per tax_year, queryable by subsection without needing to know which legacy file the row originated from.
+
+## Planned design (mirror BMF's legacy adapter pattern)
+
+The pipeline will follow the same architecture as the SOI-current side:
+
+- **Per-field pure transforms** under `R/transforms/` — most are already implemented and reusable as-is. `transform_ein`, `transform_subsection_cd`, `transform_financial_amounts`, `transform_indicators` apply unchanged. `transform_tax_period` and `transform_efile_indicator` may need legacy-specific synonyms added (legacy column names differ).
+- **Per-form crosswalks** under `data/crosswalks/` with the same BASELINE / OVERRIDES / FINAL split as the SOI-current files. Names: `legacy_pz_crosswalk_*.csv` and `legacy_pf_crosswalk_*.csv`. The BASELINE will be drafted from a regenerated `data/raw/legacy_inventory/headers_by_file.tsv` once the inventory script is rewritten (it was deleted in the 2026-05-12 cleanup; the conclusions are captured in memory).
+- **Quality framework** under `R/quality/` — `run_pre_checks_one()` and the `check_*` validators in `post_checks.R` are pipeline-agnostic and work as-is against legacy outputs. The YoY tripwire (`check_row_count_vs_prior`) also works without modification.
+- **Orchestrator** as `R/run_legacy_pipeline.R`, modeled after `R/run_pipeline.R` with the same phased structure: download/inventory → unpack → pre-checks → harmonize → quality → dictionary → render → upload. No `derive_combined` phase needed because `990combined` IS the legacy pipeline's primary output, not a derivation from it.
+
+The reusable transforms and quality validators are the main payoff of having built the SOI-current pipeline first — they collapse what could have been a long second build into mostly a crosswalk-authoring exercise.
+
+## Output integration with SOI-current
+
+The two pipelines write to the same `(tax_year, form)` output grain. Where they overlap, **SOI wins** — the IRS extracts are the authoritative source for 2012+ and have been since the SOI EO program launched. With the current scope decisions (legacy stops at 2011, SOI starts at 2012), there is no overlap; the cutover is clean.
+
+Pre-2012 990-PF output from the legacy pipeline fills the gap below the SOI-current `990pf` series. The combined panel will run 1989–present with a single source-of-truth transition at the 2011/2012 boundary.
+
+## Open design questions
+
+These have not been resolved and need user input before the legacy pipeline is built:
+
+- **How to harmonize the 1997 schema expansion.** Columns added in 1997 are absent from 1989–1996 files. Should the harmonized output NA-pad those columns for the pre-1997 era (matching the SOI-current vintage-padding convention), or partition-drop them?
+- **What to do about 1998–2011 year-to-year column drift.** Some columns appear in only a handful of years. The BASELINE crosswalk-builder needs a strategy for opt-in inclusion vs. ignore-by-default.
+- **Pre-1989 data.** Earlier NCCS panels exist for some subsets but aren't in `s3://nccsdata/legacy/core/`. Scope is currently set to 1989+ by source availability; expanding earlier would require sourcing those panels separately.
+
+## Cross-references
+
+- Reusable transforms: `docs/03-transforms-reference.qmd`.
+- Crosswalk workflow: `docs/04-crosswalks.qmd`.
+- Quality validators that apply across both pipelines: `docs/05-quality-gates.qmd`.
+- Architecture diagram showing both pipelines: `docs/01-architecture.qmd`.
+- Bucket inventory and column-count details: `project_legacy_inventory` memory entry; the local `data/raw/legacy_inventory/` working files were deleted in the 2026-05-12 cleanup since the conclusions are in memory.

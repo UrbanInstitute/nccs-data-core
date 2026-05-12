@@ -1,5 +1,14 @@
 # Architecture
 
+`nccs-data-core` produces the **NCCS CORE Series** — harmonized panels of Form 990, 990-EZ, and 990-PF fields built from the IRS Statistics of Income (SOI) annual extracts. Outputs are per `(tax_year, form)` CSV plus a companion data dictionary and a quality report. The pipeline targets data engineers and researchers who need a consistently-shaped panel across years rather than year-specific raw extracts whose schemas drift annually.
+
+Two design choices set the shape of everything downstream:
+
+- **Tax year, not filing year, is the partition key.** A given output file's rows all have a fiscal period ending in that calendar year, regardless of which IRS extract or processing year supplied them.
+- **Snake_case readable column names**, derived through an explicitly-edited crosswalk rather than passed through from the IRS source variables. The crosswalk does the rename, so downstream consumers don't have to track per-vintage source-variable drift themselves. See `docs/04-crosswalks.qmd`.
+
+The rest of this chapter describes how the pipeline gets from one to the other.
+
 ## Two parallel pipelines
 
 `nccs-data-core` is split into two independent pipelines that produce the same family of CORE output series:
@@ -90,3 +99,20 @@ The pre-check phase (2.5) and post-check phase (5) both honor the `STRICT_QUALIT
 ## Logging
 
 Every phase writes a per-phase log to `data/logs/<step>_log.txt` via `log4r` (configured in `R/create_logger.R`). The orchestrator additionally writes `run_pipeline_log.txt` with `START / OK / SKIP / FAIL` markers and elapsed seconds per phase. On EC2 these logs upload to `s3://nccsdata/logs/core/{run_timestamp}/` for post-mortem.
+
+## Where the rest of the architecture lives
+
+This chapter sketches the pipeline at the orchestrator level. Topic-specific detail is in sibling chapters:
+
+| Topic | Chapter |
+|---|---|
+| Tier-by-tier file/S3 layout | `docs/02-data-lineage.qmd` |
+| Per-field transform behavior | `docs/03-transforms-reference.qmd` |
+| Crosswalk file set + BASELINE/OVERRIDES/FINAL workflow | `docs/04-crosswalks.qmd` |
+| Quality validators (pre + post check catalog) | `docs/05-quality-gates.qmd` |
+| Phase toggles, paths, env vars | `docs/06-configuration.qmd` |
+| Day-to-day developer SOPs | `docs/07-developer-guide.qmd` |
+| Output column conventions, NA semantics, year-column distinctions | `docs/08-output-schema.qmd` |
+| Pre-2012 legacy pipeline (planned, not built) | `docs/09-legacy-harmonization.qmd` |
+| EC2 batch processing + cron | `docs/10-ec2-batch-processing.qmd` |
+| Known IRS source-file oddities the pipeline compensates for | `docs/11-upstream-source-quirks.qmd` |

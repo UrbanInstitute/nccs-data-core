@@ -1,26 +1,107 @@
 # Configuration
 
-::: {.callout-note}
-TODO: Full reference for `R/config.R` and `R/data.R`.
-:::
+All pipeline configuration lives in two files. `R/config.R` holds runtime toggles, local paths, the S3 layout, and IRS URL templates. `R/data.R` holds form-related constants (crosswalk file paths, the SOI form list, the subsection code whitelist). Anything tunable across runs without code edits lives in one of these two places — or, for cron/CI use cases, in an environment variable.
 
 ## Phase toggles (`R/config.R::CONFIG`)
 
-`ENABLE_DOWNLOAD`, `ENABLE_UNPACK`, `ENABLE_HARMONIZE`, `ENABLE_COMBINED`,
-`ENABLE_QUALITY`, `ENABLE_DICTIONARY`, `ENABLE_RENDER_REPORT`, `ENABLE_S3_UPLOAD`,
-plus per-tier `ENABLE_UPLOAD_{RAW,INTERMEDIATE,PROCESSED,LOGS}`.
+Each pipeline phase has an `ENABLE_*` flag. Phase 8 (upload) has additional per-tier sub-toggles so you can sync `processed/` to S3 without also uploading the raw zips on every run.
 
-`STRICT_QUALITY_GATES`, `ENABLE_CHECKPOINTS` control failure and skip behavior.
+| Flag | Default | Effect when `FALSE` |
+|---|---|---|
+| `ENABLE_DOWNLOAD` | `TRUE` | Skip phase 1; assume zips are already at `data/raw/soi_extracts/` |
+| `ENABLE_UNPACK` | `TRUE` | Skip phase 2; assume unpacked files are at `data/intermediate/unpacked/` |
+| `ENABLE_HARMONIZE` | `TRUE` | Skip phase 3; no harmonized CSVs written |
+| `ENABLE_COMBINED` | `TRUE` | Skip phase 4; no `990combined` series produced |
+| `ENABLE_QUALITY` | `TRUE` | Skip phase 5; no `quality_*.rds` files |
+| `ENABLE_DICTIONARY` | `TRUE` | Skip phase 6; no dictionary CSVs |
+| `ENABLE_RENDER_REPORT` | `TRUE` | Skip phase 7; no HTML quality reports |
+| `ENABLE_S3_UPLOAD` | `FALSE` | Skip all of phase 8's S3 syncs; promotion to `processed/` still happens |
+| `ENABLE_UPLOAD_RAW` | `FALSE` | Don't sync `data/raw/soi_extracts/` to S3 |
+| `ENABLE_UPLOAD_FORMS` | `TRUE` | Don't sync `data/raw/forms/` to S3 |
+| `ENABLE_UPLOAD_INTERMEDIATE` | `FALSE` | Don't sync `data/intermediate/{unpacked,harmonized}/` to S3 |
+| `ENABLE_UPLOAD_PROCESSED` | `TRUE` | Don't sync `data/processed/` to S3 |
+| `ENABLE_UPLOAD_LOGS` | `TRUE` | Don't sync `data/logs/` (incl. quality RDS) to `s3://.../logs/core/{run_timestamp}/` |
+| `ENABLE_GZIP_HTML_UPLOAD` | `TRUE` | Skip the two-pass HTML-gzip on phase 8; HTMLs upload uncompressed |
+| `STRICT_QUALITY_GATES` | `TRUE` | Quality hard-fails downgrade to warnings; the run continues |
+| `ENABLE_CHECKPOINTS` | `TRUE` | Phase orchestrator does not honor per-phase resume markers |
+
+CLI overrides on `R/run_pipeline.R` map to a subset of these (`--strict`, `--no-strict`, `--upload`, `--no-upload`, `--no-{download,unpack,harmonize,combined,quality,dictionary,render}`). Sub-toggles for the upload tiers don't have CLI flags — edit `R/config.R` or override via env if you need them.
 
 ## Year window
 
-`EARLIEST_YEAR = 2012L`, `LATEST_YEAR` bumped each release.
+| Constant | Default | Note |
+|---|---|---|
+| `EARLIEST_YEAR` | `2012L` | First IRS SOI extract year |
+| `LATEST_YEAR` | bump each release | Add new processing-year filename stems to `SOI_FILENAME_STEMS` at the same time |
 
 ## Forms
 
-`FORMS = c("990", "990ez", "990pf")`; `990combined` is derived in phase 5.
+| Constant | Value |
+|---|---|
+| `FORMS` | `c("990", "990ez", "990pf")` |
+
+The fourth output series, `990combined`, is derived in phase 4 from the 990 + 990-EZ harmonized outputs on their 53 shared columns. It is not listed in `FORMS` because it's not separately downloaded / unpacked / harmonized.
+
+## Local paths (`PATHS`)
+
+All paths are relative to the repo root. The orchestrator and individual scripts both `cd` to the repo root before running, so absolute-vs-relative is not an operational concern.
+
+| Key | Path |
+|---|---|
+| `data` | `data` |
+| `raw` | `data/raw` |
+| `soi_extracts` | `data/raw/soi_extracts` |
+| `soi_dictionaries` | `data/raw/soi_dictionaries` |
+| `forms` | `data/raw/forms` |
+| `intermediate` | `data/intermediate` |
+| `unpacked` | `data/intermediate/unpacked` |
+| `harmonized` | `data/intermediate/harmonized` |
+| `processed` | `data/processed` |
+| `logs` | `data/logs` |
+| `crosswalks` | `data/crosswalks` |
+| `docs` | `docs` |
+
+## S3 layout (`S3`)
+
+All under bucket `nccsdata`.
+
+| Key | Prefix | What's there |
+|---|---|---|
+| `raw_prefix` | `raw/core/soi-extracts` | One zip per `(processing_year, form)` |
+| `forms_prefix` | `raw/core/forms` | IRS form PDFs + text extractions (current + historical) |
+| `legacy_prefix` | `legacy/core` | Pre-2012 NCCS legacy files — read-only, consumed by the future legacy pipeline |
+| `unpacked_prefix` | `intermediate/core/unpacked` | Decompressed extracts |
+| `harmonized_prefix` | `intermediate/core/harmonized` | Per-`(tax_year, form)` harmonized CSVs |
+| `processed_prefix` | `processed/core` | The canonical published artifact tier — CSV + dictionary CSV + quality HTML per `(tax_year, form)` |
+| `logs_prefix` | `logs/core` | Per-run timestamped logs + quality RDS snapshots; accumulates across runs |
 
 ## IRS URL template
 
-`build_soi_url(processing_year, form)` returns the IRS SOI zip URL. Pattern:
-`https://www.irs.gov/pub/irs-soi/{YY}eoextract{FORM_TAG}.zip`.
+`build_soi_url(processing_year, form)` returns the IRS SOI zip URL. The filename stem varies by year — the IRS rebranded the program from `eofinextract` to `eoextract` between py2017 and py2018, and the form tag varies casing (`990ez` / `EZ` / `ez` / `990EZ`). Per-(year, form) filename stems are tabulated in `R/config.R::SOI_FILENAME_STEMS`.
+
+Pattern observations:
+
+- py2012–py2017: `https://www.irs.gov/pub/irs-soi/{YY}eofinextract{FORM_TAG}.zip` (the `eofinextract` era).
+- py2018+: `https://www.irs.gov/pub/irs-soi/{YY}eoextract{FORM_TAG}.zip` (the `eoextract` era).
+- py2017–py2019 990-PF: not published; the corresponding URL returns 404 and `build_soi_url` returns `NA_character_`.
+
+When a new processing year is released, bump `LATEST_YEAR`, add the new filename stems to `SOI_FILENAME_STEMS`, and run the pipeline. Phase 1 fetches the new zip; phase 3 rebuilds every `(tax_year, form)` output as the union of all extracts.
+
+## Environment variables
+
+Read at runtime; useful for cron / CI tuning without code edits.
+
+| Variable | Effect | Default if unset |
+|---|---|---|
+| `NCCS_RENDER_WORKERS` | Worker count for phase 7 parallel Quarto rendering. Positive integer. Overrides the `workers` arg to `run_render_reports()`. | `min(parallel::detectCores() - 1, 8)` |
+| `AWS_*` | Standard AWS SDK credential vars (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, etc.) | None — falls back to the EC2 instance role or `~/.aws/credentials` |
+
+## Form-related constants (`R/data.R`)
+
+| Constant | Type | What's there |
+|---|---|---|
+| `CROSSWALK_FILES` | named list | Path to the FINAL crosswalk per form |
+| `CROSSWALK_FOR_SERIES(form)` | function | Resolves the crosswalk path for a CORE output series. `990combined` shares the 990 crosswalk because its schema is the 990 + 990-EZ intersect, all of which appear in the 990 crosswalk |
+| `KNOWN_SUBSECTION_CODES` | integer vector | The whitelist enforced by `check_subsection_cd()`; loaded from `data/lookups/subsection_codes.csv` (IRM 25.7.1 Exhibit 25.7.1-4) |
+| `SOURCE_FORMAT_FROM_PATH(path)` | function | Detects `.dat` (space-delimited) vs `.csv` (comma-delimited) from file extension, since the IRS source-format boundary is at the py2017/py2018 cutover but the rule survives by checking extension rather than year |
+| `EXPECTED_COL_COUNT_TOLERANCE` | numeric | The ±tolerance band used in pre-check column-count validation |

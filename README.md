@@ -41,6 +41,12 @@ bash scripts/run_pipeline.sh --years 2012-2024 --forms 990,990ez,990pf --strict
 
 CLI flags: `--years`, `--forms`, `--strict` / `--no-strict`, `--upload` / `--no-upload`, plus `--no-{download,unpack,harmonize,combined,quality,dictionary,render}` to skip individual phases. See `R/run_pipeline.R` for the full list.
 
+Env-var knobs (read at runtime; useful for tuning cron without code changes):
+
+| Variable | Meaning | Default |
+|---|---|---|
+| `NCCS_RENDER_WORKERS` | Worker count for parallel Quarto rendering in phase 7. | `min(detectCores() - 1, 8)` |
+
 ## Pipeline structure
 
 Nine phases, each as a standalone script under `R/`, all wired together by `R/run_pipeline.R`:

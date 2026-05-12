@@ -57,6 +57,24 @@ Rscript R/run_pipeline.R --years 2012-2025 --forms 990,990ez,990pf --strict
 Rscript R/07_render_report.R --rds data/logs/quality_990_2023.rds
 ```
 
+## Tuning render parallelism
+
+Phase 7 renders each `(form, tax_year)` Quarto template in a forked worker. The worker count resolves in this order:
+
+1. `NCCS_RENDER_WORKERS` env var (if a positive integer), or
+2. The `workers` arg to `run_render_reports()` (if non-NULL), or
+3. Default: `min(parallel::detectCores() - 1, 8)`.
+
+The env var takes precedence over the function arg so cron / CI can tune without code changes:
+
+```bash
+NCCS_RENDER_WORKERS=8 bash scripts/run_pipeline.sh --strict
+```
+
+The cap at 8 reflects diminishing returns past that point — Quarto wall time is dominated by per-render subprocess startup (~5–7s each) rather than CPU, so additional workers mostly contend on fork/exec. On a small-RAM host, lower the cap to avoid OOM; each worker peaks at ~500MB–1GB.
+
+Each render is isolated in `tempdir()` — the template is copied per-render so concurrent renders do not collide on Quarto's `.quarto/<template-stem>/` intermediate cache.
+
 ## Skipping phases
 
 Set `ENABLE_DOWNLOAD = FALSE` (etc.) to re-use existing intermediate files.

@@ -94,4 +94,4 @@ Present in every output:
 
 About 6% of 990-PF rows are **§4947(a)(1) non-exempt charitable trusts treated as private foundations** (`subsection_cd = 92`, `is_501c3 = FALSE`). They file 990-PF because IRC treats them as private foundations for excise-tax purposes, but they are not 501(c)(3) exempt organizations. The `is_501c3` column makes this distinction queryable without requiring users to memorize subsection codes.
 
-§4947(a) trusts may also appear in 990 or 990-EZ in theory; they are absent from the tax_year-2011 sample but the schema accommodates them if they appear in other vintages.
+§4947(a) trusts do **not** appear in 990 or 990-EZ in practice. Verified empirically against the full harmonized output (4.0M 990 rows across 25 tax_years, 2.8M 990-EZ rows across 27 tax_years): zero rows with `subsection_cd == 92` in either form. The schema accommodates the code in case a future vintage introduces one, but `is_501c3 == FALSE & form %in% c("990", "990ez")` should not return §4947(a) trusts on any data currently in scope. If you need every §4947(a) trust regardless of form, query the `990pf` series alone.

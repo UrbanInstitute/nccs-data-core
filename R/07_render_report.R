@@ -86,7 +86,22 @@ render_one_report <- function(rds_path, out_path, logger = NULL) {
     }
     return(invisible(FALSE))
   }
-  file.rename(rendered_at, out_path)
+  # file.rename() fails silently on cross-filesystem moves (EXDEV), which
+  # happens when tempdir() resolves to tmpfs (/tmp) and the repo lives on a
+  # different mount — common inside Docker containers on EC2. Fall back to
+  # copy+delete so the move is robust regardless of mount topology.
+  moved <- file.rename(rendered_at, out_path)
+  if (!isTRUE(moved)) {
+    moved <- file.copy(rendered_at, out_path, overwrite = TRUE)
+    if (isTRUE(moved)) unlink(rendered_at)
+  }
+  if (!isTRUE(moved) || !file.exists(out_path)) {
+    if (!is.null(logger)) {
+      log4r::error(logger, sprintf("Failed to place render output at %s", out_path))
+    }
+    unlink(rendered_at)
+    return(invisible(FALSE))
+  }
   if (!is.null(logger)) log4r::info(logger, sprintf("WROTE %s", out_path))
   invisible(TRUE)
 }

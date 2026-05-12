@@ -6,7 +6,6 @@ book:
   title: "CORE Data Pipeline Guide"
   output-file: "core-pipeline-guide"
   author:
-    - "Jesse Lecy"
     - "Thiyaghessan"
   date: last-modified
   sidebar:

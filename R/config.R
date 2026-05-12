@@ -19,6 +19,7 @@ CONFIG <- list(
 
   # Per-tier upload toggles
   ENABLE_UPLOAD_RAW          = FALSE,
+  ENABLE_UPLOAD_FORMS        = TRUE,  # data/raw/forms/ — small, archival, slow-changing
   ENABLE_UPLOAD_INTERMEDIATE = FALSE,
   ENABLE_UPLOAD_PROCESSED    = TRUE,
   ENABLE_UPLOAD_LOGS         = TRUE,
@@ -53,7 +54,6 @@ PATHS <- list(
   soi_extracts      = "data/raw/soi_extracts",
   soi_dictionaries  = "data/raw/soi_dictionaries",
   forms             = "data/raw/forms",
-  legacy_inventory  = "data/raw/legacy_inventory",
   intermediate      = "data/intermediate",
   unpacked          = "data/intermediate/unpacked",
   harmonized        = "data/intermediate/harmonized",
@@ -68,6 +68,7 @@ PATHS <- list(
 S3 <- list(
   bucket             = "nccsdata",
   raw_prefix         = "raw/core/soi-extracts",      # {processing_year}/{form}/*.zip
+  forms_prefix       = "raw/core/forms",             # IRS form PDFs + text extractions (current + historical)
   legacy_prefix      = "legacy/core",                # raw legacy NCCS files (read-only, used by run_legacy_pipeline.R)
   unpacked_prefix    = "intermediate/core/unpacked", # {processing_year}/{form}/
   harmonized_prefix  = "intermediate/core/harmonized", # {tax_year}/{form}/

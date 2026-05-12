@@ -10,6 +10,7 @@ processed, with S3 paths at each tier.
 | Tier | Local | S3 |
 |---|---|---|
 | Raw | `data/raw/soi_extracts/{processing_year}/{form}/` | `s3://nccsdata/raw/core/soi-extracts/{processing_year}/{form}/` |
+| Forms archive | `data/raw/forms/` | `s3://nccsdata/raw/core/forms/` |
 | Legacy raw | (read-only) | `s3://nccsdata/legacy/core/` |
 | Unpacked | `data/intermediate/unpacked/{processing_year}/{form}/` | `s3://nccsdata/intermediate/core/unpacked/...` |
 | Harmonized | `data/intermediate/harmonized/{tax_year}/{form}/` | `s3://nccsdata/intermediate/core/harmonized/...` |

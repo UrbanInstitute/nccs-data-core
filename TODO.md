@@ -13,14 +13,14 @@ Outstanding work and known gaps as of 2026-05-11 (end of Phase 9, full SOI-curre
 ## Crosswalks / lookups
 
 - [ ] **`data/lookups/non_pf_status_reason_codes.csv`** — SOI's `nonpfrea` field is an IRS-internal classification that diverges from the visible Schedule A line numbering. Codes 9–16 appear in the data without documented meanings (Schedule A only enumerates lines 1–12). Cross-check against `nccs-data-bmf` for any prior NCCS investigation, or pursue IRS SOI internal docs.
-- [ ] **Historical forms archive** — fetch every prior year's Form 990 / 990-EZ / 990-PF + Schedule A PDF + instructions, save to `s3://nccsdata/raw/core/forms/{tax_year}/`, publish on the NCCS website as a permanent citable record (IRS occasionally removes old forms from `irs.gov/pub/irs-prior/`).
+- [ ] **Historical forms archive** — fetch every prior year's Form 990 / 990-EZ / 990-PF + Schedule A PDF + instructions, save to `s3://nccsdata/raw/core/forms/{tax_year}/`, publish on the NCCS website as a permanent citable record (IRS occasionally removes old forms from `irs.gov/pub/irs-prior/`). Phase 8 now syncs whatever is in `data/raw/forms/` to `s3://nccsdata/raw/core/forms/` (gated by `ENABLE_UPLOAD_FORMS = TRUE`); the open work is *populating* the local dir with historical content. Current contents are 2024-vintage only.
 - [x] **2013+ source-var name verification** — full pipeline run 2026-05-11 surfaced and resolved the actual drift: 990 cycles `tax_prd` (py2012, py2014, py2015) / `tax_pd` elsewhere; 990-EZ has five variants. All variants mapped in OVERRIDES; documented in `docs/11-upstream-source-quirks.qmd` ("`tax_period` source column name drifts across years").
 
 ## Refactors / debt
 
 - [x] **Deduplicate `is_blank` helper** — single function definition in `R/utils.R`; `R/quality/post_checks.R` and `R/06_dictionary.R` now source utils.R and call it. (TODO note had three locations; only two were live — the `R/quality/stat_helpers.R` reference was stale.)
 - [x] **Deduplicate `CROSSWALK_FOR_SERIES`** — single definition in `R/data.R` alongside `CROSSWALK_FILES`. `R/05_quality.R` and `R/06_dictionary.R` already source data.R, so no new source lines needed.
-- [ ] **Stray file: `data/raw/14eofinextract990pf.csv`** at the top of `data/raw/` (not under `soi_extracts/`). Leftover from early exploration; move into `data/raw/soi_extracts/2014/990pf/` or delete.
+- [x] **`data/raw/` cleanup (2026-05-12)** — deleted the stray top-level `14eofinextract990pf.csv` plus the redundant `soi/` (4.1 GB), `soi_pf/` (439 MB), and `legacy_inventory/` (188K) directories. `soi/` and `soi_pf/` were predecessor formats whose content is byte-identical to `data/intermediate/unpacked/` (verified by md5); recoverable via the rehydrate-from-S3 SOP if needed. Removed the dead `PATHS$legacy_inventory` entry from `R/config.R`. Total reclaimed: ~4.5 GB.
 - [ ] **`data/raw/core_pf/`** — contains NCCS legacy 990-PF CSVs (1989–2007 + a 2019 hybrid). Fine to leave for the future legacy pipeline; just be aware.
 
 ## Tests

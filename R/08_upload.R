@@ -152,6 +152,12 @@ run_upload <- function(dry_run       = FALSE,
     log4r::info(logger, "skip: ENABLE_UPLOAD_RAW=FALSE")
   }
 
+  if (isTRUE(CONFIG$ENABLE_UPLOAD_FORMS)) {
+    rc <- rc + aws_sync(PATHS$forms, s3_uri(S3$forms_prefix), dry_run, logger = logger)
+  } else {
+    log4r::info(logger, "skip: ENABLE_UPLOAD_FORMS=FALSE")
+  }
+
   if (isTRUE(CONFIG$ENABLE_UPLOAD_INTERMEDIATE)) {
     rc <- rc + aws_sync(PATHS$unpacked,   s3_uri(S3$unpacked_prefix),   dry_run, logger = logger)
     rc <- rc + aws_sync(PATHS$harmonized, s3_uri(S3$harmonized_prefix), dry_run, logger = logger)

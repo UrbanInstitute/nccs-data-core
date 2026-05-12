@@ -23,6 +23,14 @@ CONFIG <- list(
   ENABLE_UPLOAD_PROCESSED    = TRUE,
   ENABLE_UPLOAD_LOGS         = TRUE,
 
+  # When TRUE, *.html files in processed/ are gzip-compressed before upload
+  # and tagged with Content-Encoding: gzip so browsers decompress
+  # transparently. Cuts transfer / storage cost ~5-10x on the embed-resources
+  # quality reports. Trade-off: raw downloads via the S3 console / aws s3 cp
+  # return compressed bytes that the user must `gunzip` manually. Non-HTML
+  # files in processed/ (data CSVs, dictionaries) are unaffected.
+  ENABLE_GZIP_HTML_UPLOAD = TRUE,
+
   # Quality gate behavior
   STRICT_QUALITY_GATES = TRUE,
 

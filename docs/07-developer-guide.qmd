@@ -75,6 +75,17 @@ The cap at 8 reflects diminishing returns past that point — Quarto wall time i
 
 Each render is isolated in `tempdir()` — the template is copied per-render so concurrent renders do not collide on Quarto's `.quarto/<template-stem>/` intermediate cache.
 
+## Gzip-on-upload for HTML reports
+
+Phase 8 uploads the processed/ tier to S3 in two passes when `ENABLE_GZIP_HTML_UPLOAD` is `TRUE` (the default):
+
+1. Non-HTML files sync normally.
+2. `*.html` files are gzipped into a tempdir mirror and uploaded with `--content-encoding gzip --content-type text/html --metadata-directive REPLACE`. Browsers decompress transparently on load.
+
+Real-world compression on the embed-resources quality reports is ~3× (1.9 MB → 0.6 MB) because the bulk of each HTML is base64-encoded fonts and CSS that don't compress as well as raw text. Cumulative transfer reduction across the 109 reports in a full sweep is ~37 MB → ~12 MB on the wire.
+
+Trade-off: `aws s3 cp` and the S3 web console return the *compressed* bytes — analysts pulling reports through those tools get a gzipped blob with `.html` extension and have to `gunzip` manually. Set `ENABLE_GZIP_HTML_UPLOAD = FALSE` in `R/config.R` for the single-pass uncompressed upload if that UX is more important for your use case than the transfer savings.
+
 ## Skipping phases
 
 Set `ENABLE_DOWNLOAD = FALSE` (etc.) to re-use existing intermediate files.

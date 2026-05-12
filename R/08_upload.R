@@ -67,6 +67,60 @@ aws_sync <- function(src, dest, dry_run = FALSE, extra_args = character(), logge
   invisible(rc)
 }
 
+#' Compress every *.html under `src_root` into a mirror directory tree under
+#' `tmp_root`. The mirrored files keep their original names (`.html`, not
+#' `.html.gz`) but contain gzipped bytes; uploaded with `Content-Encoding:
+#' gzip`, browsers decompress them transparently on load.
+#'
+#' @return integer count of files compressed.
+gzip_htmls_to_mirror <- function(src_root, tmp_root, logger = NULL) {
+  htmls <- list.files(src_root, pattern = "\\.html$", recursive = TRUE,
+                      full.names = TRUE)
+  src_norm <- normalizePath(src_root, mustWork = TRUE)
+  for (src in htmls) {
+    rel  <- substring(normalizePath(src, mustWork = TRUE),
+                      nchar(src_norm) + 2L)
+    dest <- file.path(tmp_root, rel)
+    dir.create(dirname(dest), recursive = TRUE, showWarnings = FALSE)
+    raw <- readBin(src, what = "raw", n = file.info(src)$size)
+    writeBin(memCompress(raw, type = "gzip"), dest)
+  }
+  if (!is.null(logger)) {
+    log4r::info(logger, sprintf("gzipped %d HTML files to %s", length(htmls), tmp_root))
+  }
+  invisible(length(htmls))
+}
+
+#' Sync the processed/ tier to S3, optionally splitting *.html into a gzipped
+#' pass with Content-Encoding: gzip. When gzip is disabled, behaves like a
+#' single uncompressed sync.
+sync_processed_tier <- function(processed_root, s3_dest, dry_run = FALSE,
+                                gzip_html = TRUE, logger = NULL) {
+  if (!isTRUE(gzip_html)) {
+    return(aws_sync(processed_root, s3_dest, dry_run, logger = logger))
+  }
+
+  # Pass 1: everything except *.html, uncompressed.
+  rc1 <- aws_sync(processed_root, s3_dest, dry_run,
+                  extra_args = c("--exclude", "*.html"),
+                  logger     = logger)
+
+  # Pass 2: gzipped *.html mirror, uploaded with Content-Encoding: gzip.
+  tmp <- tempfile("processed_gz_")
+  dir.create(tmp, recursive = TRUE)
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  gzip_htmls_to_mirror(processed_root, tmp, logger = logger)
+  rc2 <- aws_sync(tmp, s3_dest, dry_run,
+                  extra_args = c("--exclude", "*",
+                                 "--include", "*.html",
+                                 "--content-encoding", "gzip",
+                                 "--content-type", "text/html",
+                                 "--metadata-directive", "REPLACE"),
+                  logger     = logger)
+
+  invisible(rc1 + rc2)
+}
+
 # ---- Top-level orchestrator ----
 
 #' @param dry_run logical: if TRUE, all aws sync calls use --dryrun (no S3 writes).
@@ -106,7 +160,13 @@ run_upload <- function(dry_run       = FALSE,
   }
 
   if (isTRUE(CONFIG$ENABLE_UPLOAD_PROCESSED)) {
-    rc <- rc + aws_sync(PATHS$processed, s3_uri(S3$processed_prefix), dry_run, logger = logger)
+    rc <- rc + sync_processed_tier(
+      processed_root = PATHS$processed,
+      s3_dest        = s3_uri(S3$processed_prefix),
+      dry_run        = dry_run,
+      gzip_html      = isTRUE(CONFIG$ENABLE_GZIP_HTML_UPLOAD),
+      logger         = logger
+    )
   } else {
     log4r::info(logger, "skip: ENABLE_UPLOAD_PROCESSED=FALSE")
   }

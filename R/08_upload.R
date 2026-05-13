@@ -10,6 +10,7 @@ suppressPackageStartupMessages({
 source(here("R", "config.R"))
 source(here("R", "data.R"))
 source(here("R", "create_logger.R"))
+source(here("R", "aws_s3_sync.R"))
 
 # ---- Step 1: promote harmonized data CSVs into processed/ ----
 
@@ -45,31 +46,6 @@ s3_uri <- function(prefix, suffix = "") {
   out <- sprintf("s3://%s/%s", S3$bucket, prefix)
   if (nzchar(suffix)) out <- sprintf("%s/%s", out, suffix)
   paste0(sub("/+$", "", out), "/")
-}
-
-#' Run `aws s3 sync` with optional dry-run + extra flags. Returns 0 on success.
-#'
-#' Args are shell-quoted before invocation because `system2(..., stdout=TRUE,
-#' stderr=TRUE)` captures output via a shell, which would otherwise glob-expand
-#' arguments like `--exclude *` into the current working directory's file list
-#' before `aws` sees them. shQuote() prevents this expansion.
-aws_sync <- function(src, dest, dry_run = FALSE, extra_args = character(), logger = NULL) {
-  if (!dir.exists(src)) {
-    if (!is.null(logger)) log4r::warn(logger, sprintf("SKIP sync: source %s does not exist", src))
-    return(invisible(0L))
-  }
-  args <- c("s3", "sync", src, dest, extra_args)
-  if (dry_run) args <- c(args, "--dryrun")
-  if (!is.null(logger)) log4r::info(logger, sprintf("aws %s", paste(args, collapse = " ")))
-  status <- system2("aws", args = shQuote(args), stdout = TRUE, stderr = TRUE)
-  attr_status <- attr(status, "status")
-  rc <- if (is.null(attr_status)) 0L else as.integer(attr_status)
-  if (!is.null(logger)) {
-    if (rc == 0L) log4r::info(logger, sprintf("  ok (%d lines)", length(status)))
-    else          log4r::error(logger, sprintf("  failed rc=%d: %s",
-                                               rc, paste(tail(status, 5), collapse = " | ")))
-  }
-  invisible(rc)
 }
 
 #' Compress every *.html under `src_root` into a mirror directory tree under
@@ -152,7 +128,8 @@ run_upload <- function(dry_run       = FALSE,
   rc <- 0L
 
   if (isTRUE(CONFIG$ENABLE_UPLOAD_RAW)) {
-    rc <- rc + aws_sync(PATHS$soi_extracts, s3_uri(S3$raw_prefix), dry_run, logger = logger)
+    rc <- rc + aws_sync(PATHS$soi_extracts,     s3_uri(S3$raw_prefix),          dry_run, logger = logger)
+    rc <- rc + aws_sync(PATHS$soi_dictionaries, s3_uri(S3$dictionaries_prefix), dry_run, logger = logger)
   } else {
     log4r::info(logger, "skip: ENABLE_UPLOAD_RAW=FALSE")
   }

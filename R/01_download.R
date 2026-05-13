@@ -9,6 +9,20 @@ suppressPackageStartupMessages({
 source(here("R", "config.R"))
 source(here("R", "data.R"))
 source(here("R", "create_logger.R"))
+source(here("R", "aws_s3_sync.R"))
+
+#' Rehydrate SOI dictionaries from S3 into PATHS$soi_dictionaries.
+#'
+#' The dictionary xls(x) files and derived _var_matrix_*.csv files are small
+#' (~1.5 MB total), archival, and used by pre-checks for column-count
+#' tolerance. They're gitignored, so a fresh EC2 has no local copy — without
+#' this, pre-checks log "No expected column count available; skipping
+#' tolerance check". `aws s3 sync` is idempotent: subsequent runs are no-ops.
+rehydrate_soi_dictionaries <- function(logger = NULL) {
+  dir.create(PATHS$soi_dictionaries, recursive = TRUE, showWarnings = FALSE)
+  src <- sprintf("s3://%s/%s/", S3$bucket, S3$dictionaries_prefix)
+  aws_sync(src, PATHS$soi_dictionaries, logger = logger)
+}
 
 run_download <- function(processing_years = CONFIG$EARLIEST_YEAR:CONFIG$LATEST_YEAR,
                          forms = CONFIG$FORMS,
@@ -18,6 +32,8 @@ run_download <- function(processing_years = CONFIG$EARLIEST_YEAR:CONFIG$LATEST_Y
 
   dir.create(PATHS$logs, recursive = TRUE, showWarnings = FALSE)
   logger <- create_logger(file.path(PATHS$logs, "01_download_log.txt"))
+
+  rehydrate_soi_dictionaries(logger = logger)
 
   old_timeout <- getOption("timeout")
   options(timeout = timeout_sec)

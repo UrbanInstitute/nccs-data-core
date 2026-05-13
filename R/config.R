@@ -68,6 +68,7 @@ PATHS <- list(
 S3 <- list(
   bucket             = "nccsdata",
   raw_prefix         = "raw/core/soi-extracts",      # {processing_year}/{form}/*.zip
+  dictionaries_prefix= "raw/core/soi-dictionaries",  # SOI dictionary xls(x) + var-matrix CSVs (small, archival)
   forms_prefix       = "raw/core/forms",             # IRS form PDFs + text extractions (current + historical)
   legacy_prefix      = "legacy/core",                # raw legacy NCCS files (read-only, used by run_legacy_pipeline.R)
   unpacked_prefix    = "intermediate/core/unpacked", # {processing_year}/{form}/

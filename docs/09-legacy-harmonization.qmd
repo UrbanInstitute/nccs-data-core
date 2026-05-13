@@ -38,6 +38,29 @@ The 2012+ files in the bucket are not raw legacy data — they're NCCS metadata 
 - **In scope:** raw legacy `*-PZ` (union of 501C3 + 501CE) and `*-PF` files, **1989–2011 only**.
 - **Out of scope:** the 2012+ NCCS+SOI hybrid files in the same bucket. Those years are covered by the SOI-current pipeline, which goes back to the IRS source instead of the hybrid intermediary.
 - **Unrecoverable:** standalone 990-EZ panel pre-2012. The IRS never published one; the EZ rows that exist sit inside the PZ files.
+- **Earliest year: 1989.** Pre-1989 panels exist for some subsets but are not in `s3://nccsdata/legacy/core/`. Sourcing them would be a separate project; 1989+ already gives 35+ years of coverage. Defer indefinitely.
+
+## Schema-instability decisions (locked in)
+
+The 1997 expansion and the 1998–2011 column drift both produce *vintage-padded* columns in the harmonized output: columns that exist in only a subset of source files and are NA in the rest. Two policy decisions govern how the pipeline handles this.
+
+### 1997 schema expansion: NA-pad pre-1997
+
+Columns introduced in 1997 (which roughly doubled PZ schema width from ~117 to ~165 columns) are NA-padded for 1989–1996 rows in the harmonized output, rather than dropped from those years' files.
+
+**Rationale.** This matches the SOI-current pipeline's vintage-padding convention (see `08-output-schema.qmd` → "Vintage-padded columns are 100% NA in pre-vintage tax-year files"). A single unified schema across all years lets analysts stack legacy outputs without per-year column reconciliation, and the NA pattern is itself a useful signal — `n_nonnull` in the dictionary will be zero for pre-1997 rows on those columns, surfacing the cutover automatically.
+
+**Trade-off.** Pre-1997 files carry ~50 extra all-NA columns each. Storage cost is small (NA serializes cheaply in CSV); analyst friction is lower than the partition-drop alternative, which would require year-aware joins.
+
+### 1998–2011 column drift: opt-in threshold ≥3 tax years
+
+The BASELINE crosswalk builder includes a legacy source column in the harmonized schema only if it appears in source files for **at least 3 distinct tax years** within the 1998–2011 window. Columns appearing in only 1 or 2 vintages are dropped at the crosswalk stage — they would otherwise produce harmonized columns that are 95–99% NA and offer no longitudinal signal.
+
+**Rationale.** A column that appears in only one year is overwhelmingly noise: a vintage-specific NCCS field, an experimental schema addition that didn't stick, or a typo that the crosswalk-auditor missed. A column that appears in 3+ years is plausibly a real schema element worth preserving. The threshold is conservative (filters out roughly the noisiest 5–10% of legacy columns) without being so high that it cuts genuinely sparse but real fields.
+
+**Trade-off.** Some real-but-short-lived schema elements (e.g. a field present only in 2007 and 2008 before being dropped) get cut. Affected columns can be opted back in via the OVERRIDES crosswalk if a specific analysis needs them — same escape valve as on the SOI-current side.
+
+**Threshold reference.** "3 tax years" means 3 distinct values of `tax_year` derived from the source filename, irrespective of how many 501C3/501CE/PF variants of that year contain the column. The threshold is hard-coded in the BASELINE-builder script and may be tunable later if downstream needs surface.
 
 ## Series mapping (planned)
 
@@ -77,14 +100,6 @@ The reusable transforms and quality validators are the main payoff of having bui
 The two pipelines write to the same `(tax_year, form)` output grain. Where they overlap, **SOI wins** — the IRS extracts are the authoritative source for 2012+ and have been since the SOI EO program launched. With the current scope decisions (legacy stops at 2011, SOI starts at 2012), there is no overlap; the cutover is clean.
 
 Pre-2012 990-PF output from the legacy pipeline fills the gap below the SOI-current `990pf` series. The combined panel will run 1989–present with a single source-of-truth transition at the 2011/2012 boundary.
-
-## Open design questions
-
-These have not been resolved and need user input before the legacy pipeline is built:
-
-- **How to harmonize the 1997 schema expansion.** Columns added in 1997 are absent from 1989–1996 files. Should the harmonized output NA-pad those columns for the pre-1997 era (matching the SOI-current vintage-padding convention), or partition-drop them?
-- **What to do about 1998–2011 year-to-year column drift.** Some columns appear in only a handful of years. The BASELINE crosswalk-builder needs a strategy for opt-in inclusion vs. ignore-by-default.
-- **Pre-1989 data.** Earlier NCCS panels exist for some subsets but aren't in `s3://nccsdata/legacy/core/`. Scope is currently set to 1989+ by source availability; expanding earlier would require sourcing those panels separately.
 
 ## Cross-references
 

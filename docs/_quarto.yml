@@ -1,6 +1,10 @@
 project:
   type: book
   output-dir: GUIDEBOOK
+  # Pre-rendered quality reports are produced by R/07_render_report.R; the
+  # book just copies them through to the site so GH Pages can serve them.
+  resources:
+    - quality-reports/**
 
 book:
   title: "CORE Data Pipeline Guide"
@@ -24,6 +28,7 @@ book:
     - 09-legacy-harmonization.qmd
     - 10-ec2-batch-processing.qmd
     - 11-upstream-source-quirks.qmd
+    - 12-quality-reports.qmd
 
 format:
   html:

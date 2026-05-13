@@ -6,7 +6,12 @@ format:
     toc: true
     toc-depth: 2
     code-fold: true
-    embed-resources: true
+    # embed-resources: false so all 109 renders share a single bootstrap +
+    # icon-font asset dir under docs/quality-reports/_libs/. Phase 7
+    # post-processes to dedupe and rewrite per-file references. With
+    # embed-resources: true each report bloats to ~1.95 MB (mostly an inlined
+    # Source Sans Pro TTF); with sharing, each is ~51 KB.
+    embed-resources: false
 params:
   report_data_path: "data/logs/quality_990ez_2017.rds"
 ---

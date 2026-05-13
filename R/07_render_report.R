@@ -1,15 +1,19 @@
 # R/07_render_report.R
 # Phase 7b: render docs/quality_report_template.qmd per (form, tax_year) using
 # the RDS reports produced in Phase 6. Output:
-#   data/processed/{tax_year}/{form}/core_{tax_year}_{form}_quality.html
+#   docs/quality-reports/{tax_year}/{form}/core_{tax_year}_{form}_quality.html
 #
 # Renders run in parallel via parallel::mclapply. Each render is isolated by
 # copying the template to a unique path in tempdir() — Quarto keys its
 # .quarto/ intermediate cache off the input file's stem, so a shared template
 # path would cause concurrent renders to collide on cache / lock files.
-# The template's format block (theme: cosmo, embed-resources: true) is fully
-# self-sufficient, so rendering outside the docs/ Quarto project produces
-# identical HTML to rendering inside it.
+#
+# The template uses embed-resources: false. After all renders complete, we
+# dedupe: copy one render's <stem>_files/libs/ tree to docs/quality-reports/
+# _libs/ and rewrite every HTML's per-render asset references to point to it.
+# Without dedup, each report bloats to ~1.95 MB (mostly an inlined Source
+# Sans Pro TTF); with sharing, each is ~51 KB and one shared _libs/ is
+# ~912 KB total.
 
 suppressPackageStartupMessages({
   library(here)
@@ -21,7 +25,9 @@ source(here("R", "config.R"))
 source(here("R", "data.R"))
 source(here("R", "create_logger.R"))
 
-TEMPLATE_PATH <- here::here("docs", "quality_report_template.qmd")
+TEMPLATE_PATH        <- here::here("docs", "quality_report_template.qmd")
+QUALITY_REPORTS_ROOT <- here::here("docs", "quality-reports")
+SHARED_LIBS_DIRNAME  <- "_libs"
 
 #' Move a freshly rendered file into its final location, with a copy+unlink
 #' fallback when `file.rename` fails. The fallback exists because
@@ -68,20 +74,24 @@ resolve_render_workers <- function(workers = NULL) {
 }
 
 #' Render a single quality report. Isolates Quarto's intermediate cache by
-#' copying the template to a unique tempdir path before rendering, so
-#' concurrent calls do not collide on `.quarto/<template-stem>/`.
+#' copying the template to a unique tempdir path before rendering.
+#'
+#' Returns a list `(ok, out_path, stem, files_dir)` for the post-process step
+#' to dedupe assets and rewrite references. On failure returns
+#' `list(ok = FALSE)`.
 render_one_report <- function(rds_path, out_path, logger = NULL) {
   out_dir <- dirname(out_path)
   dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
-  # Per-render template copy: tempfile() returns a unique path per call within
-  # an R process and per process — safe across forked mclapply workers.
   tpl_copy <- tempfile(pattern = "quality_report_", fileext = ".qmd")
   file.copy(TEMPLATE_PATH, tpl_copy, overwrite = TRUE)
+  # The .qmd is no longer needed after render; the _files/ sibling is kept
+  # for the dedup pass and cleaned up there.
   on.exit(unlink(tpl_copy), add = TRUE)
 
-  out_basename <- paste0(tools::file_path_sans_ext(basename(tpl_copy)), ".html")
-  rendered_at  <- file.path(dirname(tpl_copy), out_basename)
+  stem         <- tools::file_path_sans_ext(basename(tpl_copy))
+  rendered_at  <- file.path(dirname(tpl_copy), paste0(stem, ".html"))
+  files_dir    <- file.path(dirname(tpl_copy), paste0(stem, "_files"))
 
   ok <- tryCatch({
     quarto::quarto_render(
@@ -99,27 +109,92 @@ render_one_report <- function(rds_path, out_path, logger = NULL) {
     FALSE
   })
 
-  if (!isTRUE(ok)) return(invisible(FALSE))
+  if (!isTRUE(ok)) return(list(ok = FALSE))
 
   if (!file.exists(rendered_at)) {
     if (!is.null(logger)) {
       log4r::error(logger, sprintf("Render produced no output for %s", rds_path))
     }
-    return(invisible(FALSE))
+    return(list(ok = FALSE))
   }
   if (!place_render_output(rendered_at, out_path)) {
     if (!is.null(logger)) {
       log4r::error(logger, sprintf("Failed to place render output at %s", out_path))
     }
     unlink(rendered_at)
-    return(invisible(FALSE))
+    return(list(ok = FALSE))
   }
   if (!is.null(logger)) log4r::info(logger, sprintf("WROTE %s", out_path))
-  invisible(TRUE)
+  list(ok = TRUE, out_path = out_path, stem = stem, files_dir = files_dir)
+}
+
+#' Relative path from `from_file`'s directory up to `to_dir`. Both must share
+#' a common ancestor (which they do here — both live under QUALITY_REPORTS_ROOT).
+relative_path_to <- function(from_file, to_dir) {
+  from_parts <- strsplit(normalizePath(dirname(from_file), mustWork = FALSE), .Platform$file.sep, fixed = TRUE)[[1]]
+  to_parts   <- strsplit(normalizePath(to_dir,             mustWork = FALSE), .Platform$file.sep, fixed = TRUE)[[1]]
+  # Strip common prefix.
+  i <- 1L
+  while (i <= min(length(from_parts), length(to_parts)) &&
+         from_parts[i] == to_parts[i]) i <- i + 1L
+  ups   <- rep("..", length(from_parts) - i + 1L)
+  downs <- to_parts[i:length(to_parts)]
+  paste(c(ups, downs), collapse = "/")
+}
+
+#' Collapse all per-render `<stem>_files/libs/` trees into a single shared
+#' libs dir under QUALITY_REPORTS_ROOT/_libs/, then rewrite each HTML's
+#' references from `<stem>_files/libs/` to the relative path to `_libs/`.
+#' Returns the absolute path to the shared libs dir, or NULL if nothing to do.
+dedup_render_assets <- function(results, reports_root = QUALITY_REPORTS_ROOT,
+                                logger = NULL) {
+  ok_results <- Filter(function(r) is.list(r) && isTRUE(r$ok), results)
+  if (length(ok_results) == 0L) return(invisible(NULL))
+
+  shared_libs <- file.path(reports_root, SHARED_LIBS_DIRNAME)
+  unlink(shared_libs, recursive = TRUE)
+  dir.create(shared_libs, recursive = TRUE, showWarnings = FALSE)
+
+  # Pick the first render with an intact libs/ subdir as the source of truth.
+  src_libs <- NULL
+  for (r in ok_results) {
+    candidate <- file.path(r$files_dir, "libs")
+    if (dir.exists(candidate)) { src_libs <- candidate; break }
+  }
+  if (is.null(src_libs)) {
+    if (!is.null(logger)) log4r::warn(logger, "No per-render libs/ dir found; HTMLs will have broken asset refs")
+    return(invisible(shared_libs))
+  }
+
+  ok_copy <- file.copy(list.files(src_libs, full.names = TRUE),
+                       shared_libs, recursive = TRUE)
+  if (!all(ok_copy)) {
+    if (!is.null(logger)) log4r::warn(logger, "Some shared-libs files failed to copy")
+  }
+  if (!is.null(logger)) {
+    n_files <- length(list.files(shared_libs, recursive = TRUE))
+    log4r::info(logger, sprintf("Shared assets: %d file(s) under %s", n_files, shared_libs))
+  }
+
+  for (r in ok_results) {
+    rel_libs <- relative_path_to(r$out_path, shared_libs)
+    pattern  <- paste0(r$stem, "_files/libs/")
+    html     <- readLines(r$out_path, warn = FALSE)
+    html     <- gsub(pattern, paste0(rel_libs, "/"), html, fixed = TRUE)
+    writeLines(html, r$out_path)
+  }
+  if (!is.null(logger)) {
+    log4r::info(logger, sprintf("Rewrote asset references in %d HTML(s)", length(ok_results)))
+  }
+
+  # Clean up the per-render tempdirs.
+  for (r in ok_results) unlink(r$files_dir, recursive = TRUE)
+
+  invisible(shared_libs)
 }
 
 run_render_reports <- function(logs_dir       = PATHS$logs,
-                               processed_root = PATHS$processed,
+                               reports_root   = QUALITY_REPORTS_ROOT,
                                workers        = NULL) {
   if (!requireNamespace("quarto", quietly = TRUE)) {
     stop("'quarto' R package is required. Install with install.packages('quarto')")
@@ -145,7 +220,7 @@ run_render_reports <- function(logs_dir       = PATHS$logs,
     }
     form     <- parts[2]
     tax_year <- as.integer(parts[3])
-    out_path <- file.path(processed_root, tax_year, form,
+    out_path <- file.path(reports_root, tax_year, form,
                           sprintf("core_%d_%s_quality.html", tax_year, form))
     tasks[[length(tasks) + 1L]] <- list(rds = rds, out = out_path)
   }
@@ -172,8 +247,9 @@ run_render_reports <- function(logs_dir       = PATHS$logs,
 
   # Defensive: mclapply can return "try-error" objects in pathological cases
   # that escape the inner tryCatch (e.g. a worker SIGKILL). Treat anything
-  # not literally TRUE as a failure.
-  n_ok <- sum(vapply(results, isTRUE, logical(1)))
+  # without ok=TRUE as a failure.
+  is_ok <- function(r) is.list(r) && isTRUE(r$ok)
+  n_ok   <- sum(vapply(results, is_ok, logical(1)))
   n_fail <- length(results) - n_ok
   if (n_fail > 0L) {
     log4r::warn(logger, sprintf("Render run complete: %d HTML reports written, %d failed",
@@ -181,6 +257,9 @@ run_render_reports <- function(logs_dir       = PATHS$logs,
   } else {
     log4r::info(logger, sprintf("Render run complete: %d HTML reports written", n_ok))
   }
+
+  if (n_ok > 0L) dedup_render_assets(results, reports_root, logger)
+
   invisible(NULL)
 }
 

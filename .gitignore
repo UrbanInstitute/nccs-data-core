@@ -11,8 +11,10 @@ data/harmonized/
 data/processed/
 data/logs/
 
-# Quarto local cache
+# Quarto local cache + book build output (CI republishes on every push)
 docs/.quarto/
+docs/_freeze/
+docs/GUIDEBOOK/
 
 # Claude local settings
 .claude/settings.local.json

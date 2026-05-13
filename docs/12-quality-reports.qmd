@@ -1,0 +1,42 @@
+---
+title: "Quality Reports"
+---
+
+Auto-generated quality summaries for every `(form, tax_year)` combination
+processed by the pipeline. Each report covers row/column counts, NA rates,
+schema vs. crosswalk drift, and any assertion failures from Phase 5.
+
+Reports are produced by `R/07_render_report.R` after the validation phase
+and published alongside this book to GitHub Pages.
+
+```{r index, echo=FALSE, results="asis", message=FALSE, warning=FALSE}
+suppressPackageStartupMessages({
+  library(data.table)
+})
+
+reports_dir <- "quality-reports"
+if (!dir.exists(reports_dir)) {
+  cat("_No quality reports have been rendered yet._\n")
+} else {
+  files <- list.files(reports_dir, pattern = "_quality\\.html$", recursive = TRUE)
+  if (length(files) == 0L) {
+    cat("_No quality reports have been rendered yet._\n")
+  } else {
+    dt <- data.table(file = files)
+    # Path format: {tax_year}/{form}/core_{year}_{form}_quality.html
+    dt[, c("tax_year", "form") := tstrsplit(file, "/", keep = 1:2)]
+    dt[, tax_year := as.integer(tax_year)]
+    setorder(dt, form, -tax_year)
+
+    cat(sprintf("Total reports: **%d** across **%d** form(s).\n\n",
+                nrow(dt), uniqueN(dt$form)))
+
+    for (f in sort(unique(dt$form))) {
+      cat(sprintf("## %s\n\n", f))
+      sub <- dt[form == f]
+      cat(paste0("- [", sub$tax_year, "](", reports_dir, "/", sub$file, ")",
+                 collapse = "\n"), "\n\n")
+    }
+  }
+}
+```

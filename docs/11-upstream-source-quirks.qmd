@@ -76,6 +76,48 @@ The pipeline handles this by including `"2"` in the `INDICATOR_FALSE` set of `R/
 
 **Revisit if:** a `_cd`-suffixed harmonized column is ever introduced that uses trinary encoding (e.g. 0 = no, 1 = yes, 2 = unknown). The rule above would then silently miscode `"2"` as FALSE for that column. The fix in that case would be either (a) rename the new column off the `_cd` suffix at the crosswalk stage, matching how integer-code columns are already handled, or (b) switch to a per-column override list.
 
+## Filer-supplied balance-sheet identity failures (~12% of 990-EZ rows)
+
+About 11.8–12.1% of 990-EZ rows in tax_years 2013–2020 violate the identity `total_assets_eoy = total_liabilities_eoy + total_net_assets_eoy`. The rate trends down to 6.6–7.2% in 2021–2023 and 3.8% in 2024. Pre-2013 vintages (sourced from the 2012 SOI extract) show 5.5–9.3% on the bulk-row years (2011, 2012) and noisier rates on the small legacy CORE samples that contribute to 2000–2010.
+
+In 2017 990-EZ (representative year, 218,552 rows, 25,914 failures):
+
+- Sign distribution of `assets − liabilities − net_assets` is **mixed**: 59% positive, 41% negative. Not a single systematic offset.
+- Median `|diff|` is **$568**; long tail to $713,640.
+- Among failing rows, only **0.9%** have `net_assets == assets` — i.e. this is **not** the "liabilities subtraction missing during harmonization" signature.
+
+The reviewer-suggested hypothesis ("swap between `networthend` and `totnetassetsend` at the 2012→2013 boundary causing systematic harmonization failures") is **not supported by the data**: a wrong column mapping from 2013+ would produce ~100% failures from a fixed year onward, not a 12% plateau drifting downward. The three harmonized columns (`total_assets_eoy`, `total_liabilities_eoy`, `total_net_assets_eoy`) each map to a single SOI source variant that is stable across 2012+ extracts.
+
+The likeliest causes are upstream: small-org filers using fund-accounting conventions, accumulated-deficit reporting outside the simple identity, restated values across periods, or genuine filing errors. The pipeline does not recompute or override these — doing so would silently overwrite filer-supplied figures and erase real signal. A derived `balance_sheet_identity_ok` diagnostic flag would be the right approach for downstream filtering; one is not currently emitted.
+
+## Schedule A `_sec170` / `_sec509` blocks are filer-test-specific, zeros are not necessarily missing
+
+501(c)(3) public-support tests come in two flavors — Schedule A Part II (§170(b)(1)(A)(vi), "one-third public support" test) and Part III (§509(a)(2), "gross-receipts" test). Each filer uses **one** test; the other block is irrelevant to that filer.
+
+IRS-supplied extracts fill the unused block with **literal `0`**, not NULL. In 2017 990-EZ:
+
+- `gifts_grants_received_sec170` is 0 on 74.8% of rows (NA count: 0).
+- `total_gifts_grants_received_sec509` is 0 on 60.9% of rows (NA count: 0).
+- 819 rows have **both** blocks nonzero — orgs that switched tests mid-period or filed inconsistently.
+
+The filer's chosen test is encoded in `non_pf_status_reason` (see `data/lookups/non_pf_status_reason_codes.csv`). Cross-referencing that column gives an analyst the basis to decide which block's zeros are meaningful and which mean "did not use this test." The pipeline does **not** coerce these zeros to NA — that would require interpreting filer intent (a research decision, not a transformation), and would silently erase legitimate zero-value filings on whichever test the filer did use.
+
+## EZ filers exceeding the 990-EZ filing thresholds
+
+Form 990-EZ is restricted to organizations under $200k gross receipts and $500k assets. In tax_year 2017, **174 EZ filers report `total_revenue > $200k`** and **81 report `total_assets_eoy > $500k`**.
+
+Most are legitimate: the IRS threshold is on *gross receipts*, not net revenue, so a fundraiser-heavy org can clear $200k in revenue (net of large fundraising expenses) while staying under the gross-receipts cap. The remainder are orgs that filed the wrong form; IRS accepts these rather than rejecting. These rows are not pipeline artifacts and should be treated as legitimate signal that a small fraction of EZ filings would, by analyst convention, belong in the 990-full series.
+
+## Filer-supplied negatives on conceptually non-negative fields
+
+In tax_year 2017 990-EZ:
+
+- `total_contributions`: 12 negatives, min −$100,000
+- `program_service_revenue`: 54 negatives, min −$955,195
+- `gifts_grants_received_sec170`: 8 negatives, min −$137,821
+
+**None of these are amendments.** Only 3 rows in the entire 218,552-row file have `is_amendment == TRUE`, and zero of them overlap with the negatives. The values are IRS-supplied as-filed — plausibly refunded contributions exceeding receipts in a period, restated values, filer data-entry artifacts, or year-end netting that produces a negative aggregate. The pipeline does not sign-flip, zero out, or clip these; they are passed through faithfully.
+
 ## Trailing-empty header columns in py2020+ CSVs
 
 py2020+ `.csv` extracts have trailing commas in their header rows, which `fread` interprets as additional empty-named columns. For 990 py2020, that's 5 trailing empties (`v247`–`v251`); for 990-EZ py2020, 1 trailing empty (`v73`). Pre-checks ignore empty-named columns when counting against the expected vintage column count; the harmonize step drops them as unmapped. They are not real data columns.

@@ -90,6 +90,18 @@ Present in every output:
 - `extract_year` — int, processing year of the IRS SOI extract that supplied this row.
 - `is_amendment` — boolean, TRUE if the same `(ein, tax_period)` appears in an earlier `extract_year`.
 
+## Natural primary key
+
+The natural primary key is `(ein, tax_period)`. Duplicates on this key are exactly the rows where `is_amendment == TRUE` — the same filer submitted the same tax period in a later processing year (typically an amended return). Deduplication policy is the consumer's choice: keep only `is_amendment == FALSE` for the original filings, or keep the latest `extract_year` per `(ein, tax_period)` for amendment-superseded values.
+
+## `tax_year` is constant within a single output file
+
+Each CORE output is partitioned by `tax_year` (the first four characters of `tax_period`). Within a single `(tax_year, form)` file every row has the same `tax_year` value by construction. The column is retained — rather than dropped — so that downstream code stacking multiple-year outputs gets a working group/join key without re-derivation, and so that schemas match across years. Treat the redundancy within one file as a feature, not waste.
+
+## No top-coding or winsorization
+
+CORE outputs are **not** top-coded, winsorized, censored, or otherwise capped. Maximum values reflect the largest filer-supplied figure in the IRS SOI extract for that `(tax_year, form, column)` cell, unchanged. Identical maxes across related columns (e.g. `total_contributions` and `total_revenue` both maxing at the same value in a given year) reflect real-world equality for one filer (revenue = contributions when contributions are the only revenue source), not capping. The dictionary's `max_value` field is the raw extract maximum.
+
 ## `is_501c3` is not always TRUE in 990-PF
 
 About 6% of 990-PF rows are **§4947(a)(1) non-exempt charitable trusts treated as private foundations** (`subsection_cd = 92`, `is_501c3 = FALSE`). They file 990-PF because IRC treats them as private foundations for excise-tax purposes, but they are not 501(c)(3) exempt organizations. The `is_501c3` column makes this distinction queryable without requiring users to memorize subsection codes.

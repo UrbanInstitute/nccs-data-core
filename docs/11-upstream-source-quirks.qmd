@@ -118,6 +118,12 @@ In tax_year 2017 990-EZ:
 
 **None of these are amendments.** Only 3 rows in the entire 218,552-row file have `is_amendment == TRUE`, and zero of them overlap with the negatives. The values are IRS-supplied as-filed — plausibly refunded contributions exceeding receipts in a period, restated values, filer data-entry artifacts, or year-end netting that produces a negative aggregate. The pipeline does not sign-flip, zero out, or clip these; they are passed through faithfully.
 
+## Schedule B's filename is `f990ezb`, not `f990sb`
+
+IRS publishes blank Schedule B (Schedule of Contributors) under the basename `f990ezb` for **all three** forms it accompanies — 990, 990-EZ, and 990-PF. The `ez` in the filename is misleading; the same PDF is the official contributor schedule for every 990-series filer that has reportable contributions. The naming likely dates back to when Schedule B was introduced for 990-EZ first and the filename was never normalized when the schedule was extended.
+
+All other schedules follow the regular `f990s<letter>` pattern (`f990sa`, `f990sc`, `f990sd`, …). `scripts/download_irs_forms.R` hard-codes `f990ezb` as the canonical basename so the archive picks up Schedule B for every year that publishes it.
+
 ## Trailing-empty header columns in py2020+ CSVs
 
 py2020+ `.csv` extracts have trailing commas in their header rows, which `fread` interprets as additional empty-named columns. For 990 py2020, that's 5 trailing empties (`v247`–`v251`); for 990-EZ py2020, 1 trailing empty (`v73`). Pre-checks ignore empty-named columns when counting against the expected vintage column count; the harmonize step drops them as unmapped. They are not real data columns.

@@ -19,3 +19,29 @@ processed, with S3 paths at each tier.
 
 Raw + unpacked are partitioned by **processing year** (when IRS published the extract).
 Harmonized + processed are partitioned by **tax year** (`substr(tax_period, 1, 4)`).
+
+## Forms archive
+
+`data/raw/forms/` mirrors `s3://nccsdata/raw/core/forms/` and holds blank IRS Form 990, 990-EZ, 990-PF and their 16 common schedules (A through O, plus R), with accompanying instructions. Filenames follow the convention `<basename>_<YYYY>.pdf` — e.g. `f990_2024.pdf` for the 2024 form, `i990sj_2018.pdf` for the 2018 Schedule J instructions.
+
+Coverage (verified against the IRS prior-year publication archive):
+
+| Form / schedule | Year range | Notes |
+|---|---|---|
+| Main forms (`f990`, `f990ez`, `f990pf`) + instructions | 1990–2024 | IRS does not publish 1989 PDFs |
+| Schedule A | 1990–2024 | Public-charity status; in service since pre-redesign |
+| Schedules B, C, E, G, L, N, O | 2008–2024 | Some have older years available; instructions vary |
+| Schedules D, F, H, I, J, K, M, R | 2008–2024 | Introduced with the 2008 Form 990 redesign |
+
+Some schedules (notably M, N, O, and parts of I/L) have no standalone instruction PDFs because their instructions live inside the main 990 instructions booklet — that's an IRS publishing convention, not an archive gap.
+
+### Refreshing the archive
+
+```bash
+Rscript scripts/download_irs_forms.R --dry-run   # HEAD-only inventory
+Rscript scripts/download_irs_forms.R             # HEAD + GET, idempotent
+```
+
+The script is idempotent: existing local files are skipped without re-checking the URL. After each filing year ends and the IRS publishes the new prior-year PDFs, re-running picks up the additions. The companion `_manifest.csv` records HTTP status per candidate URL so misses can be triaged.
+
+Upload to S3 happens via phase 8 (gated on `ENABLE_UPLOAD_FORMS=TRUE`, the default), or directly with `aws s3 sync data/raw/forms/ s3://nccsdata/raw/core/forms/` for a one-shot push.

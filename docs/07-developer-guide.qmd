@@ -45,6 +45,11 @@ aws s3 sync s3://nccsdata/raw/core/soi-extracts/ data/raw/soi_extracts/
 # 4. Run the pipeline. Phase 1 will fetch the new year's extract; phase 3
 #    will rebuild every (tax_year, form) output as the union of all extracts.
 Rscript R/run_pipeline.R --years 2012-2025 --forms 990,990ez,990pf --strict
+
+# 5. (Optional) Refresh the blank-forms archive to pick up the new year's
+#    IRS-published PDFs (forms + schedules + instructions). Idempotent; skips
+#    files already on disk. See docs/02-data-lineage.qmd "Forms archive".
+Rscript scripts/download_irs_forms.R
 ```
 
 **Why this matters:** rerunning the pipeline against a partially-hydrated `data/intermediate/unpacked/` will silently drop rows for the missing processing years. The output files get rewritten with fewer rows; no error, no warning. Always rehydrate first.

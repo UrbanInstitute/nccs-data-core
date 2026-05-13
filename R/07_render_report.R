@@ -23,6 +23,27 @@ source(here("R", "create_logger.R"))
 
 TEMPLATE_PATH <- here::here("docs", "quality_report_template.qmd")
 
+#' Move a freshly rendered file into its final location, with a copy+unlink
+#' fallback when `file.rename` fails. The fallback exists because
+#' `file.rename` fails (silently returning FALSE) on cross-filesystem moves
+#' (EXDEV) — which happens when tempdir() resolves to tmpfs (/tmp) and the
+#' repo lives on a different mount, common inside Docker containers on EC2.
+#'
+#' `rename_fn` / `copy_fn` are injectable for unit testing only; production
+#' callers use the defaults.
+#'
+#' Returns TRUE only if the destination exists after the move.
+place_render_output <- function(src, dest,
+                                rename_fn = base::file.rename,
+                                copy_fn   = base::file.copy) {
+  moved <- suppressWarnings(rename_fn(src, dest))
+  if (!isTRUE(moved)) {
+    moved <- copy_fn(src, dest, overwrite = TRUE)
+    if (isTRUE(moved)) unlink(src)
+  }
+  isTRUE(moved) && file.exists(dest)
+}
+
 #' Resolve the worker count for parallel rendering.
 #'
 #' Order of precedence:
@@ -86,16 +107,7 @@ render_one_report <- function(rds_path, out_path, logger = NULL) {
     }
     return(invisible(FALSE))
   }
-  # file.rename() fails silently on cross-filesystem moves (EXDEV), which
-  # happens when tempdir() resolves to tmpfs (/tmp) and the repo lives on a
-  # different mount — common inside Docker containers on EC2. Fall back to
-  # copy+delete so the move is robust regardless of mount topology.
-  moved <- file.rename(rendered_at, out_path)
-  if (!isTRUE(moved)) {
-    moved <- file.copy(rendered_at, out_path, overwrite = TRUE)
-    if (isTRUE(moved)) unlink(rendered_at)
-  }
-  if (!isTRUE(moved) || !file.exists(out_path)) {
+  if (!place_render_output(rendered_at, out_path)) {
     if (!is.null(logger)) {
       log4r::error(logger, sprintf("Failed to place render output at %s", out_path))
     }

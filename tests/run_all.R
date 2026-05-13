@@ -34,7 +34,8 @@ TEST_FILES <- c(
   "test_combined.R",
   "test_dictionary.R",
   "test_pre_checks.R",
-  "test_post_checks.R"
+  "test_post_checks.R",
+  "test_render.R"
 )
 
 t0 <- Sys.time()

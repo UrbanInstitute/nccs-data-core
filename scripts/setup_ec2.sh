@@ -69,7 +69,17 @@ Rscript --vanilla -e '
             "duckdb","DBI","log4r","tidyverse","data.validator","assertr")
   to_install <- setdiff(pkgs, rownames(installed.packages()))
   if (length(to_install) > 0) {
-    install.packages(to_install, repos = "https://cloud.r-project.org",
+    # Posit Package Manager serves pre-compiled Ubuntu binaries keyed to the
+    # distro codename, cutting cold bootstrap from ~45 min (source builds) to
+    # ~2 min. Falls back to cloud.r-project.org if lsb_release is unavailable.
+    codename <- tryCatch(system("lsb_release -cs", intern = TRUE),
+                         error = function(e) character(0))
+    repo <- if (length(codename) == 1L && nzchar(codename)) {
+      sprintf("https://packagemanager.posit.co/cran/__linux__/%s/latest", codename)
+    } else {
+      "https://cloud.r-project.org"
+    }
+    install.packages(to_install, repos = repo,
                      Ncpus = max(1, parallel::detectCores() - 1))
   }
   ok <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)
@@ -83,10 +93,13 @@ log "Verifying AWS access"
 if aws sts get-caller-identity >/dev/null 2>&1; then
   identity="$(aws sts get-caller-identity --query Arn --output text)"
   echo "AWS identity: $identity"
-  if aws s3 ls s3://nccsdata/raw/core/soi-extracts/ >/dev/null 2>&1; then
-    echo "S3 read access to s3://nccsdata/raw/core/soi-extracts/ OK"
+  # head-bucket checks bucket-level read access without listing a prefix;
+  # `aws s3 ls <prefix>` returns nonzero on an empty prefix and produced a
+  # false-positive IAM warning on fresh buckets.
+  if aws s3api head-bucket --bucket nccsdata >/dev/null 2>&1; then
+    echo "S3 read access to s3://nccsdata OK"
   else
-    echo "WARNING: cannot list s3://nccsdata/raw/core/soi-extracts/ — check IAM permissions" >&2
+    echo "WARNING: cannot access s3://nccsdata — check IAM permissions" >&2
   fi
 else
   cat >&2 <<'EOF'

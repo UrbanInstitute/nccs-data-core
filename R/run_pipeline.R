@@ -25,6 +25,7 @@ source(here("R", "04_derive_combined.R"))
 source(here("R", "05_quality.R"))
 source(here("R", "06_dictionary.R"))
 source(here("R", "07_render_report.R"))
+source(here("R", "09_parquet.R"))
 source(here("R", "08_upload.R"))
 
 # Small helper, base R lacks %||% pre-4.4
@@ -80,6 +81,8 @@ apply_cli_overrides <- function(args) {
   if (has_flag(args, "--no-quality"))   CONFIG$ENABLE_QUALITY       <<- FALSE
   if (has_flag(args, "--no-dictionary"))CONFIG$ENABLE_DICTIONARY    <<- FALSE
   if (has_flag(args, "--no-render"))    CONFIG$ENABLE_RENDER_REPORT <<- FALSE
+  if (has_flag(args, "--parquet"))      CONFIG$ENABLE_PARQUET       <<- TRUE
+  if (has_flag(args, "--no-parquet"))   CONFIG$ENABLE_PARQUET       <<- FALSE
   if (has_flag(args, "--no-upload"))    CONFIG$ENABLE_S3_UPLOAD     <<- FALSE
   if (has_flag(args, "--upload"))       CONFIG$ENABLE_S3_UPLOAD     <<- TRUE
   if (has_flag(args, "--strict"))       CONFIG$STRICT_QUALITY_GATES <<- TRUE
@@ -162,6 +165,8 @@ run_pipeline <- function(processing_years = CONFIG$EARLIEST_YEAR:CONFIG$LATEST_Y
         function() run_dictionary())
   phase("7 render",    CONFIG$ENABLE_RENDER_REPORT, logger,
         function() run_render_reports())
+  phase("9 parquet",   CONFIG$ENABLE_PARQUET,       logger,
+        function() run_parquet())
   phase("8 upload",    TRUE,                         logger,
         function() run_upload(dry_run = dry_run, run_timestamp = run_timestamp,
                               enable_upload = CONFIG$ENABLE_S3_UPLOAD))

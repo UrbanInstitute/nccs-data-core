@@ -15,6 +15,7 @@ CONFIG <- list(
   ENABLE_QUALITY           = TRUE,
   ENABLE_DICTIONARY        = TRUE,
   ENABLE_RENDER_REPORT     = TRUE,
+  ENABLE_PARQUET           = FALSE,  # write .parquet next to processed .csv for API/R-package consumption
   ENABLE_S3_UPLOAD         = FALSE,
 
   # Per-tier upload toggles
@@ -54,6 +55,7 @@ PATHS <- list(
   soi_extracts      = "data/raw/soi_extracts",
   soi_dictionaries  = "data/raw/soi_dictionaries",
   forms             = "data/raw/forms",
+  legacy_raw        = "data/raw/legacy/core",        # mirror of s3://nccsdata/legacy/core/, pre-2012 PZ + PF only
   intermediate      = "data/intermediate",
   unpacked          = "data/intermediate/unpacked",
   harmonized        = "data/intermediate/harmonized",

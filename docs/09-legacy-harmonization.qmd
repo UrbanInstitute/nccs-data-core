@@ -62,6 +62,21 @@ The BASELINE crosswalk builder includes a legacy source column in the harmonized
 
 **Threshold reference.** "3 tax years" means 3 distinct values of `tax_year` derived from the source filename, irrespective of how many 501C3/501CE/PF variants of that year contain the column. The threshold is hard-coded in the BASELINE-builder script and may be tunable later if downstream needs surface.
 
+### Schema parity with SOI-current: drop BMF-origin columns
+
+Legacy CORE files carry NCCS-appended BMF metadata columns (`NCCSKEY`, `EOSTATUS`, `NTEE*`, `ACCPER`, `INC_CODE`, `FNDCD`, `AFFILCD`, ...) that the SOI-current CORE files do **not** carry. These columns are dropped from the legacy harmonized output.
+
+**Rationale.** Two reasons:
+
+1. *Cross-pipeline parity.* If legacy output carried BMF columns and SOI-current didn't, analysts stacking the panels would see a column footprint that depends on tax year — exactly the friction harmonization is meant to eliminate.
+2. *Freshness.* BMF columns frozen into a 1995 CORE file are a 1995 snapshot. Analysts who want `EOSTATUS` for a 1995 row are better served joining against the current BMF master, which has lineage information the frozen snapshot lacks.
+
+**Mechanism.** Columns missing a description in the CORE dictionary (i.e., not part of the CORE financial-data schema, only present as appended BMF metadata) are pre-marked in the OVERRIDES crosswalk with `harmonized_name = ""`. The harmonize step skips empty harmonized names. The row is retained in OVERRIDES so the decision is auditable and reversible — a specific column can be re-added by setting a real name.
+
+**How to get BMF context downstream.** Analysts join the harmonized legacy output against the BMF master (`s3://nccsdata/geocoding/bmf-master/merged/bmf_master_geocoded.parquet`, refreshed yearly). Primary join key: `ein`. Secondary key for subsection-level filtering: CORE `subsection_cd` ↔ BMF `subsection_code`. The two pipelines maintain parallel copies of `data/lookups/subsection_codes.csv`, both derived from IRS IRM 25.7.1 Exhibit 25.7.1-4; cross-check periodically.
+
+**Trade-off.** Legacy rows lose direct access to NCCS-historical BMF snapshots (the value of `EOSTATUS` as recorded in the 1995 NCCS CORE build, specifically). For most analyses this is fine — current BMF is more accurate. For longitudinal studies of organizational status *changes* it matters, but those analyses should pull from a versioned BMF history rather than CORE-side frozen snapshots anyway.
+
 ## Series mapping (planned)
 
 | Series | Pre-2012 source | 2012+ source |

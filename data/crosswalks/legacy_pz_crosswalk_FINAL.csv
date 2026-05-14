@@ -1,0 +1,334 @@
+source_column,harmonized_name,label,description,section,dtype,n_tax_years,years_present,first_year,last_year,scope_observed
+A3LOBBY,a3lobby,Influence legislation?,"Organization attempted to influence legislation, sch.A.III.1","Schedule A, Part III: Statement About Activities",Character,11,1989-1999,1989,1999,501CE-NONPROFIT
+A4A_BUST,a4a_bust,"Gross Receipts, Rel'd Bus.-col.E (tot)","Gross receipts from business related to charitable purpose- col. E (total) (Sch.A.IV-A,17)","Schedule A, Part IV:  Reason for Non-Private Foundation Status",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+A4A_CNT,a4a_cnt,"Gifts, grants, contribs.-4yrs","Gifts, grants, and contributions received (total of last 4 years), Sch A, line 15(e)",Schedule A,Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+A4A_GVTT,a4a_gvtt,Srvcs. & Facil. fr. Govt.-col. E (tot),Value of services or facilities furnished by government without charge- col. E (total) (Sch.A.IV-A),"Schedule A, Part IV:  Reason for Non-Private Foundation Status",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+A4A_IVST,a4a_ivst,"Gross Inc, Invest.-col. E (tot)",Gross income from investments- col. E (total) (Sch.A.IV-A),"Schedule A, Part IV:  Reason for Non-Private Foundation Status",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+A4A_MEMT,a4a_memt,Memb. Fees Rec'd-col. E (tot),Membership fees received- col. E (total) (Sch.A.IV-A),"Schedule A, Part IV:  Reason for Non-Private Foundation Status",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+A4A_OTHT,a4a_otht,Other Income- Col. E (tot),Other income- col. E (total) (Sch.A.IV-A),"Schedule A, Part IV:  Reason for Non-Private Foundation Status",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+A4A_TAXT,a4a_taxt,Tax Rev.levied for Org.- Col. E (tot),Tax revenues levied on organization's behalf- col. E (total) (Sch.A.IV-A),"Schedule A, Part IV:  Reason for Non-Private Foundation Status",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+A4A_TOTT,a4a_tott,"Tot., Ln. 15 to 22- Col. E (tot)",Total of lines 15 to 22- col. E (total) (Sch.A.IV-A),"Schedule A, Part IV:  Reason for Non-Private Foundation Status",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+A6DLBYB,a6dlbyb,Tot. Direct Lbbyg Exp.-col. A (all),Total direct lobbying expense- Sch.A.VI-A.37b (all elct orgs.),"Schedule A, Part VI-A:  Lobbying Expenditures by Electing Public Charities",Character,11,1989-1999,1989,1999,501CE-NONPROFIT
+A6GLBYB,a6glbyb,Tot. Grassroots Lbbyg Exp-col. A (all),Total grassroots lobbying expenditures- col. B (all elct orgs.),"Schedule A, Part VI-A:  Lobbying Expenditures by Electing Public Charities",Character,11,1989-1999,1989,1999,501CE-NONPROFIT
+A6NGLBB,a6nglbb,Grsrts Ntax. Amt (25% Li41)-col. B (all),Maximum grassroots nontaxable amount (25% of line 41)- Sch.A.VI.42b (all elct orgs.),"Schedule A, Part VI-A:  Lobbying Expenditures by Electing Public Charities",Character,3,1997-1999,1997,1999,501CE-NONPROFIT
+A6NLBEB,a6nlbeb,Li38-li41 (0 If Li41>li38)-all Elect Org,Subtract line 38 from line 41 (0 if line 41>line 38)- col. B (all elct orgs.),"Schedule A, Part VI-A:  Lobbying Expenditures by Electing Public Charities",Character,11,1989-1999,1989,1999,501CE-NONPROFIT
+A6NTLBB,a6ntlbb,Max. Nontax. Lobbying Amt-col. B (all),Maximum nontaxable lobbying amount Sch.A.VI.41b (all elct orgs.),"Schedule A, Part VI-A:  Lobbying Expenditures by Electing Public Charities",Character,3,1997-1999,1997,1999,501CE-NONPROFIT
+A6OEXPB,a6oexpb,Oth. Exempt Purp. Exp.-col. B (all),Other exempt purpose expenditures- Sch.A.VI.39b (all elct orgs.),"Schedule A, Part VI-A:  Lobbying Expenditures by Electing Public Charities",Character,3,1997-1999,1997,1999,501CE-NONPROFIT
+A6TGLBB,a6tglbb,Subtract Li42 fr. Li36 (0 If Li42>li36),Subtract line 42 from liine 36 (0 if line 42>line 36)- col. B (all elct orgs.),"Schedule A, Part VI-A:  Lobbying Expenditures by Electing Public Charities",Character,11,1989-1999,1989,1999,501CE-NONPROFIT
+ACCPER,accper,Accounting period (MM),Accounting period,Miscellaneous,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+ACCPERMO,"","","","","",3,1997-1999,1997,1999,501CE-NONPROFIT
+ACTIV,"","","","","",14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+ACTIV1,activ1,IRS Activity Code 1,First activity code.,Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+ACTIV2,activ2,IRS Activity Code 2,Second activity code.,Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+ACTIV3,activ3,IRS Activity Code 3,Third activity code.,Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+ACTIVCD1,activcd1,IRS Activity Code 1,IRS Activity Code 1 chosen by organization when it applied for exemption,Classification,Character,11,1989-1999,1989,1999,501CE-NONPROFIT
+ACTIVCD2,activcd2,IRS Activity Code 2,IRS Activity Code 2 chosen by organization when it applied for exemption,Classification,Character,3,1997-1999,1997,1999,501CE-NONPROFIT
+ACTIVCD3,activcd3,IRS Activity Code 3,IRS Activity Code 3 chosen by organization when it applied for exemption,Classification,Character,3,1997-1999,1997,1999,501CE-NONPROFIT
+ADDRESS,address,Address,Address,Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+ADVRULDT,"","","","","",3,1997-1999,1997,1999,501CE-NONPROFIT
+AFCD,afcd,Affiliation code,Affiliation code,Other Descriptive Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+AFFILCD,"","","","","",3,1997-1999,1997,1999,501CE-NONPROFIT
+ARC,"","","","","",11,"1997-2002, 2004, 2007-2010",1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+ARED,ared,Advance Ruling Expiration Date,Advance Ruling Expiration Date,Other Descriptive Info,Character,22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+ASCD,ascd,Asset code,Asset code,Financial Info,Character,3,"1989-1990, 1992",1989,1992,501CE-NONPROFIT
+ASSETCD,"","","","","",6,1994-1999,1994,1999,501CE-NONPROFIT
+ASSETS,"","","","","",4,"1997-1999, 2004",1997,2004,501C3-CHARITIES|501CE-NONPROFIT
+ASS_BOY,ass_boy,Total Assets - BOY,"Total assets at beginning of year Old 990 (DocCD=90): Part IV, Line 59, Col (A) New 990 (DocCD=93): Part X Line 16 (A) 990EZ (DocCD=09 and 92): Part II, Line 25, Col (A)",Balance Sheet,Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+ASS_CODE,"","","","","",11,"1997-2002, 2004, 2007-2010",1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+ASS_EOY,ass_eoy,Total Assets - EOY,"Total assets at end of year Old 990 (DocCD=90): Part IV, Line 59, Col (B) New 990 (DocCD=93): Part X Line 16 (B) 990EZ (DocCD=09 and 92): Part II, Line 25, Col (B)",Balance Sheet,Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+AdminExpCode,adminexpcode,"","Mangement and General Code (Identifies which file the estimate was taken from SOI, Core, etc.)",Supplemental fields (Authorized Users Only),Character,4,2007-2010,2007,2010,501C3-CHARITIES
+AdminExpEstimate,adminexpestimate,"",Management and general Estimate,Supplemental fields (Authorized Users Only),Numeric,4,2007-2010,2007,2010,501C3-CHARITIES
+AdminExpYr,adminexpyr,"",Managment and general Estimate Year (Identifies the Fiscal Year from which the estimate was taken),Supplemental fields (Authorized Users Only),Numeric,4,2007-2010,2007,2010,501C3-CHARITIES
+BOND_BOY,bond_boy,Tax Exempt Bonds - BOY,"Tax exempt bonds at beginning of year Old 990 (DocCD=90): Part IV, Line 64a, Col (A) New 990 (DocCD=93) and 990EZ (DocCD=09 and 92): Not available",Balance Sheet,Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+BOND_EOY,bond_eoy,Tax Exempt Bonds - EOY,"Tax exempt bonds at end of year Old 990 (DocCD=90): Part IV, Line 64a, Col (B) New 990 (DocCD=93): Part X Line 20 (B) 990EZ (DocCD=09 and 92): Not Available",Balance Sheet,Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+CATEGORY,"","","","","",4,1995-1998,1995,1998,501C3-CHARITIES
+CITY,city,City,City,Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+CLASSCD,classcd,Classification code-brkdwn of,IRS Classification code,Other Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+CODE990,"","","","","",21,1990-2010,1990,2010,501C3-CHARITIES|501CE-NONPROFIT
+COMPENS,compens,Compensation of Officers,"Compensation of officers Old 990 (DocCD=90): Part II, Line 25a, Col (A) New 990 (DocCD=93): Part IX Line 5 (A) 990EZ (DocCD=09 and 92): Not Available","Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+CONT,cont,Total Contributions,"Total contributions, gifts, and grants Old 990 (DocCD=90): Part I, Line 1e New 990 (DocCD=93): Part VIII Line 1h 990EZ (DocCD=09 and 92): Part I, Line 1","Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+CONT4,cont4,Total Gifts and Grants,"Total gifts, grants, and contributions received Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part IV-A, Line 15, Col (e) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+CONTACT,contact,Contact person (from IRS files,Contact person (from IRS files),Other Descriptive Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+CYCLE,"","","","","",12,"1997-2002, 2004, 2006-2010",1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+CashCode,cashcode,Code for Cash,Code for Estimated Cash,Supplemental fields (Authorized Users Only),Character,13,1998-2010,1998,2010,501C3-CHARITIES
+CashEstimate,cashestimate,Cash,Estimated Cash,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+CashYr,cashyr,Year of Cash,Year of Estimated Cash,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+Confidence,"","","","","",15,1989-2003,1989,2003,501CE-NONPROFIT
+Confidence2007a,"","","","","",17,1989-2005,1989,2005,501CE-NONPROFIT
+DEDUCTCD,deductcd,IRS deductability code,IRS Deductibility code,Other Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+DIREXP,direxp,Special Events Expenses,"Special events direct expenses Old 990 (DocCD=90): Part I, Line 9b New 990 (DocCD=93): Sum of Part VIII Lines 8b and 9b 990EZ (DocCD=09 and 92): Part I, Line 6b","Revenues, Expenses, and Change in Net Assets",Numeric,21,1991-2011,1991,2011,501C3-CHARITIES|501CE-NONPROFIT
+DISTRICT,district,IRS District Ofc.,IRS District Office,Other Descriptive Info,Character,21,1989-2009,1989,2009,501C3-CHARITIES|501CE-NONPROFIT
+DLN,dln,Document locator number,Document Locator Number used by the IRS,Internal Processing,Character,11,2000-2010,2000,2010,501C3-CHARITIES|501CE-NONPROFIT
+DOCLOCNO,"","","","","",3,1997-1999,1997,1999,501CE-NONPROFIT
+DUES,dues,Dues,"Membership dues and assessments Old 990 (DocCD=90): Part I, Line 3 Old 990EZ (DocCD=09): Part I, Line 3 New 990 (DocCD=93): Not available - Amounts reported as DUES in Part I, Line 3 of Form 990 prior to 2008 are reported as Program Service Revenue in Part VIII, Line 2g of New 990 (see PROGREV) New 990EZ (DocCD=92): Not available - DUES amounts reported in Part I, Line 3 of New 990EZ were not available from the IRS for New 990EZ returns for this period. IMPORTANT NOTE: Amounts reported as DUES in Part I, Line 3 of Form 990 prior to tax year 2008 are reported as Program Service Revenue in Part VIII, Line 2g (PROGREV) of Form 990 beginning in tax year 2008. For this reason, DUES is not available in Core PC and CO files circa 2011 and newer. For this reason, the following adjustment will be necessary for comparison of PROGREV and DUES revenue components in Core files prior to 2011: [PROGREV+DUES in Core files prior to 2011] = [PROGREV in Core files 2011 and later]. Due to Form 990 revisions in tax year 2008: NCCS strongly recommends combining DUES and PROGREV revenue components for all analysis involving Core files containing both Old 990 (DocCD=90) and New 990 (DocCD=93) return data (Core files 2008-2010), and for all time-series analysis spanning Core file years 2008 and newer.","Revenues, Expenses, and Change in Net Assets",Numeric,22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+DUES4,dues4,Total Membership Fees,"Total membership fees received Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part IV-A, Line 16, Col (e) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+DirSupCode,dirsupcode,Code for Direct public support,Code for Estimated Direct public support,Supplemental fields (Authorized Users Only),Character,14,1998-2011,1998,2011,501C3-CHARITIES
+DirSupEstimate,dirsupestimate,Direct public support,Estimated Direct public support,Supplemental fields (Authorized Users Only),Numeric,14,1998-2011,1998,2011,501C3-CHARITIES
+DirSupYr,dirsupyr,Year of Direct public support,Year of Estimated Direct public support,Supplemental fields (Authorized Users Only),Numeric,14,1998-2011,1998,2011,501C3-CHARITIES
+DocCD,doccd,990 Document Type Code,"A 2-digit code identifying type of Form 990 (990, 990-EZ, or 990-PF), and form revision (form revision 2007 and earlier vs. 2008 and later). Document Code is the 4th and 5th digits of the DLN assigned by the IRS.",Miscellaneous,Character,10,2002-2011,2002,2011,501C3-CHARITIES|501CE-NONPROFIT
+EIN,ein,Employer Identification Number,Employer identification number.,Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+ENDDATE,"","","","","",10,1989-1998,1989,1998,501C3-CHARITIES
+EOSTATUS,"","","","","",12,"1997-2002, 2004, 2007-2011",1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+EOY,"","","","","",3,"2007, 2009-2010",2007,2010,501C3-CHARITIES|501CE-NONPROFIT
+EXGRROOT,exgrroot,Excess Grass Roots Exp,"Excess grass roots expenditures - subtract line 42 from line 36. Enter -0- if line 42 is more than line 36 Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part VI-A, Line 43, Col (b) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+EXLOBEXP,exlobexp,Excess Lobbying Exp,"Excess lobbying expenditures - subtract line 41 from line 38. Enter -0- if line 41 is more than line 38 Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part VI-A, Line 44, Col (b) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+EXPS,exps,Total Expenses,"Total expenses Old 990 (DocCD=90): Part I, Line 17 New 990 (DocCD=93): Part IX Line 25 (A) 990EZ (DocCD=09 and 92): Part I, Line 17","Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+FILER,filer,990 filing w/n 2 years? (Y/N),Filed 990 return within 24 months of BMF file? (Y/N),Basic Info,Character,8,1989-1996,1989,1996,501CE-NONPROFIT
+FILREQCD,"","","","","",3,1997-1999,1997,1999,501CE-NONPROFIT
+FIPS,fips,State + County FIPS code,2-digit State + 3-digit County FIPS code (Federal Information Processing Standard). See also U.S. Census Bureau State & County QuickFacts .,Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+FISYR,fisyr,Fiscal year,Fiscal year (ending year),Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+FNDCD,"","","","","",4,1995-1998,1995,1998,501C3-CHARITIES
+FNDNCD,fndncd,Reason for 501(c)(3) status,"Reason for & type of 501(c)(3) exempt status including codes for operating and grantmaking foundations, and broad type of public charity",Other Descriptive Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+FRCD,frcd,Filing Requirement Code,Filing requirements code. The 1st 2 characters indicate the requirements for 990/990-EZ forms. The 3rd character = 1 if a 990-PF is required or 0 if not.,Other Descriptive Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+FUNDBAL,fundbal,Net Assets - EOY,"Net assets or fund balances at end of year Old 990 (DocCD=90): Part I, Line 21 New 990 (DocCD=93): Part I Line 22 (End of Year) 990EZ (DocCD=09 and 92): Part II, Line 27, Col (B)","Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+FUNDFEES,fundfees,Professional Fundraising Fees,"Professional fundraising fees Old 990 (DocCD=90): Part II, Line 30, Col (A) or (D) New 990 (DocCD=93): Part IX Line 11e (A) 990EZ (DocCD=09 and 92): Not Available","Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+FUNDINC,fundinc,Special Events Net Income,"Net income from special events and activities Old 990 (DocCD=90): Part I, Line 9c New 990 (DocCD=93): Sum of Part VIII Line 8c (A) and 9c (A) 990EZ (DocCD=09 and 92): Part I, Line 6c","Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+FY_97,"","","","","",3,1996-1998,1996,1998,501C3-CHARITIES
+FipsOld,"","","","","",12,"1989-1999, 2004",1989,2004,501C3-CHARITIES|501CE-NONPROFIT
+FipsOldA,"","","","","",16,1989-2004,1989,2004,501C3-CHARITIES|501CE-NONPROFIT
+GEN,gen,Group Exemption Number,Group Exemption Number,Other Descriptive Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+GOODS,goods,Inventory Cost of Goods Sold,"Inventory cost of goods sold Old 990 (DocCD=90): Part I, Line 10b New 990 (DocCD=93): Part VIII Line 10b 990EZ (DocCD=09 and 92): Part I, Line 7b","Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+GRINC,"","","","","",22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+GROSSINC,grossinc,"Gr.income (gr.rec.-1d,3,8b,10b","Gross income, Gross Receipts minus (lines 1d + 3 + 8b + 10b)",Part II:  Statement of Functional Expenses,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+GROSSREC,grossrec,Gross receipts,"Gross receipts, Sum of Part I total revenue + 6b + 8b (both columns) + 9b + 10b",Part II:  Statement of Functional Expenses,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+GRPROF,grprof,Inventory Gross Profit,"Gross profit/loss from sales of inventory Old 990 (DocCD=90): Part I, Line 10c New 990 (DocCD=93): Part VIII Line 10c (A) 990EZ (DocCD=09 and 92): Part I, Line 7c","Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+GRREC,grrec,Total Gross Receipts (calculated),"Calculation of total gross receipts is based on version of Form 990/990EZ (see DocCD) Old 990 (DocCD=90): Part I, Line 8b(A), plus Line 8b(B), plus Line 6b, plus Line 9b, plus Line 10b, plus Line 12 New 990 (DocCD=93): Part VIII, Line 12, plus Line 6b(i), plus Line 6b(ii), plus Line 7b(i), plus Line 7b(ii), plus Line 8b, plus Line 9b, plus Line 10b 990EZ (DocCD=09 and 92): Part I, Line 5b, plus Line 6b, plus Line 7b, plus Line 9","Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+GRREC4,grrec4,"Total Admissions, Sales, etc. Related to Purpose","Total gross receipts from admissions, merchandise or services, etc. related to charitable purpose Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part IV-A, Line 17, Col (e) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+GRRECMEM,grrecmem,Gross Income - Members,"501(c)(12) orgs - Gross income from members or shareholders Old 990 (DocCD=90): Part VI, Line 87a New 990 (DocCD=93): Part V Line 11a 990EZ (DocCD=09 and 92): Not Available",Other Information,Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+GRRECOTH,grrecoth,Gross Income - Other,"501(c)(12) orgs - Gross income from other sources Old 990 (DocCD=90): Part VI, Line 87b New 990 (DocCD=93): Part V Line 11b 990EZ (DocCD=09 and 92): Not Available",Other Information,Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+GRRECPUB,grrecpub,Income Public Use of Facilities,"501(c)(7) orgs - Gross receipts for public use of club facilities Old 990 (DocCD=90): Part VI, Line 86b New 990 (DocCD=93): Part V Line 10b 990EZ (DocCD=09 and 92): Part V, Line 39b",Other Information,Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+GRROOT,grroot,Grass Roots Expenses,"Total lobbying expenditures to influence public opinion (grassroots lobbying) Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part VI-A, Line 36, Col (b) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+GRTNONTX,grtnontx,Grass Roots Nontaxable Amt,"Grassroots nontaxable amount (enter 25% of line 41) Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part VI-A, Line 42, Col (b) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+GVTSRV4,gvtsrv4,Total Govt Services/Facilities,"Services or facilities furnished by a governmental unit Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part IV-A, Line 21, Col (e) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+GovGtCode,govgtcode,Code for Contributions from government grants,Code for Estimated Contributions from government grants,Supplemental fields (Authorized Users Only),Character,15,1997-2011,1997,2011,501C3-CHARITIES
+GovGtEstimate,govgtestimate,Contributions from government grants,Estimated Contributions from government grants,Supplemental fields (Authorized Users Only),Numeric,15,1997-2011,1997,2011,501C3-CHARITIES
+GovGtYr,govgtyr,Year of Contributions from government grants,Year of Estimated Contributions from government grants,Supplemental fields (Authorized Users Only),Numeric,15,1997-2011,1997,2011,501C3-CHARITIES
+INCCD,inccd,Income range code,Income range code,Financial Info,Character,3,"1989-1990, 1992",1989,1992,501CE-NONPROFIT
+INCOME,"","","","","",4,"1997-1999, 2004",1997,2004,501C3-CHARITIES|501CE-NONPROFIT
+INCOMECD,"","","","","",6,1994-1999,1994,1999,501CE-NONPROFIT
+INCPURP4,incpurp4,"Total Support Less Sales, etc.","Total support less admissions, merchandise, etc. - line 23 less line 17 Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part IV-A, Line 24, Col (e) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+INC_CODE,"","","","","",11,"1997-2002, 2004, 2007-2010",1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+INFLEXP,inflexp,Direct Lobbying Expenses,"Total lobbying expenditures to influence a legislative body (direct lobbying) Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part VI-A, Line 37, Col (b) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+INITFEES,initfees,Initiation Fees,"501(c)(7) orgs - Initiation fees and capital contributions Old 990 (DocCD=90): Part VI, Line 86a New 990 (DocCD=93): Part V Line 10a 990EZ (DocCD=09 and 92): Part V, Line 39a",Other Information,Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+INVENTG,inventg,Inventory Gross Sales,"Gross sales of inventory, less returns and allowances Old 990 (DocCD=90): Part I, Line 10a New 990 (DocCD=93): Part VIII Line 10a 990EZ (DocCD=09 and 92): Part I, Line 7a","Revenues, Expenses, and Change in Net Assets",Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+INVINC,invinc,Total Investment Income,"Total investment income Old 990 (DocCD=90): Sum of Part I, Lines 4, 5, & 7 New 990 (DocCD=93): Part VIII Line 3A 990EZ (DocCD=09 and 92): Part I, Line 4","Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+INVINC4,invinc4,Total Interest and Dividends,"Gross income from interest, dividends, payments on securities loans, etc. Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part IV-A, Line 18, Col (e) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+IndSupCode,indsupcode,Code for Indirect public support,Code for Estimated Indirect public support,Supplemental fields (Authorized Users Only),Character,14,1998-2011,1998,2011,501C3-CHARITIES
+IndSupEstimate,indsupestimate,Indirect public support,Estimated Indirect public support,Supplemental fields (Authorized Users Only),Numeric,14,1998-2011,1998,2011,501C3-CHARITIES
+IndSupYr,indsupyr,Year of Indirect public support,Year of Estimated Indirect public support,Supplemental fields (Authorized Users Only),Numeric,14,1998-2011,1998,2011,501C3-CHARITIES
+InvOthCode,invothcode,Code for Other Investments,Code for Estimated Other Investments,Supplemental fields (Authorized Users Only),Character,13,1998-2010,1998,2010,501C3-CHARITIES
+InvOthEstimate,invothestimate,Other Investments,Estimated Other Investments,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+InvOthYr,invothyr,Year of Other Investments,Year of Estimated Other Investments,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+InvSecCode,invseccode,Code for Investment Securities (other securities a,Code for Estimated Investment Securities (other securities and publicly traded securities),Supplemental fields (Authorized Users Only),Character,13,1998-2010,1998,2010,501C3-CHARITIES
+InvSecEstimate,invsecestimate,Investment Securities (other securities and public,Estimated Investment Securities (other securities and publicly traded securities),Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+InvSecYr,invsecyr,Year of Investment Securities (other securities an,Year of Estimated Investment Securities (other securities and publicly traded securities),Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+LATITUDE,latitude,Latitude,Latitude,Miscellaneous,Numeric,4,"2006-2007, 2010-2011",2006,2011,501C3-CHARITIES|501CE-NONPROFIT
+LBEBOYCode,lbeboycode,"Code for Land, Building and Equipment - beginning","Code for Estimated Land, Building and Equipment - beginning of year",Supplemental fields (Authorized Users Only),Character,13,1998-2010,1998,2010,501C3-CHARITIES
+LBEBOYEstimate,lbeboyestimate,"Land, Building and Equipment - beginning of year","Estimated Land, Building and Equipment - beginning of year",Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+LBEBOYYr,lbeboyyr,"Year of Land, Building and Equipment - beginning o","Year of Estimated Land, Building and Equipment - beginning of year",Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+LEGEXP,legexp,Legislative Expenses,"Total expenses paid or incurred in connection with the lobbying activities Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part III, Line 1 New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+LEVEL1,level1,Public charity or priv. fndn?,Public charity or private foundation?,Other Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+LEVEL1old20090616,"","","","","",19,1989-2007,1989,2007,501C3-CHARITIES|501CE-NONPROFIT
+LEVEL2,level2,Reporting public charity group,Reporting public charity groups.,Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+LEVEL2old20090616,"","","","","",19,1989-2007,1989,2007,501C3-CHARITIES|501CE-NONPROFIT
+LEVEL3,level3,Major NTEE category,Major NTEE category,Other Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+LEVEL3old20090616,"","","","","",19,1989-2007,1989,2007,501C3-CHARITIES|501CE-NONPROFIT
+LEVEL4,level4,NTEE-CC Major Group,NTEE-CC Major Group,Other Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+LEVEL4old20090616,"","","","","",19,1989-2007,1989,2007,501C3-CHARITIES|501CE-NONPROFIT
+LIAB_BOY,liab_boy,Total Liabilities - BOY,"Total liabilities at beginning of year Old 990 (DocCD=90): Part IV, Line 66, Col (A) New 990 (DocCD=93): Part X Line 26 (A) 990EZ (DocCD=09 and 92): Part II, Line 26, Col (A)",Balance Sheet,Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+LIAB_EOY,liab_eoy,Total Liabilities - EOY,"Total liabilities at end of year Old 990 (DocCD=90): Part IV, Line 66, Col (B) New 990 (DocCD=93): Part X Line 26 (B) 990EZ (DocCD=09 and 92): Part II, Line 26, Col (B)",Balance Sheet,Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+LOBNOTAX,lobnotax,Lobbying Nontaxable Amt,"Lobbying nontaxable amount Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part VI-A, Line 41, Col (b) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+LOBOTH,loboth,Other Exempt Expenses,"Other exempt purpose expenditures Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part VI-A, Line 39, Col (b) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+LONGITUDE,longitude,Longitude,Longitude,Miscellaneous,Numeric,4,"2006-2007, 2010-2011",2006,2011,501C3-CHARITIES|501CE-NONPROFIT
+LRC,"","","","","",11,"1997-2002, 2004, 2007-2010",1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+MAJGRPB,majgrpb,Major NTEE group,Major NTEE group plus hospitals and higher education,Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+MANUAL,"","","","","",4,1989-1992,1989,1992,501C3-CHARITIES
+MRTG_BOY,mrtg_boy,Mortgages and Notes Payable - BOY,"Mortgages and other notes payable at beginning of year Old 990 (DocCD=90): Part IV, Line 64b, Col (A) New 990 (DocCD=93) and 990EZ (DocCD=09 and 92): Not available",Balance Sheet,Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+MRTG_EOY,mrtg_eoy,Mortgages and Notes Payable - EOY,"Mortgages and other notes payable at end of year Old 990 (DocCD=90): Part IV, Line 64b, Col (B) New 990 (DocCD=93): Part X Line 23 (B) 990EZ (DocCD=09 and 92): Not Available",Balance Sheet,Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+MSA,msa,Metropolitan Statistical Area,Metropolitan Statistical Area (NCCS file) ( list ),Basic Info,Character,7,1999-2005,1999,2005,501C3-CHARITIES
+MSA_NECH,msa_nech,Metropolitan Statistical Area,Metropolitan Statistical Area (NCCS file) ( list ),Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+NAICS,naics,NAICS Code,North American Industrial Classification System,Other Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+NAME,name,Name of organization,Organization name.,Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+NCCSKEY,nccskey,Unique key: ein + return date,Unique key: ein + return date,Basic Info,Character,12,2000-2011,2000,2011,501C3-CHARITIES|501CE-NONPROFIT
+NCCSKEY2,nccskey2,Unique key: ein + fiscal year,Unique key: ein + fiscal year,Internal Processing,Character,16,1996-2011,1996,2011,501C3-CHARITIES|501CE-NONPROFIT
+NEGINC,"","","","","",3,1997-1999,1997,1999,501CE-NONPROFIT
+NETA_BOY,neta_boy,Net Assets - BOY,"Net assets or fund balances at beginning of year Old 990 (DocCD=90): Part IV, Line 73, Col (A) New 990 (DocCD=93): Part X line 33 (A) 990EZ (DocCD=09 and 92): Part II, Line 27, Col (A)",Balance Sheet,Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+NETINC,netinc,Net Income/Deficit,"Net income (loss) for the year Old 990 (DocCD=90): Part I, Line 18 New 990 (DocCD=93): Part I Line 19 (Current Year) 990EZ (DocCD=09 and 92): Part I, Line 18","Revenues, Expenses, and Change in Net Assets",Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+NETRENT,netrent,Net Rental Income,"Net rental income Old 990 (DocCD=90): Part I, Line 6c New 990 (DocCD=93): Part VIII Line 6d (A) 990EZ (DocCD=09 and 92): Not Available","Revenues, Expenses, and Change in Net Assets",Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+NTEE,"","","","","",17,1989-2005,1989,2005,501C3-CHARITIES|501CE-NONPROFIT
+NTEE1,ntee1,NTEE major group,NTEE major group (A-Z),Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+NTEE2,"","","","","",16,"1989-1998, 2000-2005",1989,2005,501C3-CHARITIES
+NTEE4,ntee4,Revised NTEE 4 Classification,Four-digit NTEE code.,Other Classification,Character,8,1989-1996,1989,1996,501C3-CHARITIES
+NTEECC,nteecc,NTEECC primary purpose,NTEECC classification,Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+NTEEIRS,nteeirs,NTEE assigned by IRS,NTEE code assigned by IRS (includes NTEE-CC & XP codes),Other Classification,Character,8,"1997-1998, 2006-2011",1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+NTEESRC,"","","","","",22,"1989-2005, 2007-2011",1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+NetLandCode,netlandcode,Code for Net Land Building and Equipment,Code for Estimated Net Land Building and Equipment,Supplemental fields (Authorized Users Only),Character,13,1998-2010,1998,2010,501C3-CHARITIES
+NetLandEstimate,netlandestimate,Net Land Building and Equipment,Estimated Net Land Building and Equipment,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+NetLandYr,netlandyr,Year of Net Land Building and Equipment,Year of Estimated Net Land Building and Equipment,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+Ntee2007a,ntee2007a,NTEE-CC 2007,"NTEE-CC (2007 draft, v.1)",Miscellaneous,Character,17,1989-2005,1989,2005,501C3-CHARITIES|501CE-NONPROFIT
+Ntee42007a,"","","","","",11,1995-2005,1995,2005,501C3-CHARITIES
+NteeCC4d,nteecc4d,NTEE-CC 4th and 5th Digits,NTEE-CC code 4th & 5th characters used for supporting organizations,Other Classification,Character,18,1989-2006,1989,2006,501C3-CHARITIES|501CE-NONPROFIT
+NteeDraft,nteedraft,NTEECC draft,Draft NTEE-CC code,Miscellaneous,Character,15,"1989-1998, 2000-2004",1989,2004,501C3-CHARITIES|501CE-NONPROFIT
+NteeOldA,"","","","","",16,1989-2004,1989,2004,501C3-CHARITIES|501CE-NONPROFIT
+NumEmpCode,numempcode,Code for Number of employees,Code for Estimated number of employees,Supplemental fields (Authorized Users Only),Character,3,2008-2010,2008,2010,501C3-CHARITIES|501CE-NONPROFIT
+NumEmpEstimate,numempestimate,Number of employees,Estimated number of employees,Supplemental fields (Authorized Users Only),Numeric,3,2008-2010,2008,2010,501C3-CHARITIES|501CE-NONPROFIT
+NumEmpYr,numempyr,Year of Number of employees,Year of Estimated number of employees,Supplemental fields (Authorized Users Only),Character,3,2008-2010,2008,2010,501C3-CHARITIES|501CE-NONPROFIT
+OLDNTEE,"","","","","",6,1989-1994,1989,1994,501C3-CHARITIES
+ORGCD,orgcd,"Corporation, trust, assoc,etc.","Organization code: corporation, trust, association, etc.",Other Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+OTHCHGS,othchgs,Other Changes in Net Assets,"Other changes in net assets or fund balances Old 990 (DocCD=90): Part I, Line 20 Old 990EZ (DocCD=09): Part I, Line 20 New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available","Revenues, Expenses, and Change in Net Assets",Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+OTHINC,othinc,Other Income,"Other income Old 990 (DocCD=90): Part I, Line 11 New 990 (DocCD=93): Part VIII Line 11e (A) 990EZ (DocCD=09 and 92): Part I, Line 8","Revenues, Expenses, and Change in Net Assets",Numeric,22,"1989, 1991-2011",1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+OTHINC4,othinc4,Total Support,"Total support - sum of lines 15 through 22 Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part IV-A, Line 23, Col (e) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+OTHINVST,othinvst,Other Investment Income,"Other investment income Old 990 (DocCD=90): Part I, Line 7 Old 990EZ (DocCD=09): Part I, Line 4 New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available","Revenues, Expenses, and Change in Net Assets",Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+OTHSAL,othsal,Other Salaries,"Other salaries and wages of employees Old 990 (DocCD=90): Part II, Line 26, Col (A) New 990 (DocCD=93): Part IX Line 7 (A) 990EZ (DocCD=09 and 92): Not Available","Revenues, Expenses, and Change in Net Assets",Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+OUTNCCS,outnccs,Out of Scope flag,Out-of-scope (IN/OUT) (see OUTREAS doc. for details),Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+OUTNCCSold20090616,"","","","","",19,1989-2007,1989,2007,501C3-CHARITIES|501CE-NONPROFIT
+OUTREAS,outreas,Reason why out of scope,Reason why out of scope,Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+OUTREASold20090616,"","","","","",19,1989-2007,1989,2007,501C3-CHARITIES|501CE-NONPROFIT
+OthAsstCode,othasstcode,Code for Other assets,Code for Estimated Other assets,Supplemental fields (Authorized Users Only),Character,13,1998-2010,1998,2010,501C3-CHARITIES
+OthAsstEstimate,othasstestimate,Other assets,Estimated Other assets,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+OthAsstYr,othasstyr,Year of Other assets,Year of Estimated Other assets,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+P1CHGAS,p1chgas,Other changes in net assets or fund balances,Other changes in net assets or fund balances,"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P1DUES,p1dues,Dues & assessments,"Membership dues and assessments, line 3. (Includes only portion of dues for which member directly benefits. """"""""Dues"""""""" to public charities are often more accurately reported as Contributions.)","Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P1FREXP,p1frexp,Fund-raising expenses,Fund-raising expenses,"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P1INVNTC,p1invntc,"Inventory, cost of goods sold","Inventory, cost of goods sold","Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P1INVNTG,p1invntg,"Inventory, gross sales","Inventory, gross sales","Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P1INVNTN,p1invntn,"Inventory, gross profit (net)","Inventory, gross profit (net)","Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P1INVST,p1invst,Total invest. inc. (990 lines 4+5+7 OR EZ line 4),Total invest. inc. (990 lines 4+5+7 OR EZ line 4),"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P1NASEOY,p1naseoy,Net assets or fund balance-end of year,Net assets or fund balance-end of year,"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P1NETINC,p1netinc,"Net income (""""""""excess (or deficit) for the year"""""""")","Net income (""""""""excess (or deficit) for the year"""""""")","Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P1OTHC,p1othc,Cost or other basis (other),Cost or other basis (other),"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P1OTHG,p1othg,Gross amount from sale of assets (other),Gross amount from sale of assets (other),"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P1OTHN,p1othn,"Net gain (loss) from sale of """"""""other"""""""" assets other","Net gain (loss) from sale of """"""""other"""""""" assets other than inventory","Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P1OTHREV,p1othrev,Other revenue,Other revenue,"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,9,1991-1999,1991,1999,501CE-NONPROFIT
+P1PSREV,p1psrev,Program service revenue,Program service revenue,"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,9,1991-1999,1991,1999,501CE-NONPROFIT
+P1RENTE,p1rente,Rental expenses,Rental expenses,"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,9,1991-1999,1991,1999,501CE-NONPROFIT
+P1RENTN,p1rentn,Net rental income,Net rental income,"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P1SALES,p1sales,Sales & receipts,"Sales and receipts, Gross Receipts minus (lines 1d +3)",Part II:  Statement of Functional Expenses,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P1SECURC,p1securc,Cost or other basis (securities),Cost or other basis (securities),"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P1SECURG,p1securg,Gross amount from sale of assets (securities),Gross amount from sale of assets (securities),"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P1SECURN,p1securn,Gain (loss) from sale of securities,Gain (loss) from sale of securities,"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P1SPEVC,p1spevc,Special events - portion of gross reported in line,"Special events - portion of gross reported in line 1a, contributions, & not reported in line 9","Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Character,3,1997-1999,1997,1999,501CE-NONPROFIT
+P1SPEVE,p1speve,"Special events, direct expenses","Special events, direct expenses","Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,9,1991-1999,1991,1999,501CE-NONPROFIT
+P1SPEVN,p1spevn,"Special events, net income","Special events, net income","Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,9,1991-1999,1991,1999,501CE-NONPROFIT
+P1TCONT,p1tcont,Total contributions,Total contributions,"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P1TOTEXP,p1totexp,Total expenses,Total expenses,"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P1TOTREV,p1totrev,Tot.Rev.,Total revenue,"Part I:  Revenue, Expenses, and Changes in Net Assets or Fund Balances",Numeric,7,1993-1999,1993,1999,501CE-NONPROFIT
+P2TCOMP,p2tcomp,Compensation of officers-col. A (total),Compensation of officers-col. A (total),Part II:  Statement of Functional Expenses,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P2TFRFEE,p2tfrfee,Professional fundraising fees-total (col.A),Professional fundraising fees-total (col.A),Part II:  Statement of Functional Expenses,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P2TPYTAX,p2tpytax,Payroll taxes-col. A (total),Payroll taxes-col. A (total),Part II:  Statement of Functional Expenses,Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P2TWAGES,p2twages,Other salaries & wages-col. A (total),Other salaries & wages-col. A (total),Part II:  Statement of Functional Expenses,Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P4B_ASST,p4b_asst,Total assets- beg. of year,Total assets- beg. of year,Part IV:  Balance Sheets,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P4B_BOND,p4b_bond,Tax-exempt bond liabilities- beg. of year,Tax-exempt bond liabilities- beg. of year,Part IV:  Balance Sheets,Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P4B_LIAB,p4b_liab,Total liabilities- beg. of year,Total liabilities- beg. of year,Part IV:  Balance Sheets,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P4B_MORT,p4b_mort,Mortgages & other notes payable- beg. of year,Mortgages & other notes payable- beg. of year,Part IV:  Balance Sheets,Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P4E_ASST,p4e_asst,Total assets- end of year,Total assets- end of year,Part IV:  Balance Sheets,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P4E_BOND,p4e_bond,Tax-exempt bond liabilities- end of year,Tax-exempt bond liabilities- end of year,Part IV:  Balance Sheets,Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P4E_LIAB,p4e_liab,Total liabilities- end of year,Total liabilities- end of year,Part IV:  Balance Sheets,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P4E_MORT,p4e_mort,Mortgages & other notes payable- end of year,Mortgages & other notes payable- end of year,Part IV:  Balance Sheets,Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P4E_RET1,"","","","","",3,1997-1999,1997,1999,501CE-NONPROFIT
+P4E_RETN,p4e_retn,"Retained earns, endowmts, accum. Income- end of ye","Retained earns, endowmts, accum. Income- end of year",Part IV:  Balance Sheets,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P6INIFEE,p6inifee,"Initiation fees (86a), c7 orgs","Initiation fees, line 86a, only for 501(c)(7) organizations",Part VI: Other Information,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P6MEMINC,p6meminc,"Gross income, members (c)(12)s","Gross income - members, line 87a, only for 501(c)(12) organizations",Part VI: Other Information,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P6OTHINC,p6othinc,"Gross income, other, (c)(12)s","Gross income - other sources, line 87b, only for 501(c)(12) organizations",Part VI: Other Information,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P6POLEXP,p6polexp,Political Exp.,Political expenditures,Part VI: Other Information,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P6PUBINC,p6pubinc,"Gross income, gen.public, c7s","Gross income - general public, line 86b, only for 501(c)(7) organizations",Part VI: Other Information,Numeric,11,1989-1999,1989,1999,501CE-NONPROFIT
+P6UNRELB,p6unrelb,"Unrel. Bus. Gross Income >$1,000 in Yr?","Unrelated business gross income >$1,000 in yr?",Part VI: Other Information,Character,11,1989-1999,1989,1999,501CE-NONPROFIT
+P7DIVRIN,p7divrin,Dividends- Col. E (rel't/ex Inc),Dividends & interest from securities-col. E (related or exempt function income),Part II:  Statement of Functional Expenses,Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P7ESTRIN,p7estrin,Rental exp. (97(d)),"Rental expenses, line 97(d)",Part II:  Statement of Functional Expenses,Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P7INTXAT,p7intxat,Interest-col.D,"Interest on savings & temp cash invstmt-col. D (excl by s.512,513 or 514, amount)",Part II:  Statement of Functional Expenses,Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+P7INVRIN,p7invrin,Other invest. income (99(d)),"Other investment income, line 99(d)",Part II:  Statement of Functional Expenses,Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+PAYTAX,paytax,Payroll Taxes,"Payroll taxes Old 990 (DocCD=90): Part II, Line 29, Col (A) New 990 (DocCD=93): Part IX Line 10 (A) 990EZ (DocCD=09 and 92): Not Available","Revenues, Expenses, and Change in Net Assets",Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+PMSA,pmsa,Primary MSA,Primary Metropolitan Statistical Area - the component areas that comprise a CMSA (76 PMSAs as of 1995). ( list ),Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+POLPURP,polpurp,Political Expenditures,"Direct and indirect political expenditures Old 990 (DocCD=90): Part VI, Line 81a Old 990EZ (DocCD=09): Part V, Line 37a New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Other Information,Numeric,22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+POPCD,"","","","","",14,"1991, 1994, 1996-2002, 2004, 2007-2010",1991,2010,501C3-CHARITIES|501CE-NONPROFIT
+POPCODE,"","","","","",5,"1989-1990, 1992-1993, 1995",1989,1995,501CE-NONPROFIT
+PRFNDNCD,"","","","","",3,1997-1999,1997,1999,501CE-NONPROFIT
+PROGREV,progrev,Program Service Revenue,"Program service revenue Old 990 (DocCD=90): Part I, Line 2 New 990 (DocCD=93): Part VIII Line 2g (A) - includes amounts reported as DUES in Part I, Line 3 of Form 990 prior to 2008 990EZ (DocCD=09 and 92): Part I, Line 2 IMPORTANT NOTE: Amounts reported as DUES in Part I, Line 3 of Form 990 prior to tax year 2008 are reported as Program Service Revenue in Part VIII, Line 2g (PROGREV) of Form 990 beginning in tax year 2008. For this reason, DUES is not available in Core PC and CO files circa 2011 and newer. For this reason, the following adjustment will be necessary for comparison of PROGREV and DUES revenue components in Core files prior to 2011: [PROGREV+DUES in Core files prior to 2011] = [PROGREV in Core files 2011 and later]. Due to Form 990 revisions in tax year 2008: NCCS strongly recommends combining DUES and PROGREV revenue components for all analysis involving Core files containing both Old 990 (DocCD=90) and New 990 (DocCD=93) return data (Core files 2008-2010), and for all time-series analysis spanning Core file years 2008 and newer.","Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+PayAfflCode,payafflcode,Code for Payments to affiliates,Code for Estimated Payments to affiliates,Supplemental fields (Authorized Users Only),Character,13,1998-2010,1998,2010,501C3-CHARITIES
+PayAfflEstimate,payafflestimate,Payments to affiliates,Estimated Payments to affiliates,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+PayAfflYr,payafflyr,Year of Payments to affiliates,Year of Estimated Payments to affiliates,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+PermRnaCode,permrnacode,Code for Permanently restricted net assets,Code for Estimated Permanently restricted net assets,Supplemental fields (Authorized Users Only),Character,13,1998-2010,1998,2010,501C3-CHARITIES
+PermRnaEstimate,permrnaestimate,Permanently restricted net assets,Estimated Permanently restricted net assets,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+PermRnaYr,permrnayr,Year of Permanently restricted net assets,Year of Estimated Permanently restricted net assets,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+ProgExpCode,progexpcode,"","Program Services Expenses Code(Identifies which file the estimate was taken from SOI, Core, etc.)",Supplemental fields (Authorized Users Only),Character,4,2007-2010,2007,2010,501C3-CHARITIES
+ProgExpEstimate,progexpestimate,"",Program Services Estimate,Supplemental fields (Authorized Users Only),Numeric,4,2007-2010,2007,2010,501C3-CHARITIES
+ProgExpYr,progexpyr,"",Program Services Estimate Year (Identifies the Fiscal Year from which the estimate was taken),Supplemental fields (Authorized Users Only),Numeric,4,2007-2010,2007,2010,501C3-CHARITIES
+Q78A,q78a,UBI Indicator,"Unrelated business gross income (UBI) of $1,000 or more during the year Old 990 (DocCD=90): Part VI, Question 78a New 990 (DocCD=93): Part V Line 3a 990EZ (DocCD=09 and 92): Part V, Question 35a",Other Information,Character,12,2000-2011,2000,2011,501C3-CHARITIES|501CE-NONPROFIT
+RASCD,"","","","","",22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+REASON,reason,Non-Private Foundation Reason Code,"Reason for non-private foundation status Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part IV, Left Margin New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+RECCODE,"","","","","",11,"1997-2002, 2004, 2007-2010",1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+RENTEXP,rentexp,Rental Expenses,"Rental expenses Old 990 (DocCD=90): Part I, Line 6b New 990 (DocCD=93): Sum of Part VIII Lines 6b(i) and 6b(ii) 990EZ (DocCD=09 and 92): Not Available","Revenues, Expenses, and Change in Net Assets",Numeric,22,"1989, 1991-2011",1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+RENTINC,rentinc,Gross Rents,"Gross rents Old 990 (DocCD=90): Part I, Line 6a New 990 (DocCD=93): Sum of Part VIII Line 6a (i) and 6a (ii) 990EZ (DocCD=09 and 92): Not Available","Revenues, Expenses, and Change in Net Assets",Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+RESERVED,"","","","","",11,"1997-2002, 2004, 2007-2010",1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+RETEARN,retearn,Retained Earnings - EOY,"Retained earnings at end of year Old 990 (DocCD=90): Part IV, Line 72, Col (B) New 990 (DocCD=93): Part X Line 32 (B) 990EZ (DocCD=09 and 92): Not Available",Balance Sheet,Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+RETE_BOY,rete_boy,Retained Earnings - BOY,"Retained earnings at beginning of year Old 990 (DocCD=90): Part IV, Line 72, Col (A) New 990 (DocCD=93) and 990EZ (DocCD=09 and 92): Not available",Balance Sheet,Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+REXPCD,"","","","","",22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+RINCCD,"","","","","",22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+RREVCD,"","","","","",20,1991-2010,1991,2010,501C3-CHARITIES|501CE-NONPROFIT
+RULEDATE,ruledate,Ruling date (YYYYMM) from IRS,Ruling date: year and month of IRS ruling or determination letter recognizing orgs exempt status (YYYYMM),Other Descriptive Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+RandNum,randnum,Random number between 0 and 1,Random number between 0 and 1 used for creating samples,Miscellaneous,Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+SALEOTHE,saleothe,Cost Basis: Sale of Other Assets,"Cost or other basis and sales expenses: other assets Old 990 (DocCD=90): Part I, Line 8b (B) New 990 (DocCD=93): Part VIII Line 7b (ii) 990EZ (DocCD=09 and 92): Part I, Line 5b","Revenues, Expenses, and Change in Net Assets",Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+SALEOTHG,saleothg,Gross Sales of Other Assets,"Gross receipts from sales of other assets Old 990 (DocCD=90): Part I, Line 8a (B) New 990 (DocCD=93): Part VIII Line 7a (ii) 990EZ (DocCD=09 and 92): Part I, Line 5a","Revenues, Expenses, and Change in Net Assets",Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+SALEOTHN,saleothn,Net Gain/Loss: Sale of Other Assets,"Net gain/loss from sales of other assets Old 990 (DocCD=90): Part I, Line 8c (B) New 990 (DocCD=93): Part VIII Line 7c (ii) 990EZ (DocCD=09 and 92): Part I, Line 5c","Revenues, Expenses, and Change in Net Assets",Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+SALES,"","","","","",22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+SALESECN,salesecn,Net Gain/Loss: Sale of Securities,"Net gain/loss from sales of securities Old 990 (DocCD=90): Part I, Line 8c (A) New 990 (DocCD=93): Part VIII Line 7c (i) 990EZ (DocCD=09 and 92): Not Available","Revenues, Expenses, and Change in Net Assets",Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+SALESEXP,salesexp,Cost Basis: Sale of Securities,"Cost or other basis and sales expenses: securities Old 990 (DocCD=90): Part I, Line 8b (A) New 990 (DocCD=93): Part VIII Line 7b(i) 990EZ (DocCD=09 and 92): Not Available","Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+SAVINT,savint,Interest Revenue,"Interest on savings and temporary cash investments Old 990 (DocCD=90): Part I, Line 4 New 990 (DocCD=93) and 990EZ (DocCD=09 and 92): Not available","Revenues, Expenses, and Change in Net Assets",Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+SECINC,secinc,Dividends,"Dividends and interest from securities Old 990 (DocCD=90): Part I, Line 5 New 990 (DocCD=93) and 990EZ (DocCD=09 and 92): Not available","Revenues, Expenses, and Change in Net Assets",Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+SECUR,secur,Gross Sales of Securities,"Gross receipts from sales of securities Old 990 (DocCD=90): Part I, Line 8a (A) New 990 (DocCD=93): Part VIII Line 7a(i) 990EZ (DocCD=09 and 92): Not Available","Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+SEC_NAME,sec_name,Sort Name (Secondary name),Secondary organization name,Other Descriptive Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+SOIYR,soiyr,Starting year,Starting year for org's fiscal year.,Miscellaneous,Character,12,"1997-2002, 2004, 2007-2011",1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+SOLICIT,solicit,Fundraising Expenses,"Total fundraising expenses Old 990 (DocCD=90): Part I, Line 15 New 990 (DocCD=93) and 990EZ (DocCD=09 and 92): Not available","Revenues, Expenses, and Change in Net Assets",Numeric,22,1989-2010,1989,2010,501C3-CHARITIES|501CE-NONPROFIT
+SOURCE,"","","","","",22,"1989-1998, 2000-2011",1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+SPEVTG,spevtg,Special Events Gross Revenue,"Gross revenue from special events and activities Old 990 (DocCD=90): Part I, Line 9a (right) New 990 (DocCD=93): Sum of Part VIII Line 8a and 9a 990EZ (DocCD=09 and 92): Part I, Line 6a","Revenues, Expenses, and Change in Net Assets",Numeric,16,"1989, 1997-2011",1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+STATE,state,State,Two-letter state abbreviation.,Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+STYEAR,styear,Starting Year,"Starting year (yyyy when fiscal year began, which is also the tax form year)",Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+SUBCATEGORY,"","","","","",4,1995-1998,1995,1998,501C3-CHARITIES
+SUBSECCD,subseccd,Subsection code,"IRS subsection code (03=501(c)(3), etc.)",Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+TAXPER,taxper,Ending date for tax period,"Ending date for tax period of financial data. Core files for 1997 on are in """"""""yyyymm"""""""" format (199412=Dec. 1994). Earlier years use 2-digit year (""""""""9412"""""""").",Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+TAXREV4,taxrev4,Total Tax Levies,"Tax revenues levied for organization benefit Old 990 (DocCD=90) and Old 990EZ (DocCD=09): Sch A, Part IV-A, Line 20, Col (e) New 990 (DocCD=93) and New 990EZ (DocCD=92): Not available",Schedule A,Numeric,14,1997-2010,1997,2010,501C3-CHARITIES|501CE-NONPROFIT
+TOTLOB,totlob,"Total lobbying: SchA,IV-A","Total lobbying (Sch A, Part VI-A), line 38b",Schedule A,Numeric,12,1999-2010,1999,2010,501C3-CHARITIES|501CE-NONPROFIT
+TOTREV,totrev,Total Revenue (calculated),Calculation of total revenue is based on version of Form 990/990EZ (see DocCD) Old 990 (DocCD=90) and Old 990EZ (DocCD=09): calculated as (CONT + PROGREV + DUES + INVINC + NETRENT + SALESECN + SALEOTHN + FUNDINC + GRPROF + OTHINC) New 990 (DocCD=93) and New 990EZ (DocCD=92): calculated as (EXPS + NETINC),"Revenues, Expenses, and Change in Net Assets",Numeric,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+TOTREV2,totrev2,Total Revenue,"Total revenue Old 990 (DocCD=90): Part I, Line 12 New 990 (DocCD=93): Part VIII Line 12 (A) 990EZ (DocCD=09 and 92): Part I, Line 9","Revenues, Expenses, and Change in Net Assets",Numeric,15,1997-2011,1997,2011,501C3-CHARITIES|501CE-NONPROFIT
+TempRnaCode,temprnacode,Code for Temporarily restricted net assets,Code for Estimated Temporarily restricted net assets,Supplemental fields (Authorized Users Only),Character,13,1998-2010,1998,2010,501C3-CHARITIES
+TempRnaEstimate,temprnaestimate,Temporarily restricted net assets,Estimated Temporarily restricted net assets,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+TempRnaYr,temprnayr,Year of Temporarily restricted net assets,Year of Estimated Temporarily restricted net assets,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+UnaseoyCode,unaseoycode,Code for Unrestricted net assets,Code for Estimated Unrestricted net assets,Supplemental fields (Authorized Users Only),Character,13,1998-2010,1998,2010,501C3-CHARITIES
+UnaseoyEstimate,unaseoyestimate,Unrestricted net assets,Estimated Unrestricted net assets,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+UnaseoyYr,unaseoyyr,Year of Unrestricted net assets,Year of Estimated Unrestricted net assets,Supplemental fields (Authorized Users Only),Numeric,13,1998-2010,1998,2010,501C3-CHARITIES
+VBS,"","","","","",12,"1989-1998, 2002, 2004",1989,2004,501C3-CHARITIES|501CE-NONPROFIT
+VERIFY,verify,Financials have been verified,Financials have been verified,Internal Processing,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+VFB,"","","","","",10,1989-1998,1989,1998,501C3-CHARITIES
+VINCEXP,"","","","","",12,"1989-1998, 2002, 2004",1989,2004,501C3-CHARITIES|501CE-NONPROFIT
+VINCTYPE,"","","","","",10,1989-1998,1989,1998,501C3-CHARITIES
+VOK,"","","","","",12,"1989-1998, 2002, 2004",1989,2004,501C3-CHARITIES|501CE-NONPROFIT
+V_BOYAL,"","","","","",3,1997-1999,1997,1999,501C3-CHARITIES
+V_CONT,"","","","","",3,1997-1999,1997,1999,501C3-CHARITIES
+V_EOYAL,"","","","","",3,1997-1999,1997,1999,501C3-CHARITIES
+V_FB,"","","","","",3,1997-1999,1997,1999,501C3-CHARITIES
+V_FREXP,"","","","","",3,1997-1999,1997,1999,501C3-CHARITIES
+V_GREC,"","","","","",3,1997-1999,1997,1999,501C3-CHARITIES
+V_REVEXP,"","","","","",3,1997-1999,1997,1999,501C3-CHARITIES
+Verifyby,"","","","","",3,"2002, 2007, 2009",2002,2009,501C3-CHARITIES|501CE-NONPROFIT
+ZIP,zip,Zip code + 4,ZIP code.,Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+ZIP5,zip5,"Zip code, 5 digits",First 5 digits of zip code,Basic Info,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+cityOld1,"","","","","",16,1989-2004,1989,2004,501C3-CHARITIES|501CE-NONPROFIT
+epostcard,"","","","","",4,2008-2011,2008,2011,501C3-CHARITIES|501CE-NONPROFIT
+estTAXPER,"","","","","",8,1989-1996,1989,1996,501CE-NONPROFIT
+estp1totrev,"","","","","",6,1991-1996,1991,1996,501CE-NONPROFIT
+fincheckv,"","","","","",5,"2002, 2004, 2007, 2009-2010",2002,2010,501C3-CHARITIES|501CE-NONPROFIT
+nInvLndCode,ninvlndcode,"","Net Invest- Land, Bldg & Equip Code (Identifies which file the estimate was taken from SOI, Core, etc.)",Supplemental fields (Authorized Users Only),Character,11,1998-2008,1998,2008,501C3-CHARITIES
+nInvLndEstimate,ninvlndestimate,"","Net Invest- Land, Bldg & Equip Estimate",Supplemental fields (Authorized Users Only),Numeric,11,1998-2008,1998,2008,501C3-CHARITIES
+nInvLndYr,ninvlndyr,"","Net Invest- Land, Bldg & Equip Year (Identifies the Fiscal Year from which the estimate was taken)",Supplemental fields (Authorized Users Only),Numeric,11,1998-2008,1998,2008,501C3-CHARITIES
+nteeConf,nteeconf,NTEE confidence rating,NTEE classification confidence rating (A/B/C),Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+nteeFinal,"","","","","",23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+nteeFinal1,"","","","","",23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+ntmaj10,ntmaj10,NTEE major group (10),10 NTEE major groups,Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+ntmaj12,ntmaj12,NTEE major group (12),12 NTEE major groups: ntmaj10 plus higher education (BH) and hospitals (EH),Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+ntmaj5,ntmaj5,Major subsector,Major subsector (5),Classification,Character,23,1989-2011,1989,2011,501C3-CHARITIES|501CE-NONPROFIT
+p4b_net,p4b_net,Total fund bal - beg of year,Total fund balances or net worth- beginning of year,Part IV:  Balance Sheets,Numeric,3,1997-1999,1997,1999,501CE-NONPROFIT
+stateOld1,"","","","","",16,1989-2004,1989,2004,501C3-CHARITIES|501CE-NONPROFIT
+v_errorCd,"","","","","",11,1989-1999,1989,1999,501C3-CHARITIES|501CE-NONPROFIT
+verfail,"","","","","",3,"2002, 2004, 2006",2002,2006,501C3-CHARITIES|501CE-NONPROFIT
+zip5Old1,"","","","","",16,1989-2004,1989,2004,501C3-CHARITIES|501CE-NONPROFIT
+zipnew,"","","","","",11,1989-1999,1989,1999,501C3-CHARITIES|501CE-NONPROFIT

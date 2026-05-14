@@ -1,0 +1,199 @@
+source_column,harmonized_name,label,description,section,dtype,n_tax_years,years_present,first_year,last_year,scope_observed
+ACCPER,accper,Accounting period (MM),Accounting period,Miscellaneous,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+ACTIV,activ,,,,,14,1997-2010,1997,2010,501C3-PRIVFOUND
+ACTIV1,activ1,IRS Activity Code 1,First activity code.,Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+ACTIV2,activ2,IRS Activity Code 2,Second activity code.,Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+ACTIV3,activ3,IRS Activity Code 3,Third activity code.,Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+ADDRESS,address,,,,,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+AFCD,afcd,Affiliation code,Affiliation code,Other Descriptive Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+ARC,arc,[NULL],[NULL],Miscellaneous,Character,12,1999-2010,1999,2010,501C3-PRIVFOUND
+ARED,ared,Advance Ruling Expiration Date,Advance Ruling Expiration Date,Other Descriptive Info,Character,21,"1989-1992, 1994-2010",1989,2010,501C3-PRIVFOUND
+ASCD,ascd,,,,,6,"1989-1990, 1994-1996, 1999",1989,1999,501C3-PRIVFOUND
+ASS_CODE,ass_code,,,,,12,"1999-2001, 2003-2011",1999,2011,501C3-PRIVFOUND
+CITY,city,City,City,Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+CLASSCD,classcd,Classification code-brkdwn of,IRS Classification code,Other Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+CODE990,code990,,,,,7,"1989-1992, 1994-1996",1989,1996,501C3-PRIVFOUND
+CONTACT,contact,,,,,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+CYCLE,cycle,,,,,11,"1999-2001, 2003-2010",1999,2010,501C3-PRIVFOUND
+DEDUCTCD,deductcd,IRS deductability code,IRS Deductibility code,Other Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+DISTRICT,district,IRS District Ofc.,IRS District Office,Other Descriptive Info,Character,20,"1989-1992, 1994-2009",1989,2009,501C3-PRIVFOUND
+DLN,dln,Document Locator Number,A unique 14-digit identifier used by the IRS.,Miscellaneous,Character,12,1999-2010,1999,2010,501C3-PRIVFOUND
+DocCD,doccd,990 Document Type Code,"A 2-digit code identifying type of Form 990 (990, 990-EZ, or 990-PF), and form revision (form revision 2007 and earlier vs. 2008 and later). Document Code is the 4th and 5th digits of the DLN assigned by the IRS.",Miscellaneous,Character,4,"2007-2008, 2010-2011",2007,2011,501C3-PRIVFOUND
+EIN,ein,Employer Identification Number,Employer identification number.,Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+EOSTATUS,eostatus,,,,,12,"1999-2001, 2003-2011",1999,2011,501C3-PRIVFOUND
+FIPS,fips,State + County FIPS code,2-digit State + 3-digit County FIPS code (Federal Information Processing Standard). See also U.S. Census Bureau State & County QuickFacts .,Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+FISYR,fisyr,Fiscal year,Fiscal year (ending year),Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+FNDNCD,fndncd,Reason for 501(c)(3) status,"Reason for & type of 501(c)(3) exempt status including codes for operating and grantmaking foundations, and broad type of public charity",Other Descriptive Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+FRCD,frcd,Filing Requirement Code,Filing requirements code. The 1st 2 characters indicate the requirements for 990/990-EZ forms. The 3rd character = 1 if a 990-PF is required or 0 if not.,Other Descriptive Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+GEN,gen,,,,,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+INCCD,inccd,,,,,6,"1989-1990, 1994-1996, 1999",1989,1999,501C3-PRIVFOUND
+INC_CODE,inc_code,,,,,12,"1999-2001, 2003-2011",1999,2011,501C3-PRIVFOUND
+LEVEL1,level1,Public charity or priv. fndn?,Public charity or private foundation?,Other Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+LEVEL1old20090616,level1old20090616,,,,,17,"1989-1992, 1994-2006",1989,2006,501C3-PRIVFOUND
+LEVEL2,level2,Reporting public charity group,Reporting public charity groups.,Other Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+LEVEL2old20090616,level2old20090616,,,,,17,"1989-1992, 1994-2006",1989,2006,501C3-PRIVFOUND
+LEVEL3,level3,Major NTEE category,Major NTEE category,Other Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+LEVEL3old20090616,level3old20090616,,,,,17,"1989-1992, 1994-2006",1989,2006,501C3-PRIVFOUND
+LEVEL4,level4,NTEE-CC Major Group,NTEE-CC Major Group,Other Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+LEVEL4old20090616,level4old20090616,,,,,17,"1989-1992, 1994-2006",1989,2006,501C3-PRIVFOUND
+LRC,lrc,,,,,11,"1999-2001, 2003-2010",1999,2010,501C3-PRIVFOUND
+MAJGRPB,majgrpb,Major NTEE group,Major NTEE group plus hospitals and higher education,Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+MSA_NECH,msa_nech,Metropolitan Statistical Area,Metropolitan Statistical Area (NCCS file) ( list ),Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+NAME,name,Name of organization,Organization name.,Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+NCCSKEY,nccskey,,,,,6,2006-2011,2006,2011,501C3-PRIVFOUND
+NCCSKEY2,nccskey2,,,,,6,2006-2011,2006,2011,501C3-PRIVFOUND
+NTEE,ntee,,,,,8,1998-2005,1998,2005,501C3-PRIVFOUND
+NTEE1,ntee1,NTEE major group,NTEE major group (A-Z),Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+NTEECC,nteecc,NTEECC primary purpose,NTEECC classification,Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+NTEEIRS,nteeirs,NTEE assigned by IRS,NTEE code assigned by IRS (includes NTEE-CC & XP codes),Other Classification,Character,6,2006-2011,2006,2011,501C3-PRIVFOUND
+NTEESRC,nteesrc,,,,,11,"1998, 2000-2004, 2007-2011",1998,2011,501C3-PRIVFOUND
+NteeFinal,nteefinal,,,,,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+NteeFinal1,nteefinal1,,,,,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+ORGCD,orgcd,"Corporation, trust, assoc,etc.","Organization code: corporation, trust, association, etc.",Other Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+OUTNCCS,outnccs,Out of Scope flag,Out-of-scope (IN/OUT) (see OUTREAS doc. for details),Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+OUTNCCSold20090616,outnccsold20090616,,,,,17,"1989-1992, 1994-2006",1989,2006,501C3-PRIVFOUND
+OUTREAS,outreas,Reason why out of scope,Reason why out of scope,Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+OUTREASold20090616,outreasold20090616,,,,,17,"1989-1992, 1994-2006",1989,2006,501C3-PRIVFOUND
+P10MIR,p10mir,"Minimum investment return, line 6","Minimum investment return: 5% of line 5, net value of noncharitable-use assets (Part X, line 6)","Parts X, XI, and XIII: Minimum Investment Return, Distributable Amount, and Undistributed Income",Numeric,19,"1992, 1994-2011",1992,2011,501C3-PRIVFOUND
+P10TASST,p10tasst,"Total noncharitable-use assets, line 1d","Total fair market value of assets not used (or held for use) directly in carrying out charitable, etc., purposes (add lines 1a, b, and c) (Part X, line 1d)","Parts X, XI, and XIII: Minimum Investment Return, Distributable Amount, and Undistributed Income",Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P11DISTR,p11distr,"Distributable amount, line 7","Distributable amount (Part XI, line 7)","Parts X, XI, and XIII: Minimum Investment Return, Distributable Amount, and Undistributed Income",Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P13UNDST,p13undst,"Undistributed income, line 6f(d)","Undistributed income for xxxx. This amount must be distributed in following year. (Part XIII, line 6f(d))","Parts X, XI, and XIII: Minimum Investment Return, Distributable Amount, and Undistributed Income",Numeric,19,"1992, 1994-2011",1992,2011,501C3-PRIVFOUND
+P14A4942,p14a4942,"Qualifying assets - current yr, line 3a(2)(a)","Assets alternative test - value of assets qualifying under section 4942 - current year (Part XIV, line 3a(2)(a))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14ASVLA,p14asvla,"Value of assets - current yr, line 3a(1)(a)","Assets alternative test - value of all assets - current year (Part XIV, line 3a(1)(a))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14ASVLB,p14asvlb,"Value of assets - prior yr 1, line 3a(1)(b)","Assets alternative test - value of all assets - prior year 1 (Part XIV, line 3a(1)(b))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14ASVLC,p14asvlc,"Value of assets - prior yr 2, line 3a(1)(c)","Assets alternative test - value of all assets - prior year 2 (Part XIV, line 3a(1)(c))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14ASVLD,p14asvld,"Value of assets - prior yr 3, line 3a(1)(d)","Assets alternative test - value of all assets - prior year 3 (Part XIV, line 3a(1)(d))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14B4942,p14b4942,"Qualifying assets - prior yr 1, line 3a(2)(b)","Assets alternative test - value of assets qualifying under section 4942 - prior year 1 (Part XIV, line 3a(2)(b))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14C4942,p14c4942,"Qualifying assets - prior yr 2, line 3a(2)(c)","Assets alternative test - value of assets qualifying under section 4942 - prior year 2 (Part XIV, line 3a(2)(c))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14D4942,p14d4942,"Qualifying assets - prior yr 3, line 3a(2)(d)","Assets alternative test - value of assets qualifying under section 4942 - prior year 3 (Part XIV, line 3a(2)(d))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14ENDWA,p14endwa,"Endow. alt. test - current yr, line 3b(a)","Endowment alternative test--Enter 2/3 of minimum investment return shown in Part X, line 6 - current year (Part XIV, line 3b(a))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14ENDWB,p14endwb,"Endow. alt. test - prior yr 1, line 3b(b)","Endowment alternative test--Enter 2/3 of minimum investment return shown in Part X, line 6 - prior year 1 (Part XIV, line 3b(b))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14ENDWC,p14endwc,"Endow. alt. test - prior yr 2, line 3b(c)","Endowment alternative test--Enter 2/3 of minimum investment return shown in Part X, line 6 - prior year 2 (Part XIV, line 3b(c))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14ENDWD,p14endwd,"Endow. alt. test - prior yr 3, line 3b(d)","Endowment alternative test--Enter 2/3 of minimum investment return shown in Part X, line 6 - prior year 3 (Part XIV, line 3b(d))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14GINVA,p14ginva,"Gross Inv. Inc. - current yr, line 3c(4)(a)","Gross investment income - current year (Part XIV, line 3c(4)(a))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14GINVB,p14ginvb,"Gross Inv. Inc. - prior yr 1, line 3c(4)(b)","Gross investment income - prior year 1 (Part XIV, line 3c(4)(b))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14GINVC,p14ginvc,"Gross Inv. Inc. - prior yr 2, line 3c(4)(c)","Gross investment income - prior year 2 (Part XIV, line 3c(4)(c))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14GINVD,p14ginvd,"Gross Inv. Inc. - prior yr 3, line 3c(4)(d)","Gross investment income - prior year 3 (Part XIV, line 3c(4)(d))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14NADJA,p14nadja,"Adj. Net Inc. or MIR - current yr, line 2a(a)","Adjusted Net Income or Minimum Investement Income - current year (Part XIV, line 2a(a))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14NADJB,p14nadjb,"Adj. Net Inc. or MIR - prior yr 1, line 2a(b)","Adjusted Net Income or Minimum Investement Income - prior year 1 (Part XIV, line 2a(b))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14NADJC,p14nadjc,"Adj. Net Inc. or MIR - prior yr 2, line 2a(c)","Adjusted Net Income or Minimum Investement Income - prior year 2 (Part XIV, line 2a(c))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14NADJD,p14nadjd,"Adj. Net Inc. or MIR - prior yr 3, line 2a(d)","Adjusted Net Income or Minimum Investement Income - prior year 3 (Part XIV, line 2a(d))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14PSUPA,p14psupa,"Gen. pub. support - current yr, line 3c(2)(a)","Support from general public and 5 or more exempt organizations as provided in section 4942 - current year (Part XIV, line 3c2(a))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14PSUPB,p14psupb,"Gen. pub. support - prior yr 1, line 3c(2)(b)","Support from general public and 5 or more exempt organizations as provided in section 4942 - prior year 1 (Part XIV, line 3c2(b))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14PSUPC,p14psupc,"Gen. pub. support - prior yr 2, line 3c(2)(c)","Support from general public and 5 or more exempt organizations as provided in section 4942 - prior year 2 (Part XIV, line 3c(c))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14PSUPD,p14psupd,"Gen. pub. support - prior yr 3, line 3c(2)(d)","Support from general public and 5 or more exempt organizations as provided in section 4942 - prior year 3 (Part XIV, line 3c2(d))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14QDISA,p14qdisa,"Qualifying dist. - current yr, line 2c(a)","Qualifying distributions from Part XII, line 4 - current year (Part XIV, line 2c(a))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14QDISB,p14qdisb,"Qualifying dist. - prior yr 1, line 2c(b)","Qualifying distributions from Part XII, line 4 - prior year 1 (Part XIV, line 2c(b))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14QDISC,p14qdisc,"Qualifying dist. - prior yr 2, line 2c(c)","Qualifying distributions from Part XII, line 4 - prior year 2 (Part XIV, line 2c(c))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14QDISD,p14qdisd,"Qualifying dist. - prior yr 3, line 2c(d)","Qualifying distributions from Part XII, line 4 - prior year 3 (Part XIV, line 2c(d))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14T4942,p14t4942,"Qualifying assets - 4 yr total, line 3a(2)(e)","Assets alternative test - value of assets qualifying under section 4942 (Total of Last 4 Years) (Part XIV, line 3a(2)(e))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14TASVL,p14tasvl,"Value of assets - 4 yr total, line 3a(1)(e)","Assets alternative test - value of all assets (Total of Last 4 Years) (Part XIV, line 3a(1)(e))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14TENDW,p14tendw,"Endow. alt. test - 4 yr total, line 3b(e)","Endowment alternative test (Total of Last 4 Years)--Enter 2/3 of minimum investment return shown in Part X, line 6 (Part XIV, line 3b(e))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14TGINV,p14tginv,"Gross Inv. Inc. - 4 yr total, line 3c(4)(e)","Gross investment income (Total of Last 4 Years) (Part XIV, line 3c(4)(e))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14TNADJ,p14tnadj,"Adj. Net Inc. or MIR - 4 yr total, line 2a(e)","Adjusted Net Income (Total of last 4 years) (Part XIV, line 2a(e))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14TPSUP,p14tpsup,"Gen. pub. support - 4 yr total, line 3c(2)(e)","Support from general public and 5 or more exempt organizations as provided in section 4942 (Total of Last 4 Years) (Part XIV, line 3c2(e))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14TQDIS,p14tqdis,"Qualifying dist. - 4 yr total, line 2c(e)","Qualifying distributions from Part XII, line 4 (Total Last 4 Years) (Part XIV, line 2c(e))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14TSUPA,p14tsupa,"Total support - current yr, line 3c(1)(a)","Total support other than gross investment income (interest, dividends, rents, payments on securities loans (section 512(a)(5)), or royalties) - current year (Part XIV, line 3c1(a))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14TSUPB,p14tsupb,"Total support - prior yr 1, line 3c(1)(b)","Total support other than gross investment income (interest, dividends, rents, payments on securities loans (section 512(a)(5)), or royalties) - prior year 1 (Part XIV, line 3c1(b))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14TSUPC,p14tsupc,"Total support - prior yr 2, line 3c(1)(c)","Total support other than gross investment income (interest, dividends, rents, payments on securities loans (section 512(a)(5)), or royalties) - prior year 2 (Part XIV, line 3c1(c))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14TSUPD,p14tsupd,"Total support - prior yr 3, line 3c(1)(d)","Total support other than gross investment income (interest, dividends, rents, payments on securities loans (section 512(a)(5)), or royalties) - prior year 3 (Part XIV, line 3c1(d))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P14TTSUP,p14ttsup,"Total support - 4 yr total, line 3c(1)(e)","Total support other than gross investment income (interest, dividends, rents, payments on securities loans (section 512(a)(5)), or royalties) (Total of Last 4 Years) (Part XIV, line 3c1(e))",Part XIV: Private Operating Foundations,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P1ADMEXP,p1admexp,"Total op. and admin. exp. per books, line 24(a)","Total operating and administrative expenses as per books (add lines 13 through 23) (Part I, line 24(a))","Part I: Revenue, Expenses, and Net Income",Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P1CHAEXP,p1chaexp,"Total charity op. and admin. exp., line 24(d)","Total disbursements for charitable purposes (cash basis) operating and administrative expenses (add lines 13 through 23) (Part I, line 24(d))","Part I: Revenue, Expenses, and Net Income",Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P1CONTPD,p1contpd,"Contributions paid per books, line 25(a)","Contributions, gifts, grants paid as per books (Part I, line 25(a))","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P1DIVID,p1divid,"Dividends, line 4(a)","Dividends and interest from securities (Part I, line 4(a))","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P1EXCREV,p1excrev,"Excess revenue over exp. per books, line 27a","Excess of revenue over expenses and disbursements as per books (line 12 minus 26) (Part I, line 27a)","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P1GINVPF,p1ginvpf,"Gross profit on sales, line 10c(a)","Gross profit or (loss) on sales (gross sales less cost of goods sold) (Part I, line 10c(a))","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P1GOODS,p1goods,,,,,12,2000-2011,2000,2011,501C3-PRIVFOUND
+P1GRENTS,p1grents,"Gross Rents, line 5a(a)","Gross rents (Part I, line 5a(a))","Part I: Revenue, Expenses, and Net Income",Numeric,16,1996-2011,1996,2011,501C3-PRIVFOUND
+P1INTREV,p1intrev,"Interest on savings, line 3(a)","Interest on savings and temporary cash investments (Part I, line 3(a))","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P1INVEXP,p1invexp,"Total investment op. and admin. exp., line 24(b)","Total investment operating and administrative expenses (add lines 13 through 23) (Part I, line 24(b))","Part I: Revenue, Expenses, and Net Income",Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P1INVRV,p1invrv,"Total investment income, line 12(b)","Total investment income (add lines 1 through 11) (Part I, line 12(b))","Part I: Revenue, Expenses, and Net Income",Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P1NADINC,p1nadinc,"Adjusted net income, line 27c","Adjusted net income (line 12 minus 26, enter 0 if negative) (Part I, line 27c)","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P1NADJRV,p1nadjrv,"Total adjusted income, line 12(c)","Total adjusted income (add lines 1 through 11) (Part I, line 12(c))","Part I: Revenue, Expenses, and Net Income",Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P1NETINV,p1netinv,"Net investment income, line 27b","Net investment income (line 12 minus 26, enter 0 if negative) (Part I, line 27b)","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P1NGASTS,p1ngasts,"Net gain from sale of assets, line 6a(a)","Net gain from sale of assets not on line 10 (Part I, line 6a(a))","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P1NLASTS,p1nlasts,"Net loss from sale of assets, line 6a(a)","Net loss from sale of assets not on line 10 (Part I, line 6a(a))","Part I: Revenue, Expenses, and Net Income",Numeric,10,"1989-1992, 1994-1996, 1999-2001",1989,2001,501C3-PRIVFOUND
+P1OFCOMP,p1ofcomp,"Compensation of officers, line 13(a)","Compensation of officers, directors, trustees, etc. (Part I, line 13(a))","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P1OTHINC,p1othinc,"Other income, line 11(a)","Other income (Part I, line 11(a))","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P1TADJEX,p1tadjex,"Total adjusted income expenses, line 26(c)","Total adjusted income expenses and disbursements (lines 24 and 25) (Part I, line 26(c))","Part I: Revenue, Expenses, and Net Income",Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P1TCONT,p1tcont,"Contributions received, line 1(a)","Contributions, gifts, grants, etc., received (Part I, line 1(a))","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P1TEXCTX,p1texctx,"Total excise tax, line 5","Total excise tax based on investment income (Part VI, line 5)",Part VI: Excise Tax Based on Investment Income,Numeric,7,"1989-1992, 1994-1996",1989,1996,501C3-PRIVFOUND
+P1TEXMEX,p1texmex,"Total charity expenses, line 26(d)","Total expenses and disbursements for charitable purposes (cash basis) (lines 24 and 25) (Part I, line 26(d))","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P1TINVEX,p1tinvex,"Total investment expenses, line 26(b)","Total investment expenses and disbursements (lines 24 and 25) (Part I, line 26(b))","Part I: Revenue, Expenses, and Net Income",Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P1TOTEXP,p1totexp,"Total expenses per books, line 26(a)","Total expenses and disbursements as per books (lines 24 and 25) (Part I, line 26(a))","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P1TOTREV,p1totrev,"Total revenue per books, line 12(a)","Total revenue as per books (add lines 1 through 11) (Part I, line 12(a))","Part I: Revenue, Expenses, and Net Income",Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P2CASHBV,p2cashbv,"Cash, line 1(b)","Cash - non-interest-bearing, book value end of year (Part II, line 1(b))",Parts II and III: Balance Sheets and Net Assets,Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P2CRPBND,p2crpbnd,"Investments - corporate bonds, line 10c(b)","Investments - corporate bonds, book value end of year (Part II, line 10c(b))",Parts II and III: Balance Sheets and Net Assets,Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P2CRPSTK,p2crpstk,"Investments - corporate stock, line 10b(b)","Investments - corporate stock, book value end of year (Part II, line 10b(b))",Parts II and III: Balance Sheets and Net Assets,Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P2EYASST,p2eyasst,P2EYASST,P2EYASST,Parts II and III: Balance Sheets and Net Assets,Numeric,13,"1997-2003, 2006-2011",1997,2011,501C3-PRIVFOUND
+P2EYOTIN,p2eyotin,"Investments - other, line 13(b)","Investments - other, book value end of year (Part II, line 13(b))",Parts II and III: Balance Sheets and Net Assets,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P2GVTINV,p2gvtinv,"Investments - govt. obligations, line 10a(b)","Investments - U.S. and state government obligations, book value end of year (Part II, line 10a(b))",Parts II and III: Balance Sheets and Net Assets,Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P2MORTG,p2mortg,"Investments - mortgage loans, line 12(b)","Investments - mortgage loans, book value end of year (Part II, line 12(b))",Parts II and III: Balance Sheets and Net Assets,Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P2MTGNTS,p2mtgnts,"Mortgages and notes payable, line 21(b)","Mortgages and oher notes payable, book value end of year (Part II, line 21(b))",Parts II and III: Balance Sheets and Net Assets,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P2TASFMV,p2tasfmv,"Total assets per market value, line 16(c)","Total assets, fair market value end of year (Part II, line 16(c))",Parts II and III: Balance Sheets and Net Assets,Numeric,21,"1989-1990, 1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P2TINVSC,p2tinvsc,Total securities inv. - line 10a(b)+10b(b)+10c(b),"Total securities investments, book value end of year (Part II, line 10a(b)+10b(b)+10c(b))",Parts II and III: Balance Sheets and Net Assets,Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P2TLIABL,p2tliabl,"Total liabilities, line 23(b)","Total liabilities, book value end of year (add lines 17 through 22) (Part II, line 23(b))",Parts II and III: Balance Sheets and Net Assets,Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P2TOTAST,p2totast,"Total assets per book, line 16(b)","Total assets, book value end of year (Part II, line 16(b))",Parts II and III: Balance Sheets and Net Assets,Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P3EYTFND,p3eytfnd,"Total net assets or fund bal., line 30(b) & 6","Total net assets or fund balances, book value end of year (Part II, line 30(b) and Part III, line 6)",Parts II and III: Balance Sheets and Net Assets,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P6DOMORG,p6domorg,"Domestic org. meets 4940(e) req.?, line 1","Domestic organization that meets section 4940(e) requirements in Part V? (Part VI, line 1)",Part VI: Excise Tax Based on Investment Income,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P6ESTTX,p6esttx,"Est. tax paymts and credits, line 6a","Estimated tax payments and overpayment credited to current year (Part VI, line 6a)",Part VI: Excise Tax Based on Investment Income,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P6EXMPF,p6exmpf,"Section 4940(d)(2) exempt op. fndn.?, line 1","Exempt operating foundation described in section 4940(d)(2)? (Part VI, line 1)",Part VI: Excise Tax Based on Investment Income,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P6INVTAX,p6invtax,,,,,3,1999-2001,1999,2001,501C3-PRIVFOUND
+P6TEXCTX,p6texctx,"Total excise tax, line 5","Total excise tax based on investment income (Part VI, line 5)",Part VI: Excise Tax Based on Investment Income,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P6TX4940,p6tx4940,"Excise tax - section 4940, line 1","Excise tax - as described in section 4940 (Part VI, line 1)",Part VI: Excise Tax Based on Investment Income,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P6TX511,p6tx511,"Excise tax - section 511, line 2","Excise tax under section 511 (domestic section 4947(a)(1) trusts and taxable foundations only) (Part VI, line 2)",Part VI: Excise Tax Based on Investment Income,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P6TXCRDT,p6txcrdt,"Overpayment credited, line 11","Tax overpayment to be credited to subsequent year (Part VI, line 11)",Part VI: Excise Tax Based on Investment Income,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P6TXINV,p6txinv,"Tax paid with extension, line 6c","Tax paid with application for extension of time to file (Form 8868) (Part VI, line 6c)",Part VI: Excise Tax Based on Investment Income,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P6TXPNLT,p6txpnlt,"Tax underpayment penalty, line 8","Penalty for underpayment of estimated tax (Part VI, line 8)",Part VI: Excise Tax Based on Investment Income,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P6TXRFD,p6txrfd,,,,,10,2002-2011,2002,2011,501C3-PRIVFOUND
+P6TXSUBA,p6txsuba,"Subtitle A tax, line 4","Subtitle A (income) tax (domestic section 4947(a)(1) trusts and taxable foundations only) (Part VI, line 4)",Part VI: Excise Tax Based on Investment Income,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P6TXWERR,p6txwerr,"Backup withholding error, line 6d","Backup withholding erroneously withheld (Part VI, line 6d)",Part VI: Excise Tax Based on Investment Income,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P6TXWTH,p6txwth,"Foreign org. tax withheld, line 6b","Exempt foreign organizations - tax withheld at source (Part VI, line 6b)",Part VI: Excise Tax Based on Investment Income,Numeric,15,1997-2011,1997,2011,501C3-PRIVFOUND
+P7BUSINT,p7busint,"Hold >2% interest in any bus. during yr.?, line 3a","Did the organization hold more than a 2% direct or indirect interest in any business enterprise at any time during the year? (Part VII-B, line 3a)",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7DISBOR,p7disbor,"Borrow or lend fr/to disqual. person?, line 1a(2)","During the year did the organization borrow money from, lend money to, or otherwise extend credit to (or accept it from) a disqualified person? (Part VII-B, line 1a(2))",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7DISPAY,p7dispay,"Compensate or reimb. disqual. person?, line 1a(4)","During the year did the organization pay compensation to or pay or reimburse the expenses of a disqualified person? (Part VII-B, line 1a(4))",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7DISSAL,p7dissal,"Sale or exchange with disqual. person?, line 1a(1)","During the year did the organization engage in the sale or exchange, or leasing of property with a disqualified person? (Part VII-B, line 1a(1))",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7DISSER,p7disser,"Give/accept goods to/fr disqual. per?, line 1a(3)","During the year did the organization furnish goods, services, or facilities to (or accept them from) a disqualified person? (Part VII-B, line 1a(3))",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7DISTRA,p7distra,"Transfer inc./assets to disqual. per?, line 1a(5)","During the year did the organization transfer any income or assets to a disqualified person? (Part VII-B, line 1a(5))",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7ELECT,p7elect,"Influence election or voter registr.?, line 5a(2)","Did the organization influence the outcome of any specific public election or to carry on any voter registration drive? (Part VII-B, line 5a(2))",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7INDGRT,p7indgrt,"Grant to ind. for travel, study, etc.?, line 5a(3)","Did the organization provide a grant to an individual for travel, study, or other similar purposes? (Part VII-B, line 5a(3))",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7JEOINV,p7jeoinv,"Invest would jeopardize charitable purp.?, line 4a","Did the organization invest during the year any amount in a manner that would jeaopardize its charitable purposeses? (Part VII-B, line 4a)",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7LIQUID,p7liquid,"Liquidation, termination, etc.?, line 5","Was there a liquidation, termination, dissolution, or substantial contraction during the year? (Part VII-A, line 5)",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7ORGGRT,p7orggrt,"Grant to non-charitable, etc. org.?, line 5a(4)","Did the organization provide a grant to an organization other than charity, etc. described in section 509(a)(1), (2) or (3) or section 4940(d)(2)? (Part VII-B, line 5a(4))",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7OTHPUR,p7othpur,"Provide paymt for non-char. purpose?, line 5a(5)","Did the organization provide for any purpose other than religious, charitable, scientific, literary or educational purposes, or for the prevention of cruelty to children or animals? (Part VII-B, line 5a(5))",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7PAYGVT,p7paygvt,"Agree to pay a govt official?, line 1a(6)","During the year did the organization agree to pay money or property to a government official? (Part VII-B, line 1a(6))",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7POFCLM,p7pofclm,"Claim sec. 4942 private oper. fnd. status?, line 9","Is the org. claiming status as a private operating foundation within the meaning of section 4942(j)(3) or 4942(j)(5) for calendar year xxxx or taxable year beginning in xxxx? (Part VII-A, line 9)",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7POLIT,p7polit,"Influence legislation or political camp.?, line 1a","During the year, did the organization attempt to influence any national, state, or local legislation or did it participate or intervene in any political campaign? (Part VII-A, line 1a)",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7PROPAG,p7propag,"Pay for propaganda or influence leg.?, line 5a(1)","Did the organization pay to carry on propaganda, or otherwise attempt to influence legislation? (Part VII-B, line 5a(1))",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+P7UNDINC,p7undinc,"Undistributed inc. from prior yrs?, line 2a","At the end of the tax year, did the organization have any undistributed income for the tax years before the current tax year? (Part VII-B, line 2a)",Parts VII-A and VII-B: Statements Regarding Activities,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+PMSA,pmsa,Primary MSA,Primary Metropolitan Statistical Area,Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+RECCODE,reccode,,,,,12,"1999-2001, 2003-2011",1999,2011,501C3-PRIVFOUND
+RESERVED,reserved,,,,,11,"1999-2001, 2003-2010",1999,2010,501C3-PRIVFOUND
+RULEDATE,ruledate,Ruling date (YYYYMM) from IRS,Ruling date: year and month of IRS ruling or determination letter recognizing orgs exempt status (YYYYMM),Other Descriptive Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+RandNum,randnum,Random number between 0 and 1,Random number between 0 and 1 used for creating samples,Miscellaneous,Numeric,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+SEC_NAME,sec_name,Sort Name (Secondary name),Secondary organization name,Other Descriptive Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+SOURCE,source,,,,,13,1999-2011,1999,2011,501C3-PRIVFOUND
+STATE,state,State,Two-letter state abbreviation.,Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+STYEAR,styear,Starting Year,"Starting year (yyyy when fiscal year began, which is also the tax form year)",Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+SUBSECCD,subseccd,Subsection code,"IRS subsection code (03=501(c)(3), etc.)",Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+TAXPER,taxper,Ending date for tax period,Ending date for tax period of financial data. Core files for 1997 on are in yyyymm format (199412=Dec. 1994). Earlier years use 2-digit year ('9412').,Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+TFLD,tfld,,,,,10,2002-2011,2002,2011,501C3-PRIVFOUND
+Verifyby,verifyby,,,,,3,"2002, 2008, 2011",2002,2011,501C3-PRIVFOUND
+ZIP,zip,Zip code + 4,ZIP code.,Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+ZIP5,zip5,"Zip code, 5 digits",First 5 digits of zip code,Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+cityOld1,cityold1,,,,,15,"1989-1992, 1994-2004",1989,2004,501C3-PRIVFOUND
+estTAXPER,esttaxper,,,,,7,"1989-1992, 1994-1996",1989,1996,501C3-PRIVFOUND
+fincheckv,fincheckv,Verif. code financial variable,Results code for financial variable check (finCheckA),Verification,Character,6,"2002, 2006-2009, 2011",2002,2011,501C3-PRIVFOUND
+fipsold,fipsold,,,,,8,"1989-1992, 1994-1996, 1999",1989,1999,501C3-PRIVFOUND
+nteeConf,nteeconf,NTEE confidence rating,NTEE classification confidence rating (A/B/C),Classification,Character,13,"1998, 2000-2011",1998,2011,501C3-PRIVFOUND
+ntmaj10,ntmaj10,NTEE major group (10),10 NTEE major groups,Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+ntmaj12,ntmaj12,NTEE major group (12),12 NTEE major groups: ntmaj10 plus higher education (BH) and hospitals (EH),Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+ntmaj5,ntmaj5,Major subsector,Major subsector (5),Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+stateOld1,stateold1,,,,,15,"1989-1992, 1994-2004",1989,2004,501C3-PRIVFOUND
+vMagP,vmagp,,,,,4,"2006-2007, 2009, 2011",2006,2011,501C3-PRIVFOUND
+v_errorCd,v_errorcd,,,,,8,"1989-1992, 1994-1996, 1999",1989,1999,501C3-PRIVFOUND
+verfail,verfail,,,,,5,"2002, 2006-2007, 2009, 2011",2002,2011,501C3-PRIVFOUND
+verify,verify,Financials have been verified,Financials have been verified,Verification,Character,12,"1997-1998, 2002-2011",1997,2011,501C3-PRIVFOUND
+zip5Old1,zip5old1,,,,,15,"1989-1992, 1994-2004",1989,2004,501C3-PRIVFOUND
+zipnew,zipnew,,,,,8,"1989-1992, 1994-1996, 1999",1989,1999,501C3-PRIVFOUND

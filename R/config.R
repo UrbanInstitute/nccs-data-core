@@ -58,7 +58,8 @@ PATHS <- list(
   legacy_raw        = "data/raw/legacy/core",        # mirror of s3://nccsdata/legacy/core/, pre-2012 PZ + PF only
   intermediate      = "data/intermediate",
   unpacked          = "data/intermediate/unpacked",
-  harmonized        = "data/intermediate/harmonized",
+  harmonized        = "data/intermediate/harmonized",         # SOI-current pipeline outputs (2012+)
+  harmonized_legacy = "data/intermediate/harmonized_legacy",  # legacy pipeline outputs (1989-2011)
   processed         = "data/processed",
   logs              = "data/logs",
   crosswalks        = "data/crosswalks",

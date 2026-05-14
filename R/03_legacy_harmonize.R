@@ -7,11 +7,16 @@
 #   data/crosswalks/legacy_pf_crosswalk_FINAL.csv                    (PF -> 990pf)
 #
 # Writes one CSV per (tax_year, form) under
-#   data/intermediate/harmonized/{tax_year}/{990combined|990pf}/core_{tax_year}_{form}.csv
+#   data/intermediate/harmonized_legacy/{tax_year}/{990combined|990pf}/core_{tax_year}_{form}.csv
 #
-# Lands in the same harmonized tree as SOI-current outputs so the downstream
-# phases (quality, dictionary, render, upload) operate uniformly across the
-# 1989-2011 / 2012+ boundary.
+# Writes to a SEPARATE tree from the SOI-current pipeline (PATHS$harmonized).
+# Both pipelines can produce files at the same tax_year (SOI-current's 2012+
+# extracts contain late-filer rows with TAXPER going back to the 1990s) but
+# the schemas differ — SOI-current 990combined is a 53-col 990∩990ez intersect;
+# legacy 990combined uses the full legacy_pz crosswalk (~120 cols). Keeping
+# the trees separate prevents path collisions and lets each quality run
+# validate against its own crosswalk. A future merge step can combine them
+# at the processed/ tier if a unified pre-2012-to-present panel is needed.
 #
 # Per-form mechanics:
 #
@@ -245,8 +250,16 @@ harmonize_legacy_form <- function(form, xwalk, source_root, logger) {
     apply_transforms(dt, logger)
     derive_subsection_from_partition(dt, subclass, logger)
 
-    dt[, `:=`(tax_year                = tax_year_fn,
-              source_subsection_class = subclass)]
+    # tax_year is set by transform_tax_period from TAXPER's first 4 chars (per
+    # CLAUDE.md: "Outputs are partitioned by tax year (first 4 of TAXPER), not
+    # the year the form was filed"). The legacy NCCS file's filename encodes a
+    # publication year that may differ from a row's TAXPER (e.g., the 1989
+    # NCCS file contains late filers with TAXPER 1987-1990). Fall back to the
+    # filename year only for rows whose TAXPER was missing/invalid, so we
+    # don't silently drop those rows in partition_and_write.
+    if (!"tax_year" %in% names(dt)) dt[, tax_year := NA_integer_]
+    dt[is.na(tax_year), tax_year := tax_year_fn]
+    dt[, source_subsection_class := subclass]
     if ("subsection_cd" %in% names(dt)) {
       dt[, is_501c3 := !is.na(subsection_cd) & subsection_cd == 3L]
     }
@@ -278,7 +291,7 @@ partition_and_write <- function(dt, form, dest_root, logger) {
 
 run_legacy_harmonize <- function(forms       = c("990combined", "990pf"),
                                  source_root = PATHS$legacy_raw,
-                                 dest_root   = PATHS$harmonized) {
+                                 dest_root   = PATHS$harmonized_legacy) {
   dir.create(PATHS$logs, recursive = TRUE, showWarnings = FALSE)
   logger <- create_logger(file.path(PATHS$logs, "03_legacy_harmonize_log.txt"))
 

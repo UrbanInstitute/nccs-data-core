@@ -128,10 +128,11 @@ compute_vintage_aware_completeness <- function(dt, form) {
 location_to_category <- function(loc) {
   if (is.na(loc) || !nzchar(loc)) return("other")
   l <- tolower(loc)
-  if (grepl("header|item a|top of form", l))                 return("header")
-  if (grepl("sch a",   l))                                   return("sched_a")
-  if (grepl("sch b",   l))                                   return("sched_b")
-  m <- regmatches(l, regexec("pt ([ivx]+|\\d+)", l))[[1]]
+  if (grepl("header|item a|top of form|basic info|classification", l))   return("header")
+  if (grepl("sch(?:edule)? a", l))                                       return("sched_a")
+  if (grepl("sch(?:edule)? b", l))                                       return("sched_b")
+  # SOI-current style: "Pt II-4(f)"; legacy style: "Part II", "Part XIII"
+  m <- regmatches(l, regexec("(?:pt|part) ([ivx]+|\\d+)", l))[[1]]
   if (length(m) == 2L && nzchar(m[2])) return(sprintf("part_%s", m[2]))
   "other"
 }
@@ -140,6 +141,10 @@ location_to_category <- function(loc) {
 #' col_type inferred from the harmonized data.table's actual column class.
 build_categories <- function(dt, xwalk_path) {
   xw <- fread(xwalk_path)
+  # Legacy crosswalks expose category context in `section` instead of `location`.
+  if (!"location" %in% names(xw) && "section" %in% names(xw)) {
+    xw[, location := section]
+  }
   xw[, category := vapply(location, location_to_category, character(1))]
   xw <- xw[harmonized_name %in% names(dt)]
 
@@ -161,17 +166,25 @@ build_categories <- function(dt, xwalk_path) {
 
 check_schema <- function(dt, xwalk_path, form = NULL) {
   xw <- fread(xwalk_path)
+  # Legacy crosswalks include rows with harmonized_name="" (BMF-origin drops);
+  # those columns are filtered out at harmonize time and aren't part of the
+  # output schema. Filter them out here too so they don't show up as "missing".
+  if ("harmonized_name" %in% names(xw)) {
+    xw <- xw[!is.na(harmonized_name) & harmonized_name != ""]
+  }
   required <- unique(xw$harmonized_name)
-  # 990combined intentionally projects to a 53-col intersect of 990 ∩ 990ez,
-  # not the full 990 schema. Validate against that intersect.
-  if (identical(form, "990combined")) {
+  # SOI-current 990combined intentionally projects to a 53-col intersect of
+  # 990 ∩ 990ez. Legacy 990combined uses the full legacy_pz schema (no
+  # intersect — it's its own crosswalk, not a derivation).
+  if (identical(form, "990combined") && !is_legacy_crosswalk_path(xwalk_path)) {
     x990ez <- fread(CROSSWALK_FILES[["990ez"]])
     required <- intersect(required, unique(x990ez$harmonized_name))
   }
   missing <- setdiff(required, names(dt))
   extras  <- setdiff(names(dt), c(required,
                 "tax_year", "tax_month", "is_501c3", "extract_year",
-                "is_amendment", "source_form", "soi_year"))
+                "is_amendment", "source_form", "soi_year",
+                "source_subsection_class"))
   list(passed = length(missing) == 0L, missing = missing, extras = extras)
 }
 
@@ -316,9 +329,11 @@ run_post_checks <- function(dt, form, tax_year, xwalk_path,
              names(cats))
   } else list()
 
-  # Source column map + descriptions from crosswalk
+  # Source column map + descriptions from crosswalk.
+  # Legacy crosswalks use `source_column`; SOI-current uses `source_var`.
   xw <- fread(xwalk_path)
-  source_column_map  <- split(xw$source_var, xw$harmonized_name)
+  src_col <- if ("source_var" %in% names(xw)) "source_var" else "source_column"
+  source_column_map  <- split(xw[[src_col]], xw$harmonized_name)
   column_descriptions <- setNames(xw$description, xw$harmonized_name)
 
   critical_field_issues <- list()

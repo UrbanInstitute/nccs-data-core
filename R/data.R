@@ -19,11 +19,35 @@ CROSSWALK_FILES <- list(
   "990pf"  = "data/crosswalks/soi_990pf_crosswalk_FINAL.csv"
 )
 
-#' Resolve the crosswalk file path for a CORE output series. The `990combined`
-#' series is built from the 990 + 990-EZ shared schema; its dictionary and
-#' quality reports use the 990 crosswalk (the 990's row covers all 53 shared
-#' harmonized names).
-CROSSWALK_FOR_SERIES <- function(form) {
+# Legacy crosswalks: only the 990combined and 990pf series have legacy
+# coverage (1989-2011). The 990 and 990ez series start in 2012 (SOI-current).
+LEGACY_CROSSWALK_FILES <- list(
+  "990combined" = "data/crosswalks/legacy_pz_crosswalk_FINAL.csv",
+  "990pf"       = "data/crosswalks/legacy_pf_crosswalk_FINAL.csv"
+)
+
+# Tax-year cutover between legacy and SOI-current pipelines.
+LEGACY_TAX_YEAR_MAX <- 2011L
+
+#' Resolve the crosswalk file path for a CORE output series + tax year.
+#'
+#' Pre-2012 rows are produced by the legacy pipeline and use the legacy_pz /
+#' legacy_pf crosswalks; 2012+ rows use the SOI-current crosswalks. The
+#' `990combined` SOI-current crosswalk routes to soi_990 (its dictionary +
+#' quality reports use the 990 crosswalk since 990 covers all 53 shared cols);
+#' for legacy 990combined the legacy_pz crosswalk is its own full schema.
+#'
+#' @param form one of "990", "990ez", "990pf", "990combined".
+#' @param tax_year integer year of the output partition; if NULL, defaults to
+#'   the SOI-current crosswalk (back-compat for non-tax-year-aware callers).
+CROSSWALK_FOR_SERIES <- function(form, tax_year = NULL) {
+  if (!is.null(tax_year) && tax_year <= LEGACY_TAX_YEAR_MAX) {
+    path <- LEGACY_CROSSWALK_FILES[[form]]
+    if (is.null(path)) {
+      stop(sprintf("No legacy crosswalk for form '%s' (tax_year=%d)", form, tax_year))
+    }
+    return(path)
+  }
   switch(form,
     "990"         = CROSSWALK_FILES[["990"]],
     "990ez"       = CROSSWALK_FILES[["990ez"]],
@@ -31,6 +55,13 @@ CROSSWALK_FOR_SERIES <- function(form) {
     "990combined" = CROSSWALK_FILES[["990"]],
     stop(sprintf("No crosswalk for form '%s'", form))
   )
+}
+
+#' TRUE if a crosswalk file uses the legacy schema (source_column) rather than
+#' the SOI-current schema (source_var). Used by post-checks and downstream
+#' consumers to dispatch column-name lookups.
+is_legacy_crosswalk_path <- function(path) {
+  grepl("/legacy_(pz|pf)_crosswalk_", path, fixed = FALSE)
 }
 
 # ---- Source-format quirks by file extension ----
@@ -69,7 +100,12 @@ EXPECTED_COL_COUNT_TOLERANCE <- 0.05
 # Used by post-checks. tax_year extracted from first 4 chars of tax_period.
 
 tax_year_range <- function() {
-  c(1989L, as.integer(format(Sys.Date(), "%Y")) + 1L)
+  # Lower bound 1985 (not 1989) accommodates legacy NCCS files that contain
+  # late filers with TAXPER predating the file's publication year. The earliest
+  # legitimate tax_year observed in the legacy bucket is 1987 (PF series); 1985
+  # gives a small cushion for very-late filers without losing outlier signal
+  # for genuinely corrupt dates.
+  c(1985L, as.integer(format(Sys.Date(), "%Y")) + 1L)
 }
 
 # ---- Known subsection codes ----

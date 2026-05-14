@@ -27,6 +27,7 @@ source(here("R", "config.R"))
 source(here("R", "create_logger.R"))
 source(here("R", "01_legacy_download.R"))
 source(here("R", "03_legacy_harmonize.R"))
+source(here("R", "05_quality.R"))
 source(here("R", "09_parquet.R"))
 
 `%||%` <- function(a, b) if (is.null(a) || length(a) == 0L) b else a
@@ -113,7 +114,9 @@ run_legacy_pipeline <- function(dry_run = FALSE) {
   phase("3 harmonize",       CONFIG$ENABLE_HARMONIZE, logger,
         function() run_legacy_harmonize())
   phase("5 quality",         CONFIG$ENABLE_QUALITY,   logger,
-        function() stub_phase("5 quality (legacy)", logger))
+        function() run_quality(harmonized_root = PATHS$harmonized_legacy,
+                               forms = c("990combined", "990pf"),
+                               strict = CONFIG$STRICT_QUALITY_GATES))
   phase("6 dictionary",      CONFIG$ENABLE_DICTIONARY,logger,
         function() stub_phase("6 dictionary (legacy)", logger))
   phase("7 render",          CONFIG$ENABLE_RENDER_REPORT, logger,

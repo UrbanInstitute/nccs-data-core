@@ -26,6 +26,7 @@ suppressPackageStartupMessages({
 source(here("R", "config.R"))
 source(here("R", "create_logger.R"))
 source(here("R", "01_legacy_download.R"))
+source(here("R", "03_legacy_harmonize.R"))
 source(here("R", "09_parquet.R"))
 
 `%||%` <- function(a, b) if (is.null(a) || length(a) == 0L) b else a
@@ -110,7 +111,7 @@ run_legacy_pipeline <- function(dry_run = FALSE) {
         function() run_legacy_download())
   # Phase 2 (unpack) deliberately omitted: legacy files are flat CSV, no unzip step.
   phase("3 harmonize",       CONFIG$ENABLE_HARMONIZE, logger,
-        function() stub_phase("3 harmonize (legacy)", logger))
+        function() run_legacy_harmonize())
   phase("5 quality",         CONFIG$ENABLE_QUALITY,   logger,
         function() stub_phase("5 quality (legacy)", logger))
   phase("6 dictionary",      CONFIG$ENABLE_DICTIONARY,logger,

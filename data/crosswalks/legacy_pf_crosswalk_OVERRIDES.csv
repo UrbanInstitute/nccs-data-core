@@ -176,7 +176,7 @@ SEC_NAME,"","",below_threshold,0.125,"",Sort Name (Secondary name),Secondary org
 SOURCE,"","",skipped_bmf_origin,,"","","","","",13,1999-2011,1999,2011,501C3-PRIVFOUND
 STATE,"","",below_threshold,0.111111111,"",State,Two-letter state abbreviation.,Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
 STYEAR,"","",below_threshold,0.125,"",Starting Year,"Starting year (yyyy when fiscal year began, which is also the tax form year)",Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
-SUBSECCD,"",subsection_cd,description_jaccard,0.4,990pf:SUBCD,Subsection code,"IRS subsection code (03=501(c)(3), etc.)",Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
+SUBSECCD,subsection_cd,subsection_cd,description_jaccard,0.4,990pf:SUBCD,Subsection code,"IRS subsection code (03=501(c)(3), etc.)",Classification,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
 TAXPER,tax_period,"",below_threshold,0.181818182,"",Ending date for tax period,Ending date for tax period of financial data. Core files for 1997 on are in yyyymm format (199412=Dec. 1994). Earlier years use 2-digit year ('9412').,Basic Info,Character,22,"1989-1992, 1994-2011",1989,2011,501C3-PRIVFOUND
 TFLD,"","",skipped_bmf_origin,,"","","","","",10,2002-2011,2002,2011,501C3-PRIVFOUND
 Verifyby,"","",skipped_bmf_origin,,"","","","","",3,"2002, 2008, 2011",2002,2011,501C3-PRIVFOUND

@@ -1,0 +1,247 @@
+source_column,harmonized_name,label,description,section,dtype,n_tax_years,years_present,first_year,last_year,scope_observed
+ASSTSALE,asstsale,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+CGR2NET,cgr2net,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+CNAB,cnab,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+CNAM,cnam,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+CNAO,cnao,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+CRERATIO,creratio,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+CRINC_F,crinc_f,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES
+CTOTREVB,ctotrevb,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+CTOTREVM,ctotrevm,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+FUNDB_F,fundb_f,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES
+FUNDB_O,fundb_o,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES
+GRINC_F,grinc_f,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES
+GRINC_O,grinc_o,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES
+GRREC_F,grrec_f,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES
+GRREC_O,grrec_o,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES
+IERATIO,ieratio,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+LIB97,lib97,,,,,2,1997-1998,1997,1998,501C3-CHARITIES
+LIBEOY97,libeoy97,,,,,2,1997-1998,1997,1998,501C3-CHARITIES
+NTEE4CD,ntee4cd,,,,,2,1997-1998,1997,1998,501C3-CHARITIES
+NTEECC3D,nteecc3d,,,,,2,1997-1998,1997,1998,501C3-CHARITIES
+NTEECODE,nteecode,Common code of NTEE-XP,Common code of NTEE-XP,Other Classification,Character,2,1997-1998,1997,1998,501C3-CHARITIES
+NTEEDEC,nteedec,Decile code of NTEE classifica,Decile code of NTEE classifica,Other Classification,Character,2,1997-1998,1997,1998,501C3-CHARITIES
+NTEEMID,nteemid,Decile & centile code of NTEE,Decile & centile code of NTEE,Other Classification,Character,2,1997-1998,1997,1998,501C3-CHARITIES
+NteeOldB,nteeoldb,,,,,2,2005-2006,2005,2006,501C3-CHARITIES|501CE-NONPROFIT
+SALES_F,sales_f,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES
+SALES_O,sales_o,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES
+TOTREV_F,totrev_f,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES
+TOTREV_O,totrev_o,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES
+V1INVNTN,v1invntn,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+V1NASEOY,v1naseoy,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+V1NETINC,v1netinc,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+V1OTHN,v1othn,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+V1SECURN,v1securn,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+V1SPEVN,v1spevn,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+V1TOTREV,v1totrev,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+VASSTLIA,vasstlia,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+VBS_BOY,vbs_boy,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+VBS_EOY,vbs_eoy,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+VGBOND_BOY,vgbond_boy,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+VGBOND_EOY,vgbond_eoy,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+VGCOMPENS,vgcompens,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+VGFUNDFEES,vgfundfees,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+VGMRTG_BOY,vgmrtg_boy,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+VGMRTG_EOY,vgmrtg_eoy,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+VGOTHSAL,vgothsal,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+VGPAYTAX,vgpaytax,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+VGRENTEXP,vgrentexp,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+VGSOLICIT,vgsolicit,,,,,2,"2002, 2004",2002,2004,501C3-CHARITIES|501CE-NONPROFIT
+geoExclude,geoexclude,,,,,2,2007-2008,2007,2008,501C3-CHARITIES
+geocd,geocd,,,,,2,2007-2008,2007,2008,501C3-CHARITIES
+ADMISSN,admissn,,,,,1,2004,2004,2004,501C3-CHARITIES
+ASS_EOYx,ass_eoyx,,,,,1,2010,2010,2010,501CE-NONPROFIT
+AssIndCode,assindcode,,,,,1,2010,2010,2010,501C3-CHARITIES
+AssIndEstimate,assindestimate,Assistance to Individuals,Estimated Assistance to individuals,Supplemental fields (Authorized Users Only),Numeric,1,2010,2010,2010,501C3-CHARITIES
+AssIndYr,assindyr,,,,,1,2010,2010,2010,501C3-CHARITIES
+Auspice,auspice,,,,,1,2001,2001,2001,501C3-CHARITIES
+BASALES,basales,,,,,1,2004,2004,2004,501C3-CHARITIES
+BONDBEG,bondbeg,,,,,1,2004,2004,2004,501C3-CHARITIES
+BONDEND,bondend,,,,,1,2004,2004,2004,501C3-CHARITIES
+BOND_BOY_OLD,bond_boy_old,,,,,1,2010,2010,2010,501CE-NONPROFIT
+BOND_EOYx,bond_eoyx,,,,,1,2010,2010,2010,501CE-NONPROFIT
+CBSA,cbsa,,,,,1,2001,2001,2001,501C3-CHARITIES
+CMSA,cmsa,,,,,1,1999,1999,1999,501C3-CHARITIES
+CommCode,commcode,,,,,1,2010,2010,2010,501C3-CHARITIES
+CommEstimate,commestimate,Communication,Estimated Communication,Supplemental fields (Authorized Users Only),Numeric,1,2010,2010,2010,501C3-CHARITIES
+CommYr,commyr,,,,,1,2010,2010,2010,501C3-CHARITIES
+Confidence2005b,confidence2005b,,,,,1,2003,2003,2003,501C3-CHARITIES
+ConfidenceDraft,confidencedraft,,,,,1,2003,2003,2003,501CE-NONPROFIT
+DEDCTCD,dedctcd,,,,,1,1997,1997,1997,501CE-NONPROFIT
+DIVCODE,divcode,,,,,1,2001,2001,2001,501C3-CHARITIES
+DIVIDEND,dividend,,,,,1,2004,2004,2004,501C3-CHARITIES
+DIV_AMT,div_amt,,,,,1,2004,2004,2004,501C3-CHARITIES
+DepRecCode,depreccode,,,,,1,2010,2010,2010,501C3-CHARITIES
+DepRecEstimate,deprecestimate,Depreciation,Estimated Depreciation,Supplemental fields (Authorized Users Only),Numeric,1,2010,2010,2010,501C3-CHARITIES
+DepRecYr,deprecyr,,,,,1,2010,2010,2010,501C3-CHARITIES
+DuesFlg,duesflg,,,,,1,2010,2010,2010,501CE-NONPROFIT
+EARNAMT,earnamt,,,,,1,2004,2004,2004,501C3-CHARITIES
+EmpBenCode,empbencode,,,,,1,2010,2010,2010,501C3-CHARITIES
+EmpBenEstimate,empbenestimate,Other employee benefits,Estimated Other employee benefits,Supplemental fields (Authorized Users Only),Numeric,1,2010,2010,2010,501C3-CHARITIES
+EmpBenYr,empbenyr,,,,,1,2010,2010,2010,501C3-CHARITIES
+F990REV,f990rev,,,,,1,2004,2004,2004,501C3-CHARITIES
+FIPSTATE,fipstate,,,,,1,1999,1999,1999,501C3-CHARITIES
+FISYRx,fisyrx,,,,,1,2010,2010,2010,501CE-NONPROFIT
+FUNDBALx,fundbalx,,,,,1,2010,2010,2010,501CE-NONPROFIT
+FUNDRAIS,fundrais,,,,,1,2004,2004,2004,501C3-CHARITIES
+FileName,filename,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+GAINSALE,gainsale,,,,,1,2004,2004,2004,501C3-CHARITIES
+GEOCDF,geocdf,,,,,1,2008,2008,2008,501C3-CHARITIES
+GIFTRECD,giftrecd,,,,,1,2004,2004,2004,501C3-CHARITIES
+GSOTHER,gsother,,,,,1,2004,2004,2004,501C3-CHARITIES
+GSSAMT,gssamt,,,,,1,2004,2004,2004,501C3-CHARITIES
+GrantCode,grantcode,,,,,1,2010,2010,2010,501C3-CHARITIES
+GrantEstimate,grantestimate,Grants,Estimated Grants to governments and organizations,Supplemental fields (Authorized Users Only),Numeric,1,2010,2010,2010,501C3-CHARITIES
+GrantYr,grantyr,,,,,1,2010,2010,2010,501C3-CHARITIES
+InterCode,intercode,,,,,1,2010,2010,2010,501C3-CHARITIES
+InterEstimate,interestimate,Interest,Estimated Interest,Supplemental fields (Authorized Users Only),Numeric,1,2010,2010,2010,501C3-CHARITIES
+InterYr,interyr,,,,,1,2010,2010,2010,501C3-CHARITIES
+KeyID,keyid,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+LAT,lat,,,,,1,2003,2003,2003,501C3-CHARITIES
+LEVEL5,level5,Level 5 classification,"Level 5 Detailed NTEE classification (Almanac tables 5.6, 5.7)",Other Classification,Character,1,1999,1999,1999,501C3-CHARITIES
+LIAB_EOYx,liab_eoyx,,,,,1,2010,2010,2010,501CE-NONPROFIT
+LON,lon,,,,,1,2003,2003,2003,501C3-CHARITIES
+MEMBFEE,membfee,,,,,1,2004,2004,2004,501C3-CHARITIES
+MISCINC,miscinc,,,,,1,2004,2004,2004,501C3-CHARITIES
+MRTGBEG,mrtgbeg,,,,,1,2004,2004,2004,501C3-CHARITIES
+MRTGEND,mrtgend,,,,,1,2004,2004,2004,501C3-CHARITIES
+MRTG_BOY_OLD,mrtg_boy_old,,,,,1,2010,2010,2010,501CE-NONPROFIT
+MRTG_EOYx,mrtg_eoyx,,,,,1,2010,2010,2010,501CE-NONPROFIT
+MailCity,mailcity,,,,,1,2001,2001,2001,501C3-CHARITIES
+MailName,mailname,,,,,1,2001,2001,2001,501C3-CHARITIES
+MailStreet,mailstreet,,,,,1,2001,2001,2001,501C3-CHARITIES
+NETWOR,networ,,,,,1,2004,2004,2004,501C3-CHARITIES
+NTEEDRAF,nteedraf,,,,,1,1999,1999,1999,501C3-CHARITIES
+NTEE_CAT,ntee_cat,,,,,1,1999,1999,1999,501C3-CHARITIES
+Ntee2005b,ntee2005b,,,,,1,2003,2003,2003,501C3-CHARITIES
+Ntee2006,ntee2006,,,,,1,2004,2004,2004,501C3-CHARITIES
+Ntee2006a,ntee2006a,Early 2006 draft NTEE,Early 2006 draft NTEE originally in nteecc field (March-April 2006) superceded by revised NTEECC codes.,Miscellaneous,Character,1,2004,2004,2004,501C3-CHARITIES
+Ntee4c2006,ntee4c2006,,,,,1,2004,2004,2004,501C3-CHARITIES
+NteeConf2006,nteeconf2006,,,,,1,2004,2004,2004,501C3-CHARITIES
+OTHEXPS,othexps,,,,,1,2004,2004,2004,501C3-CHARITIES
+OccuCode,occucode,,,,,1,2010,2010,2010,501C3-CHARITIES
+OccuEstimate,occuestimate,Occupancy,Estimated Occupancy,Supplemental fields (Authorized Users Only),Numeric,1,2010,2010,2010,501C3-CHARITIES
+OccuYr,occuyr,,,,,1,2010,2010,2010,501C3-CHARITIES
+P2TASFMV,p2tasfmv,,,,,1,1991,1991,1991,501C3-CHARITIES
+POP_NDX,pop_ndx,,,,,1,1999,1999,1999,501C3-CHARITIES
+PROGREV2,progrev2,,,,,1,1990,1990,1990,501C3-CHARITIES
+PensionCode,pensioncode,,,,,1,2010,2010,2010,501C3-CHARITIES
+PensionEstimate,pensionestimate,Pension,Estimated pension plan contributions,Supplemental fields (Authorized Users Only),Numeric,1,2010,2010,2010,501C3-CHARITIES
+PensionYr,pensionyr,,,,,1,2010,2010,2010,501C3-CHARITIES
+ProffeesCode,proffeescode,,,,,1,2010,2010,2010,501C3-CHARITIES
+ProffeesEstimate,proffeesestimate,Professional fees,Estimated Professional and other fees,Supplemental fields (Authorized Users Only),Numeric,1,2010,2010,2010,501C3-CHARITIES
+ProffeesYr,proffeesyr,,,,,1,2010,2010,2010,501C3-CHARITIES
+RENTS,rents,,,,,1,2004,2004,2004,501C3-CHARITIES
+RETEARNx,retearnx,,,,,1,2010,2010,2010,501CE-NONPROFIT
+RETE_BOY_OLD,rete_boy_old,,,,,1,2010,2010,2010,501CE-NONPROFIT
+REV_INT,rev_int,,,,,1,2004,2004,2004,501C3-CHARITIES
+SALEMRE,salemre,,,,,1,2004,2004,2004,501C3-CHARITIES
+SALESCN,salescn,,,,,1,2004,2004,2004,501C3-CHARITIES
+SECNAME,secname,,,,,1,1997,1997,1997,501CE-NONPROFIT
+SERVALUE,servalue,,,,,1,2004,2004,2004,501C3-CHARITIES
+SRC1_UPD,src1_upd,,,,,1,1999,1999,1999,501C3-CHARITIES
+SRC2_UPD,src2_upd,,,,,1,1999,1999,1999,501C3-CHARITIES
+STATECHK,statechk,,,,,1,1999,1999,1999,501C3-CHARITIES
+SupplyCode,supplycode,,,,,1,2010,2010,2010,501C3-CHARITIES
+SupplyEstimate,supplyestimate,Supplies,Estimated Supplies,Supplemental fields (Authorized Users Only),Numeric,1,2010,2010,2010,501C3-CHARITIES
+SupplyYr,supplyyr,,,,,1,2010,2010,2010,501C3-CHARITIES
+TAXPD,taxpd,,,,,1,1997,1997,1997,501CE-NONPROFIT
+TOTMLAA,totmlaa,,,,,1,2004,2004,2004,501C3-CHARITIES
+TXBENEFT,txbeneft,,,,,1,2004,2004,2004,501C3-CHARITIES
+TaxPer_OLD,taxper_old,,,,,1,2010,2010,2010,501C3-CHARITIES
+VGASS_BOY,vgass_boy,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGASS_EOY,vgass_eoy,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGCONT,vgcont,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGDIREXP,vgdirexp,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGDUES,vgdues,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGEXPS,vgexps,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGFUNDBAL,vgfundbal,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGFUNDINC,vgfundinc,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGGOODS,vggoods,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGGRPROF,vggrprof,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGINVENTG,vginventg,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGINVINC,vginvinc,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGLIAB_BOY,vgliab_boy,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGLIAB_EOY,vgliab_eoy,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGNETA_BOY,vgneta_boy,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGNETINC,vgnetinc,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGNETRENT,vgnetrent,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGOTHCHGS,vgothchgs,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGOTHINC,vgothinc,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGPROGREV,vgprogrev,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGRETEARN,vgretearn,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGRETE_BOY,vgrete_boy,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGSALEOTHE,vgsaleothe,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGSALEOTHG,vgsaleothg,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGSALEOTHN,vgsaleothn,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGSALESECN,vgsalesecn,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGSALESEXP,vgsalesexp,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGSECUR,vgsecur,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGSPEVTG,vgspevtg,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VGTOTREV2,vgtotrev2,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VLIABBOY,vliabboy,,,,,1,2002,2002,2002,501CE-NONPROFIT
+VLIABEOY,vliabeoy,,,,,1,2002,2002,2002,501CE-NONPROFIT
+benmemCode,benmemcode,,,,,1,2010,2010,2010,501C3-CHARITIES
+benmemYr,benmemyr,,,,,1,2010,2010,2010,501C3-CHARITIES
+benmemestimate,benmemestimate,Benefits to members,Estimated Benefits paid to or for members,Supplemental fields (Authorized Users Only),Numeric,1,2010,2010,2010,501C3-CHARITIES
+compensP,compensp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+compothcode,compothcode,,,,,1,2010,2010,2010,501C3-CHARITIES
+compothestimate,compothestimate,Compensation other,Estimated Other compensation,Supplemental fields (Authorized Users Only),Numeric,1,2010,2010,2010,501C3-CHARITIES
+compothyr,compothyr,,,,,1,2010,2010,2010,501C3-CHARITIES
+confiden,confiden,,,,,1,1999,1999,1999,501C3-CHARITIES
+contP,contp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+doccdP,doccdp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+duesP,duesp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+expsP,expsp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+fisyrP,fisyrp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+fundfeesP,fundfeesp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+fundincP,fundincp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+gftgrntsrcvd170,gftgrntsrcvd170,Gifts grants membership fees received (170),"Total gifts grants membership fees received: 170(b)(1)(A)(iv) and 170(b)(1)(A)(vi) Old 990 and Old 990EZ (DocCD=90 and 09): Not Available New 990 and New 990EZ (DocCD=93 and 92): Schedule A, Part II-A Public Support, Line 1(f)",Schedule A,Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+grprofP,grprofp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+grsinc170,grsinc170,"Gross income from interest, etc. (170)","Total gross income from interest, etc.: 170(b)(1)(A)(iv) and 170(b)(1)(A)(vi) Old 990 and Old 990EZ (DocCD=90 and 09): Not Available New 990 and New 990EZ (DocCD=93 and 92): Schedule A, Part II-B Total Support, Line 8(f)",Schedule A,Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+grsincfndrsng,grsincfndrsng,Gross income fundraising events,"Gross income from fundraising events Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 8a","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+grsincgaming,grsincgaming,Gross income gaming,"Gross income from gaming activities Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 9a","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+grsrcptsadmissn509,grsrcptsadmissn509,"Receipts from admissions, merchandise, etc. (509)","Total receipts from admissions, merchandise, etc.: 509(a)(2) Old 990 and Old 990EZ (DocCD=90 and 09): Not Available New 990 and New 990EZ (DocCD=93 and 92): Schedule A, Part III-A Public Support, Line 2(f)",Schedule A,Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+grsrcptsrelated170,grsrcptsrelated170,Gross receipts from related activities (170),"Total gross receipts from related activities, etc.: 170(b)(1)(A)(iv) and 170(b)(1)(A)(vi) Old 990 and Old 990EZ (DocCD=90 and 09): Not Available New 990 and New 990EZ (DocCD=93 and 92): Schedule A, Part II-B Total Support, Line 12",Schedule A,Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+grsrntsprsnl,grsrntsprsnl,"Gross Rents, Personal","Gross rents, Personal Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 6a (ii)","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+grsrntsreal,grsrntsreal,"Gross Rents, Real Estate","Gross rents, Real Estate Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 6a (i)","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+inPrior,inprior,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+inPriorSrc,inpriorsrc,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+invincP,invincp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+lessdirfndrsng,lessdirfndrsng,Fundraising event expenses,"Fundraising events direct expenses Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 8b","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+lessdirgaming,lessdirgaming,Gaming activity expenses,"Gaming activities direct expenses Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 9b","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+netgnls,netgnls,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+netincP,netincp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+netincfndrsng,netincfndrsng,Fundraising events net income,"Net income (loss) from fundraising events Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 8c","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+netincgaming,netincgaming,Gaming activity net income,"Net income (loss) from gaming activities Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 9c","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+netrentP,netrentp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+ntee42005b,ntee42005b,,,,,1,2003,2003,2003,501C3-CHARITIES
+nteeOld,nteeold,,,,,1,1998,1998,1998,501C3-CHARITIES
+othexpCode,othexpcode,,,,,1,2010,2010,2010,501C3-CHARITIES
+othexpYr,othexpyr,,,,,1,2010,2010,2010,501C3-CHARITIES
+othexpestimate,othexpestimate,Other expenses,Estimated Other expenses line,Supplemental fields (Authorized Users Only),Numeric,1,2010,2010,2010,501C3-CHARITIES
+othincP,othincp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+othsalP,othsalp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+paytaxP,paytaxp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+progrevP,progrevp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+rntlexpnsprsnl,rntlexpnsprsnl,"Rental expense, Personal","Rental expenses, Personal Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 6b (ii)","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+rntlexpnsreal,rntlexpnsreal,"Rental expense, Real Estate","Rental expenses, Real Estate Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 6b (i)","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+rntlincprsnl,rntlincprsnl,"Net Rental Income, Personal","Net Rental Income (loss), Personal Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 6c (ii)","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+rntlincreal,rntlincreal,"Net Rental Income, Real Estate","Net Rental Income (loss), Real Estate Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 6c (i)","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+royaltsinc,royaltsinc,Royalties,"Royalty income Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 5A","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+saleothnP,saleothnp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+salesecnP,salesecnp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+srvcsval170,srvcsval170,Services or facilities furnished by gov (170),"Total value of services or facilities furnished by a governmental unit without charge: 170(b)(1)(A)(iv) and 170(b)(1)(A)(vi) Old 990 and Old 990EZ (DocCD=90 and 09): Not Available New 990 and New 990EZ (DocCD=93 and 92): Schedule A, Part II-A Public Support, Line 3(f)",Schedule A,Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+srvcsval509,srvcsval509,Services or facilities furnished by gov (509),"Total value of services or facilities furnished by a governmental unit without charge: 509(a)(2) Old 990 and Old 990EZ (DocCD=90 and 09): Not Available New 990 and New 990EZ (DocCD=93 and 92): Schedule A, Part III-A Public Support, Line 5(f)",Schedule A,Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+subcd,subcd,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+subtotsuppinc509,subtotsuppinc509,Subtotal total support (509),"Subtotal total support (lines 10a + 10b): 509(a)(2) Old 990 and Old 990EZ (DocCD=90 and 09): Not Available New 990 and New 990EZ (DocCD=93 and 92): Schedule A, Part III-B Total Support, Line 10c(f)",Schedule A,Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+taxperP,taxperp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+totgftgrntrcvd509,totgftgrntrcvd509,Gifts grants membership fees received (509),"Total gifts, grants, contributions, and membership fees received: 509(a)(2) Old 990 and Old 990EZ (DocCD=90 and 09): Not Available New 990 and New 990EZ (DocCD=93 and 92): Schedule A, Part III-A Public Support, Line 1(f)",Schedule A,Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+totrevP,totrevp,,,,,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+totsupp509,totsupp509,Total support (509),"Total support (lines 9 + 10c + 11 + 12): 509(a)(2) Old 990 and Old 990EZ (DocCD=90 and 09): Not Available New 990 and New 990EZ (DocCD=93 and 92): Schedule A, Part III-B Total Support, Line 13(f)",Schedule A,Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+txexmptbndsproceeds,txexmptbndsproceeds,Tax-exempt bond investment income,"Income from investment of tax-exempt bond proceeds Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part VIII Line 4A","Revenues, Expenses, and Change in Net Assets",Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+txrevnuelevied170,txrevnuelevied170,Tax revenues levied (170),"Total tax revenues levied: 170(b)(1)(A)(iv) and 170(b)(1)(A)(vi) Old 990 and Old 990EZ (DocCD=90 and 09): Not Available New 990 and New 990EZ (DocCD=93 and 92): Schedule A, Part II-A Public Support, Line 2(f)",Schedule A,Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+txrevnuelevied509,txrevnuelevied509,Tax revenues levied (509),"Total Tax revenues levied: 509(a)(2) Old 990 and Old 990EZ (DocCD=90 and 09): Not Available New 990 and New 990EZ (DocCD=93 and 92): Schedule A, Part III-A Public Support, Line 4(f)",Schedule A,Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+unsecurednotesend,unsecurednotesend,Unsecured Mortgages and Notes Payable - EOY,"Unsecured mortgages and notes payable at end of year Old 990 and 990EZ (DocCD=90, 09 and 92): Not Available New 990 (DocCD=93): Part X Line 24 (B)",Balance Sheet,Numeric,1,2011,2011,2011,501C3-CHARITIES|501CE-NONPROFIT
+vMagP,vmagp,,,,,1,2006,2006,2006,501CE-NONPROFIT
+vMagS,vmags,,,,,1,2006,2006,2006,501CE-NONPROFIT

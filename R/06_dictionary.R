@@ -18,7 +18,8 @@ source(here("R", "create_logger.R"))
 UNIVERSAL_DICTIONARY_ROWS <- function() {
   data.table(
     harmonized_name = c("tax_year", "tax_month", "is_501c3",
-                       "extract_year", "is_amendment", "source_form", "soi_year"),
+                       "extract_year", "is_amendment", "source_form", "soi_year",
+                       "source_subsection_class"),
     description = c(
       "Calendar year the filing's fiscal period ended (substr(tax_period, 1, 4)).",
       "Month the filing's fiscal period ended (substr(tax_period, 5, 6)).",
@@ -26,7 +27,8 @@ UNIVERSAL_DICTIONARY_ROWS <- function() {
       "Processing year of the IRS SOI extract that supplied this row.",
       "TRUE if the same (ein, tax_period) appeared in an earlier extract_year for this series.",
       "990combined only: '990' or '990ez' indicating which source form this row came from.",
-      "990-PF only: IRS-assigned SOI year (calendar year covering most of activity)."
+      "990-PF only: IRS-assigned SOI year (calendar year covering most of activity).",
+      "Legacy only: the NCCS subsection-class partition the row was sourced from (501C3-CHARITIES, 501CE-NONPROFIT, or 501C3-PRIVFOUND)."
     ),
     source_var      = NA_character_,
     source_location = "pipeline-derived",
@@ -45,6 +47,17 @@ infer_dictionary_type <- function(x) {
 #' Build the dictionary CSV for one harmonized file.
 build_dictionary_one <- function(dt, form, tax_year, xwalk_path, logger = NULL) {
   xw <- fread(xwalk_path)
+  # Compat: legacy crosswalks use source_column / section instead of
+  # source_var / location. Normalize column names before collapsing.
+  if (!"source_var" %in% names(xw) && "source_column" %in% names(xw)) {
+    setnames(xw, "source_column", "source_var")
+  }
+  if (!"location" %in% names(xw) && "section" %in% names(xw)) {
+    xw[, location := section]
+  }
+  # Legacy crosswalks include harmonized_name="" rows (BMF-origin drops); the
+  # harmonize step filters them out, so they shouldn't appear in the dictionary.
+  xw <- xw[!is.na(harmonized_name) & harmonized_name != ""]
   # Collapse synonyms: harmonized_name -> {source_var(s), description, location, years_present}
   xw_collapsed <- xw[, .(
     source_var      = paste(unique(source_var), collapse = "|"),
@@ -107,7 +120,8 @@ run_dictionary <- function(harmonized_root = PATHS$harmonized,
       f <- file.path(yd, form, sprintf("core_%d_%s.csv", tax_year, form))
       if (!file.exists(f)) next
       dt <- fread(f, colClasses = c(ein = "character", tax_period = "character"))
-      dict <- build_dictionary_one(dt, form, tax_year, CROSSWALK_FOR_SERIES(form), logger)
+      dict <- build_dictionary_one(dt, form, tax_year,
+                                   CROSSWALK_FOR_SERIES(form, tax_year), logger)
 
       out_dir <- file.path(processed_root, tax_year, form)
       dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)

@@ -60,7 +60,8 @@ PATHS <- list(
   unpacked          = "data/intermediate/unpacked",
   harmonized        = "data/intermediate/harmonized",         # SOI-current pipeline outputs (2012+)
   harmonized_legacy = "data/intermediate/harmonized_legacy",  # legacy pipeline outputs (1989-2011)
-  processed         = "data/processed",
+  processed         = "data/processed",                       # SOI-current published tier
+  processed_legacy  = "data/processed_legacy",                # legacy published tier (parallel to processed/)
   logs              = "data/logs",
   crosswalks        = "data/crosswalks",
   docs              = "docs"

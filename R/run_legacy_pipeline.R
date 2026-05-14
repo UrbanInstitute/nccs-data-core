@@ -28,6 +28,7 @@ source(here("R", "create_logger.R"))
 source(here("R", "01_legacy_download.R"))
 source(here("R", "03_legacy_harmonize.R"))
 source(here("R", "05_quality.R"))
+source(here("R", "06_dictionary.R"))
 source(here("R", "09_parquet.R"))
 
 `%||%` <- function(a, b) if (is.null(a) || length(a) == 0L) b else a
@@ -118,7 +119,9 @@ run_legacy_pipeline <- function(dry_run = FALSE) {
                                forms = c("990combined", "990pf"),
                                strict = CONFIG$STRICT_QUALITY_GATES))
   phase("6 dictionary",      CONFIG$ENABLE_DICTIONARY,logger,
-        function() stub_phase("6 dictionary (legacy)", logger))
+        function() run_dictionary(harmonized_root = PATHS$harmonized_legacy,
+                                  processed_root  = PATHS$processed_legacy,
+                                  forms           = c("990combined", "990pf")))
   phase("7 render",          CONFIG$ENABLE_RENDER_REPORT, logger,
         function() stub_phase("7 render (legacy)", logger))
   phase("9 parquet",         CONFIG$ENABLE_PARQUET,   logger,

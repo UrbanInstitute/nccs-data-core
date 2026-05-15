@@ -90,6 +90,15 @@ Present in every output:
 - `extract_year` — int, processing year of the IRS SOI extract that supplied this row.
 - `is_amendment` — boolean, TRUE if the same `(ein, tax_period)` appears in an earlier `extract_year`.
 
+## Merged-panel columns
+
+Output files under `data/processed_merged/` (produced by `R/run_build_panel.R`) carry two additional columns that the SOI-current and legacy single-pipeline outputs do not:
+
+- `source_pipeline` — `"legacy"` or `"soi_current"`. The primary origin of the row. Overlap rows (same `(ein, tax_period)` in both pipelines) are tagged `"soi_current"` because SOI-precedence resolved the shared columns.
+- `has_legacy_augment` — boolean. `TRUE` iff the row's `(ein, tax_period)` appeared in both pipelines, i.e. the SOI row was augmented by legacy-only columns. `FALSE` on single-pipeline rows.
+
+Together these two columns let analysts filter "as-filed only" (`source_pipeline == "soi_current" & !has_legacy_augment`), "NCCS legacy only" (`source_pipeline == "legacy"`), or "rows where both sources had something to say" (`has_legacy_augment`). Where SOI-precedence overwrote a non-NA legacy value on a shared column, the discarded legacy value is recorded in `data/logs/merge_disagreements_{year}_{form}.csv` — see `docs/09-legacy-harmonization.qmd` ("Merge phase") for the rule + the as-filed-vs-imputed caveat.
+
 ## Natural primary key
 
 The natural primary key is `(ein, tax_period)`. Duplicates on this key are exactly the rows where `is_amendment == TRUE` — the same filer submitted the same tax period in a later processing year (typically an amended return). Deduplication policy is the consumer's choice: keep only `is_amendment == FALSE` for the original filings, or keep the latest `extract_year` per `(ein, tax_period)` for amendment-superseded values.

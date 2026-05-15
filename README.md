@@ -63,7 +63,12 @@ Nine phases, each as a standalone script under `R/`, all wired together by `R/ru
 | 7 | `07_render_report.R` | Renders the Quarto template `docs/quality_report_template.qmd` to HTML per `(form, tax_year)`. |
 | 8 | `08_upload.R` | Promotes harmonized CSVs into `data/processed/{tax_year}/{form}/`, then per-tier `aws s3 sync` to `s3://nccsdata/`. |
 
-`R/transforms/` holds six pure column-transform functions (`tax_period`, `ein`, `subsection`, `financial_amounts`, `indicators`, `efile_indicator`). The test suite lives under `tests/` — six files, 161 total tests covering transforms, crosswalk apply, combined-derivation, dictionary, and pre/post-check validators. Run everything via the harness:
+Two additional orchestrators sit alongside `run_pipeline.R`:
+
+- `R/run_legacy_pipeline.R` — pre-2012 raw NCCS legacy files (PZ + PF), writing to `data/intermediate/harmonized_legacy/` and `data/processed_legacy/`. See `docs/09-legacy-harmonization.qmd`.
+- `R/run_build_panel.R` — Option D column-merge of the two harmonized trees on `(ein, tax_period)` with SOI precedence. Adds `source_pipeline` + `has_legacy_augment` tag columns and emits a per-(year, form) disagreement audit under `data/logs/`. Output: `data/intermediate/harmonized_merged/` → `data/processed_merged/`. Standalone because it depends on both upstream pipelines having produced output.
+
+`R/transforms/` holds six pure column-transform functions (`tax_period`, `ein`, `subsection`, `financial_amounts`, `indicators`, `efile_indicator`). The test suite lives under `tests/` — seven files, 209 total tests covering transforms, crosswalk apply, combined-derivation, dictionary, pre/post-check validators, and the legacy/SOI merge. Run everything via the harness:
 
 ```bash
 Rscript tests/run_all.R          # exits nonzero on failure
@@ -76,8 +81,10 @@ Or `source("tests/run_all.R")` from RStudio. Individual files also run standalon
 ```
 nccs-data-core/
 ├── R/
-│   ├── run_pipeline.R              # top-level orchestrator
-│   ├── 01_download.R ... 08_upload.R
+│   ├── run_pipeline.R              # SOI-current orchestrator
+│   ├── run_legacy_pipeline.R       # pre-2012 legacy NCCS orchestrator
+│   ├── run_build_panel.R           # merged-panel orchestrator (legacy ∪ SOI-current)
+│   ├── 01_download.R ... 08_upload.R, 04_legacy_merge.R, 09_parquet.R
 │   ├── transforms/                 # six pure transforms
 │   ├── quality/                    # pre/post-check validators + stat helpers
 │   ├── config.R                    # paths, S3 prefixes, IRS URL table, phase toggles
@@ -89,9 +96,11 @@ nccs-data-core/
 │   ├── crosswalks/                 # BASELINE / OVERRIDES / FINAL per form (tracked)
 │   ├── lookups/                    # per-coded-column reference CSVs (tracked)
 │   ├── raw/                        # SOI zips + form PDFs (gitignored)
-│   ├── intermediate/               # unpacked sources + harmonized output (gitignored)
-│   ├── processed/                  # canonical user-facing artifacts (gitignored)
-│   └── logs/                       # per-phase log files + quality RDS (gitignored)
+│   ├── intermediate/               # unpacked sources + harmonized{,_legacy,_merged} output (gitignored)
+│   ├── processed/                  # canonical SOI-current artifacts (gitignored)
+│   ├── processed_legacy/           # canonical legacy artifacts (gitignored)
+│   ├── processed_merged/           # merged-panel artifacts (gitignored)
+│   └── logs/                       # per-phase log files + quality RDS + merge audits (gitignored)
 ├── docs/
 │   ├── _quarto.yml                 # Quarto book config
 │   ├── index.qmd, 01-architecture.qmd, ... 10-ec2-batch-processing.qmd

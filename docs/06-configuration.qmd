@@ -12,6 +12,7 @@ Each pipeline phase has an `ENABLE_*` flag. Phase 8 (upload) has additional per-
 | `ENABLE_UNPACK` | `TRUE` | Skip phase 2; assume unpacked files are at `data/intermediate/unpacked/` |
 | `ENABLE_HARMONIZE` | `TRUE` | Skip phase 3; no harmonized CSVs written |
 | `ENABLE_COMBINED` | `TRUE` | Skip phase 4; no `990combined` series produced |
+| `ENABLE_MERGE` | `TRUE` | (used only by `R/run_build_panel.R`) Skip the legacy/SOI-current column-merge phase; no `harmonized_merged/` written |
 | `ENABLE_QUALITY` | `TRUE` | Skip phase 5; no `quality_*.rds` files |
 | `ENABLE_DICTIONARY` | `TRUE` | Skip phase 6; no dictionary CSVs |
 | `ENABLE_RENDER_REPORT` | `TRUE` | Skip phase 7; no HTML quality reports |
@@ -56,7 +57,12 @@ All paths are relative to the repo root. The orchestrator and individual scripts
 | `intermediate` | `data/intermediate` |
 | `unpacked` | `data/intermediate/unpacked` |
 | `harmonized` | `data/intermediate/harmonized` |
+| `legacy_raw` | `data/raw/legacy/core` |
+| `harmonized_legacy` | `data/intermediate/harmonized_legacy` |
+| `harmonized_merged` | `data/intermediate/harmonized_merged` |
 | `processed` | `data/processed` |
+| `processed_legacy` | `data/processed_legacy` |
+| `processed_merged` | `data/processed_merged` |
 | `logs` | `data/logs` |
 | `crosswalks` | `data/crosswalks` |
 | `docs` | `docs` |
@@ -72,7 +78,8 @@ All under bucket `nccsdata`.
 | `legacy_prefix` | `legacy/core` | Pre-2012 NCCS legacy files — read-only, consumed by the future legacy pipeline |
 | `unpacked_prefix` | `intermediate/core/unpacked` | Decompressed extracts |
 | `harmonized_prefix` | `intermediate/core/harmonized` | Per-`(tax_year, form)` harmonized CSVs |
-| `processed_prefix` | `processed/core` | The canonical published artifact tier — CSV + dictionary CSV + quality HTML per `(tax_year, form)` |
+| `processed_prefix` | `processed/core` | The canonical SOI-current published artifact tier — CSV + dictionary CSV + quality HTML per `(tax_year, form)` |
+| `processed_merged_prefix` | `processed_merged/core` | Merged-panel published tier (legacy ∪ SOI-current via Option D column-merge); separate prefix while merged output is in bake-in. Phase 8 upload of this tier is not yet wired. |
 | `logs_prefix` | `logs/core` | Per-run timestamped logs + quality RDS snapshots; accumulates across runs |
 
 ## IRS URL template

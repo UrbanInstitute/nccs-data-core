@@ -9,14 +9,15 @@ Two design choices set the shape of everything downstream:
 
 The rest of this chapter describes how the pipeline gets from one to the other.
 
-## Two parallel pipelines
+## Three orchestrators
 
-`nccs-data-core` is split into two independent pipelines that produce the same family of CORE output series:
+`nccs-data-core` is split into two upstream pipelines plus a standalone merge orchestrator that combines them:
 
-- **`R/run_pipeline.R`** — the SOI-current pipeline. Ingests IRS Statistics of Income annual extracts published at `irs.gov/pub/irs-soi/` from 2012 onward. **This is what's built today and what produces every artifact currently on S3.**
-- **`R/run_legacy_pipeline.R`** — pipeline for the raw legacy NCCS files (1989–2011 PZ and PF only; 2012+ files in `s3://nccsdata/legacy/core/` are NCCS+SOI hybrids and are skipped). **Not yet built.** See `docs/09-legacy-harmonization.qmd` for scope.
+- **`R/run_pipeline.R`** — the SOI-current pipeline. Ingests IRS Statistics of Income annual extracts published at `irs.gov/pub/irs-soi/` from 2012 onward. Writes to `data/intermediate/harmonized/` and `data/processed/`.
+- **`R/run_legacy_pipeline.R`** — pipeline for the raw legacy NCCS files (1989–2011 PZ and PF only; 2012+ files in `s3://nccsdata/legacy/core/` are NCCS+SOI hybrids and are skipped). Writes to `data/intermediate/harmonized_legacy/` and `data/processed_legacy/`. See `docs/09-legacy-harmonization.qmd`.
+- **`R/run_build_panel.R`** — column-merge orchestrator that joins the two harmonized trees per `(tax_year, form)` on `(ein, tax_period)` with SOI precedence, producing `data/intermediate/harmonized_merged/` and `data/processed_merged/`. Depends on both upstream pipelines having produced output; rerun whenever either side changes. See `docs/09-legacy-harmonization.qmd` ("Merge phase").
 
-The two pipelines write to the same `(tax_year, form)` output grain. Where they overlap on a tax year, SOI wins (IRS authoritative for 2012+). Where SOI is absent (pre-2012), legacy fills.
+Both upstream pipelines partition by the first 4 chars of `TAXPER` (not publication year), so overlap on `(tax_year, form)` exists in both directions across the 2011/2012 boundary — the merge phase resolves it via column-level coalesce with a per-(year, form) disagreement audit.
 
 ## SOI-current pipeline phases
 

@@ -59,13 +59,53 @@ expected_harmonized_cols <- function(xwalk, extract_year) {
 }
 
 #' Vintage-aware overall completeness. Computes per-cohort completeness over
-#' the harmonized columns expected for that cohort's (extract_year, source_form)
-#' vintage, then row-count-weights across cohorts.
-compute_vintage_aware_completeness <- function(dt, form) {
-  if (!"extract_year" %in% names(dt)) {
-    return(list(overall = NA_real_, per_cohort = list()))
-  }
+#' the harmonized columns expected for that cohort's vintage, then
+#' row-count-weights across cohorts.
+#'
+#' Vintage key:
+#'   - **SOI-current** outputs have `extract_year` (processing year of the IRS
+#'     extract that supplied the row); cohorts are per `(extract_year, source_form)`
+#'     for 990combined or per `extract_year` otherwise.
+#'   - **Legacy** outputs lack `extract_year`; a single legacy CSV is one cohort
+#'     keyed on its `tax_year` (constant within the file), and the legacy
+#'     crosswalk is used to derive expected cols for that vintage.
+#'
+#' @param xwalk_path path to the crosswalk used to harmonize this file. Required
+#'   for legacy outputs (so the legacy_{pz,pf} schema drives expected cols);
+#'   ignored for SOI-current outputs (which fall back to CROSSWALK_FILES).
+compute_vintage_aware_completeness <- function(dt, form, xwalk_path = NULL) {
   is_combined <- identical(form, "990combined")
+  legacy_mode <- !"extract_year" %in% names(dt)
+
+  if (legacy_mode) {
+    # Single-cohort case: whole file shares one tax_year.
+    if (!"tax_year" %in% names(dt)) {
+      return(list(overall = NA_real_, per_cohort = list()))
+    }
+    if (is.null(xwalk_path)) {
+      return(list(overall = NA_real_, per_cohort = list()))
+    }
+    xw <- fread(xwalk_path)
+    tax_year <- dt$tax_year[1]
+    expected <- expected_harmonized_cols(xw, tax_year)
+    expected <- intersect(union(expected, UNIVERSAL_COLS), names(dt))
+    if (length(expected) == 0L) {
+      return(list(overall = NA_real_, per_cohort = list()))
+    }
+    comps <- vapply(expected,
+                    function(c) 100 * sum(!is_blank(dt[[c]])) / nrow(dt),
+                    numeric(1))
+    cohort <- list(
+      extract_year     = NA_integer_,
+      source_form      = form,
+      n_rows           = nrow(dt),
+      n_expected_cols  = length(expected),
+      completeness_pct = round(mean(comps), 2)
+    )
+    return(list(overall = cohort$completeness_pct, per_cohort = list(cohort)))
+  }
+
+  # SOI-current path (existing behavior).
   if (is_combined && !"source_form" %in% names(dt)) {
     return(list(overall = NA_real_, per_cohort = list()))
   }
@@ -318,7 +358,8 @@ run_post_checks <- function(dt, form, tax_year, xwalk_path,
   # Vintage-aware completeness (default headline metric): per-cohort completeness
   # over only the columns expected for that (extract_year, source_form) vintage,
   # then row-count-weighted across cohorts.
-  vintage_completeness <- compute_vintage_aware_completeness(dt, form)
+  vintage_completeness <- compute_vintage_aware_completeness(dt, form,
+                                                              xwalk_path = xwalk_path)
   overall_completeness <- vintage_completeness$overall
 
   # Category reports from crosswalk location

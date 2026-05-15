@@ -270,6 +270,26 @@ harmonize_legacy_form <- function(form, xwalk, source_root, logger) {
   combined <- rbindlist(pieces, use.names = TRUE, fill = TRUE)
   log4r::info(logger, sprintf("Combined %s: %d rows across %d source files",
                               form, nrow(combined), length(files)))
+
+  # Drop rows whose TAXPER spills into 2012+. The 2011 NCCS file contains a
+  # non-trivial population of rows with TAXPER starting "2012", presumably
+  # fiscal-year-2012 filers that NCCS captured early. They get partitioned
+  # into harmonized_legacy/2012/ with the narrow legacy schema and then fail
+  # the strict schema gate. SOI-current's 2012 extracts have the wide schema
+  # and own tax_year >= 2012 anyway, so dropping the spillover here is the
+  # right move — the merge pipeline (Option D) sees the same orgs from the
+  # SOI side without losing coverage.
+  if ("tax_year" %in% names(combined)) {
+    n_before <- nrow(combined)
+    combined <- combined[is.na(tax_year) | tax_year <= LEGACY_TAX_YEAR_MAX]
+    n_dropped <- n_before - nrow(combined)
+    if (n_dropped > 0L) {
+      log4r::info(logger,
+                  sprintf("Dropped %d rows with tax_year > %d (SOI-current owns these)",
+                          n_dropped, LEGACY_TAX_YEAR_MAX))
+    }
+  }
+
   combined
 }
 

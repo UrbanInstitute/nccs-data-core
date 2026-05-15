@@ -83,7 +83,13 @@ run_quality <- function(harmonized_root = PATHS$harmonized,
       f <- file.path(yd, form, sprintf("core_%d_%s.csv", tax_year, form))
       if (!file.exists(f)) next
 
-      dt <- fread(f, colClasses = c(ein = "character", tax_period = "character"))
+      # na.strings: harmonize writes NA as "" via fwrite's default, so reading
+      # back without explicit na.strings would surface empty cells as "" rather
+      # than NA. check_tax_period then counts those empties as "malformed"
+      # (regex fails the empty string), producing a false hard-fail. Match the
+      # harmonize convention here.
+      dt <- fread(f, colClasses = c(ein = "character", tax_period = "character"),
+                  na.strings = c("", "NA"))
       report <- run_post_checks(
         dt            = dt,
         form          = form,

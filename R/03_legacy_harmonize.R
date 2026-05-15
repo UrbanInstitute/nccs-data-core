@@ -258,6 +258,18 @@ harmonize_legacy_form <- function(form, xwalk, source_root, logger) {
     # filename year only for rows whose TAXPER was missing/invalid, so we
     # don't silently drop those rows in partition_and_write.
     if (!"tax_year" %in% names(dt)) dt[, tax_year := NA_integer_]
+
+    # transform_tax_period sets tax_year=NA when TAXPER is malformed or
+    # out-of-range (e.g., "198406" in the 1999 file). The filename-year
+    # fallback below repairs tax_year so the row stays in the legacy
+    # partition, but the raw tax_period would otherwise be carried forward
+    # unchanged — causing check_tax_period to independently flag it as
+    # out_of_range and break the strict gate. Blank tax_period when
+    # tax_year is NA so the row's date is consistently marked "unknown"
+    # downstream (NA, not the malformed string).
+    if ("tax_period" %in% names(dt)) {
+      dt[is.na(tax_year), tax_period := NA_character_]
+    }
     dt[is.na(tax_year), tax_year := tax_year_fn]
     dt[, source_subsection_class := subclass]
     if ("subsection_cd" %in% names(dt)) {
@@ -271,7 +283,9 @@ harmonize_legacy_form <- function(form, xwalk, source_root, logger) {
   log4r::info(logger, sprintf("Combined %s: %d rows across %d source files",
                               form, nrow(combined), length(files)))
 
-  # Drop rows whose TAXPER spills into 2012+. The 2011 NCCS file contains a
+  # Clamp tax_year to the plausibility window.
+  #
+  # High end (> LEGACY_TAX_YEAR_MAX = 2011): the 2011 NCCS file contains a
   # non-trivial population of rows with TAXPER starting "2012", presumably
   # fiscal-year-2012 filers that NCCS captured early. They get partitioned
   # into harmonized_legacy/2012/ with the narrow legacy schema and then fail
@@ -279,14 +293,22 @@ harmonize_legacy_form <- function(form, xwalk, source_root, logger) {
   # and own tax_year >= 2012 anyway, so dropping the spillover here is the
   # right move — the merge pipeline (Option D) sees the same orgs from the
   # SOI side without losing coverage.
+  #
+  # Low end (< 1985): individual rows with TAXPER predating the plausibility
+  # window (e.g. one row with TAXPER="198406" in the 1999 file). These are
+  # super-late-filer anomalies that don't represent legitimate NCCS coverage
+  # of pre-1985 tax years. Dropping them prevents single-row out_of_range
+  # rejections in the strict quality gate.
   if ("tax_year" %in% names(combined)) {
     n_before <- nrow(combined)
-    combined <- combined[is.na(tax_year) | tax_year <= LEGACY_TAX_YEAR_MAX]
+    bounds   <- tax_year_range()  # lower=1985, upper=current year + 1
+    combined <- combined[is.na(tax_year) |
+                         (tax_year >= bounds[1] & tax_year <= LEGACY_TAX_YEAR_MAX)]
     n_dropped <- n_before - nrow(combined)
     if (n_dropped > 0L) {
       log4r::info(logger,
-                  sprintf("Dropped %d rows with tax_year > %d (SOI-current owns these)",
-                          n_dropped, LEGACY_TAX_YEAR_MAX))
+                  sprintf("Dropped %d rows with tax_year outside [%d, %d]",
+                          n_dropped, bounds[1], LEGACY_TAX_YEAR_MAX))
     }
   }
 

@@ -68,15 +68,15 @@ Phase 7 renders each `(form, tax_year)` Quarto template in a forked worker. The 
 
 1. `NCCS_RENDER_WORKERS` env var (if a positive integer), or
 2. The `workers` arg to `run_render_reports()` (if non-NULL), or
-3. Default: `min(parallel::detectCores() - 1, 8)`.
+3. Default: `parallel::detectCores() - 1` (no upper cap; one core reserved for the parent + OS).
 
 The env var takes precedence over the function arg so cron / CI can tune without code changes:
 
 ```bash
-NCCS_RENDER_WORKERS=8 bash scripts/run_pipeline.sh --strict
+NCCS_RENDER_WORKERS=32 bash scripts/run_pipeline.sh --strict
 ```
 
-The cap at 8 reflects diminishing returns past that point — Quarto wall time is dominated by per-render subprocess startup (~5–7s each) rather than CPU, so additional workers mostly contend on fork/exec. On a small-RAM host, lower the cap to avoid OOM; each worker peaks at ~500MB–1GB.
+Each worker peaks at ~500 MB – 1 GB during the Quarto/pandoc render, so on memory-constrained hosts throttle via the env var — e.g. on a 4 GB instance, `NCCS_RENDER_WORKERS=4` keeps headroom for the parent R session. On a c5.18xlarge (72 vCPU, 144 GB RAM), the uncapped default uses 71 workers and renders ~60 HTML reports in well under a minute.
 
 Each render is isolated in `tempdir()` — the template is copied per-render so concurrent renders do not collide on Quarto's `.quarto/<template-stem>/` intermediate cache.
 

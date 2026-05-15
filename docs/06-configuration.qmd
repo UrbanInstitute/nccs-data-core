@@ -105,7 +105,7 @@ Read at runtime; useful for cron / CI tuning without code edits.
 
 | Variable | Effect | Default if unset |
 |---|---|---|
-| `NCCS_RENDER_WORKERS` | Worker count for phase 7 parallel Quarto rendering. Positive integer. Overrides the `workers` arg to `run_render_reports()`. | `min(parallel::detectCores() - 1, 8)` |
+| `NCCS_RENDER_WORKERS` | Worker count for phase 7 parallel Quarto rendering. Positive integer. Overrides the `workers` arg to `run_render_reports()`. | `parallel::detectCores() - 1` (uncapped — set explicitly to throttle on memory-constrained hosts) |
 | `AWS_*` | Standard AWS SDK credential vars (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, etc.) | None — falls back to the EC2 instance role or `~/.aws/credentials` |
 
 ## Form-related constants (`R/data.R`)

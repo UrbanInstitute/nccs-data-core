@@ -45,7 +45,7 @@ Env-var knobs (read at runtime; useful for tuning cron without code changes):
 
 | Variable | Meaning | Default |
 |---|---|---|
-| `NCCS_RENDER_WORKERS` | Worker count for parallel Quarto rendering in phase 7. | `min(detectCores() - 1, 8)` |
+| `NCCS_RENDER_WORKERS` | Worker count for parallel Quarto rendering in phase 7. | `detectCores() - 1` (uncapped; set the env var to throttle on memory-constrained hosts) |
 
 ## Pipeline structure
 

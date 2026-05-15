@@ -70,7 +70,11 @@ resolve_render_workers <- function(workers = NULL) {
     n <- suppressWarnings(as.integer(workers))
     if (!is.na(n) && n >= 1L) return(n)
   }
-  max(1L, min(parallel::detectCores() - 1L, 8L))
+  # detectCores() - 1: leave one core for the parent + OS. No upper cap —
+  # each Quarto render is small (~few hundred MB RAM, CPU-bound), so on
+  # big boxes (e.g. c5.18xlarge / 72 vCPU) we want full saturation. Set
+  # NCCS_RENDER_WORKERS to override on memory-constrained hosts.
+  max(1L, parallel::detectCores() - 1L)
 }
 
 #' Render a single quality report. Isolates Quarto's intermediate cache by

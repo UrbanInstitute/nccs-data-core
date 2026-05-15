@@ -64,7 +64,11 @@ fi
 
 log "Installing R packages"
 Rscript --vanilla -e '
-  pkgs <- c("data.table","arrow","aws.s3","paws","openxlsx","rio","here",
+  # paws and aws.s3 were dropped 2026-05-15: pipeline performs all S3
+  # operations via the AWS CLI (R/aws_s3_sync.R + R/01_legacy_download.R),
+  # not via R-side SDKs. Removing them cuts the binary-install footprint
+  # (paws is a metapackage that pulls in every AWS service subpackage).
+  pkgs <- c("data.table","arrow","openxlsx","rio","here",
             "purrr","stringr","lubridate","jsonlite","quarto",
             "duckdb","DBI","log4r","tidyverse","data.validator","assertr")
   to_install <- setdiff(pkgs, rownames(installed.packages()))

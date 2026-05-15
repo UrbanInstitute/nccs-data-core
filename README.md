@@ -139,7 +139,7 @@ See [Developer Guide](docs/07-developer-guide.qmd) for the full SOP.
 
 ## Required R packages
 
-`data.table`, `arrow`, `aws.s3`, `paws`, `openxlsx`, `rio`, `here`, `purrr`, `stringr`, `lubridate`, `jsonlite`, `quarto`, `duckdb`, `DBI`, `log4r`, `tidyverse`, `data.validator`, `assertr`. Also requires the **AWS CLI** (used by phase 8 via `system2()`) and **pdftotext** (for ad-hoc form text extraction).
+`data.table`, `arrow`, `openxlsx`, `rio`, `here`, `purrr`, `stringr`, `lubridate`, `jsonlite`, `quarto`, `duckdb`, `DBI`, `log4r`, `tidyverse`, `data.validator`, `assertr`. Also requires the **AWS CLI** (used by phase 8 via `system2()` — there is no R-side AWS SDK dependency) and **pdftotext** (for ad-hoc form text extraction).
 
 ## Documentation
 

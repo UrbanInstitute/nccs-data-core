@@ -89,7 +89,7 @@ Rscript tests/run_all.R                                     # exits nonzero on f
 Rscript tests/test_legacy_merge.R                           # individual file
 ```
 
-Required R packages (see `scripts/setup_ec2.sh` for the EC2 bootstrap): `data.table`, `arrow`, `aws.s3`, `paws`, `openxlsx`, `rio`, `here`, `purrr`, `stringr`, `lubridate`, `jsonlite`, `quarto`, `duckdb`, `DBI`, `log4r`, `tidyverse`, `data.validator`, `assertr`. AWS credentials must be available (IAM role on EC2, `aws configure`, `AWS_PROFILE`, or `AWS_*` env vars) for any script that touches S3 — every upload phase + the legacy download do.
+Required R packages (see `scripts/setup_ec2.sh` for the EC2 bootstrap): `data.table`, `arrow`, `openxlsx`, `rio`, `here`, `purrr`, `stringr`, `lubridate`, `jsonlite`, `quarto`, `duckdb`, `DBI`, `log4r`, `tidyverse`, `data.validator`, `assertr`. S3 operations go through the AWS CLI (not an R-side SDK like paws/aws.s3), so AWS credentials must be available to the shell — IAM role on EC2, `aws configure`, `AWS_PROFILE`, or `AWS_*` env vars.
 
 For cron / EC2 entry points, use `bash scripts/run_pipeline.sh [flags]` — a thin `--vanilla` wrapper that tees a timestamped console log to `data/logs/` and propagates the R exit code.
 

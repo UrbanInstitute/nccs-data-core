@@ -129,7 +129,7 @@ run_legacy_pipeline <- function(dry_run = FALSE) {
         function() run_render_reports(logs_dir     = PATHS$logs_legacy,
                                       reports_root = PATHS$quality_reports_legacy))
   phase("9 parquet",         CONFIG$ENABLE_PARQUET,   logger,
-        function() run_parquet())
+        function() run_parquet(processed_root = PATHS$processed_legacy))
   phase("8 upload",          CONFIG$ENABLE_S3_UPLOAD, logger,
         function() run_upload_legacy(run_timestamp = run_timestamp))
 

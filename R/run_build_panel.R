@@ -36,6 +36,7 @@ source(here("R", "05_quality.R"))
 source(here("R", "06_dictionary.R"))
 source(here("R", "07_render_report.R"))
 source(here("R", "08_upload.R"))
+source(here("R", "09_parquet.R"))
 
 `%||%` <- function(a, b) if (is.null(a) || length(a) == 0L) b else a
 
@@ -56,6 +57,8 @@ apply_cli_overrides <- function(args) {
   if (has_flag(args, "--no-quality"))    CONFIG$ENABLE_QUALITY       <<- FALSE
   if (has_flag(args, "--no-dictionary")) CONFIG$ENABLE_DICTIONARY    <<- FALSE
   if (has_flag(args, "--no-render"))     CONFIG$ENABLE_RENDER_REPORT <<- FALSE
+  if (has_flag(args, "--parquet"))       CONFIG$ENABLE_PARQUET       <<- TRUE
+  if (has_flag(args, "--no-parquet"))    CONFIG$ENABLE_PARQUET       <<- FALSE
   if (has_flag(args, "--no-upload"))     CONFIG$ENABLE_S3_UPLOAD     <<- FALSE
   if (has_flag(args, "--upload"))        CONFIG$ENABLE_S3_UPLOAD     <<- TRUE
   if (has_flag(args, "--strict"))        CONFIG$STRICT_QUALITY_GATES <<- TRUE
@@ -135,6 +138,9 @@ run_build_panel <- function() {
   phase("7 render (merged)", CONFIG$ENABLE_RENDER_REPORT, logger,
         function() run_render_reports(logs_dir     = PATHS$logs_merged,
                                       reports_root = PATHS$quality_reports_merged))
+
+  phase("9 parquet (merged)", CONFIG$ENABLE_PARQUET, logger,
+        function() run_parquet(processed_root = PATHS$processed_merged))
 
   phase("8 upload (merged)", CONFIG$ENABLE_S3_UPLOAD, logger,
         function() run_upload_merged(run_timestamp = run_timestamp))

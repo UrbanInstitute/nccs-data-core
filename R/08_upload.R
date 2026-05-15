@@ -37,7 +37,47 @@ promote_harmonized_to_processed <- function(harmonized_root = PATHS$harmonized,
     n <- n + 1L
   }
   if (!is.null(logger)) log4r::info(logger, sprintf("Promoted %d data CSVs to processed/", n))
+
+  check_dictionary_staleness(processed_root, logger = logger)
+
   invisible(n)
+}
+
+#' Warn when a promoted data CSV has no companion dictionary, or has one that
+#' predates the CSV (indicating phase 6 wasn't re-run after harmonize). Pure
+#' diagnostic — does not block the upload. Catches the operational drift class
+#' where partial re-runs leave the published tier internally inconsistent.
+#'
+#' @return character vector of CSV paths flagged as stale (invisibly).
+check_dictionary_staleness <- function(processed_root, logger = NULL) {
+  csvs <- list.files(processed_root,
+                     pattern    = "^core_\\d{4}_[A-Za-z0-9]+\\.csv$",
+                     recursive  = TRUE,
+                     full.names = TRUE)
+  # Exclude the dictionary files themselves from the list of data CSVs.
+  csvs <- csvs[!grepl("_dictionary\\.csv$", csvs)]
+  stale <- character(0)
+  reasons <- character(0)
+  for (csv in csvs) {
+    dict <- sub("\\.csv$", "_dictionary.csv", csv)
+    if (!file.exists(dict)) {
+      stale   <- c(stale,   csv)
+      reasons <- c(reasons, "missing")
+      next
+    }
+    if (file.info(dict)$mtime < file.info(csv)$mtime) {
+      stale   <- c(stale,   csv)
+      reasons <- c(reasons, "older-than-csv")
+    }
+  }
+  if (length(stale) && !is.null(logger)) {
+    log4r::warn(logger, sprintf(
+      "Dictionary staleness: %d / %d partition(s) need phase 6 re-run", length(stale), length(csvs)))
+    for (i in seq_along(stale)) {
+      log4r::warn(logger, sprintf("  %s [%s]", basename(stale[i]), reasons[i]))
+    }
+  }
+  invisible(stale)
 }
 
 # ---- Step 2: per-tier S3 sync ----

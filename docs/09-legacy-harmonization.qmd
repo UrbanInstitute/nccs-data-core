@@ -130,9 +130,43 @@ The reusable transforms and quality validators are the main payoff of having bui
 
 ## Output integration with SOI-current
 
-The two pipelines write to the same `(tax_year, form)` output grain. Where they overlap, **SOI wins** — the IRS extracts are the authoritative source for 2012+ and have been since the SOI EO program launched. With the current scope decisions (legacy stops at 2011, SOI starts at 2012), there is no overlap; the cutover is clean.
+The two pipelines write to the same `(tax_year, form)` output grain. Where they overlap, **SOI wins** — the IRS extracts are the authoritative source for 2012+ and have been since the SOI EO program launched.
 
-Pre-2012 990-PF output from the legacy pipeline fills the gap below the SOI-current `990pf` series. The combined panel will run 1989–present with a single source-of-truth transition at the 2011/2012 boundary.
+The "clean cutover at 2011/2012" framing from the planning phase turned out to be wrong in practice: both pipelines partition by the first 4 chars of `TAXPER` (per `CLAUDE.md`), not by publication year. The 2011 NCCS legacy file contains late filers with `TAXPER` in 2012, and SOI 2012+ extracts contain late filers with `TAXPER` going back into the 1990s. Real (ein, tax_period) overlap exists across the boundary in both directions. The merge phase below was built to handle this.
+
+Pre-2012 990-PF output from the legacy pipeline fills the gap below the SOI-current `990pf` series. The combined panel runs 1989–present.
+
+## Merge phase (Option D, shipped 2026-05-15)
+
+`R/04_legacy_merge.R` + `R/run_build_panel.R` produce a third tree, `data/intermediate/harmonized_merged/`, by column-level merging of `harmonized_legacy/` (legacy pipeline) and `harmonized/` (SOI-current pipeline) per `(tax_year, form)`. Output forms are `990combined` and `990pf` — the two forms the legacy crosswalks target.
+
+**Rule per overlap row** (matched on `(ein, tax_period)`):
+
+- Shared harmonized columns: **SOI value wins where non-NA**; legacy fills where SOI is NA. NA defers rather than overwrites.
+- Legacy-only columns: legacy value (NA on SOI-only rows).
+- SOI-only columns: SOI value (NA on legacy-only rows).
+
+**Row tags**: `source_pipeline ∈ {legacy, soi_current}` (primary origin) + `has_legacy_augment: bool` (TRUE iff overlap row).
+
+**Disagreement audit**: per `(year, form)` CSV at `data/logs/merge_disagreements_{year}_{form}.csv` capturing every shared-column row where both sides are non-NA but values disagree. The audit is the only place the legacy value survives an overwrite — analysts who need it can join the audit back onto the merged panel.
+
+### As-filed vs. imputed semantics (important caveat)
+
+The merged panel reports **as-filed IRS values** for shared columns where both pipelines populate them. This is mechanical (SOI-precedence applied uniformly), but the consequence is worth knowing: where NCCS's legacy CORE files carried *imputed* or *derived* values that the IRS extract reports as `0` or blank, the merged panel takes the IRS value.
+
+The clearest example is `program_service_revenue` for 990EZ filers. In 2011, ~66% of SOI 990EZ rows have `program_service_revenue = $0` because filers leave Part I Line 2 blank and aggregate revenue elsewhere on the form. NCCS legacy may have backfilled a value for those rows from other lines. The merged 2011 panel reports the SOI `$0`. The legacy non-zero value is still recoverable via the disagreement audit (`data/logs/merge_disagreements_2011_990combined.csv`).
+
+The same applies to categorical columns like `subsection_cd`: where legacy and SOI disagree on subsection classification (legacy=4 → SOI=3 is the most common pattern in 2011, with 893 rows), the merged panel takes SOI. This is generally correct because SOI reflects what the org wrote on its return header, while legacy may carry an older BMF-snapshot classification.
+
+**Crosswalk consistency was verified** during this design call: `PROGREV` (legacy), `totprgmrevnue` (SOI 990), and `prgmservrev` (SOI 990EZ) all correctly map to harmonized `program_service_revenue` from semantically equivalent IRS lines. The disagreements are real cross-source data divergence, not a crosswalk bug. See the 2026-05-15 pause memo for the investigation trail.
+
+### Why standalone orchestrator
+
+`R/run_build_panel.R` is its own entry point rather than a tail step of either pipeline because it depends on outputs from both. Wiring it into one would force a specific run order to fire it. Cost: a single extra `Rscript` invocation. Benefit: rebuilding the merged panel after a single-side change is one command, and the precondition (both harmonized trees exist) is explicit.
+
+### Upload target
+
+Merged-panel output writes to `data/processed_merged/` locally and `s3://nccsdata/processed_merged/core/` on upload (new prefix, not a replacement for `processed/`). This keeps the SOI-current `processed/` tier untouched during the merged-panel bake-in period and gives analysts an explicit choice.
 
 ## Cross-references
 

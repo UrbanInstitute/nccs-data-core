@@ -12,6 +12,7 @@ CONFIG <- list(
   ENABLE_UNPACK            = TRUE,
   ENABLE_HARMONIZE         = TRUE,
   ENABLE_COMBINED          = TRUE,
+  ENABLE_MERGE             = TRUE,   # legacy ∪ SOI-current column-merge (Option D); used by run_build_panel.R
   ENABLE_QUALITY           = TRUE,
   ENABLE_DICTIONARY        = TRUE,
   ENABLE_RENDER_REPORT     = TRUE,
@@ -60,8 +61,10 @@ PATHS <- list(
   unpacked          = "data/intermediate/unpacked",
   harmonized        = "data/intermediate/harmonized",         # SOI-current pipeline outputs (2012+)
   harmonized_legacy = "data/intermediate/harmonized_legacy",  # legacy pipeline outputs (1989-2011)
+  harmonized_merged = "data/intermediate/harmonized_merged",  # Option D column-merge of legacy ∪ SOI-current
   processed         = "data/processed",                       # SOI-current published tier
   processed_legacy  = "data/processed_legacy",                # legacy published tier (parallel to processed/)
+  processed_merged  = "data/processed_merged",                # merged-panel published tier (legacy ∪ SOI-current)
   logs              = "data/logs",
   crosswalks        = "data/crosswalks",
   docs              = "docs"
@@ -78,6 +81,7 @@ S3 <- list(
   unpacked_prefix    = "intermediate/core/unpacked", # {processing_year}/{form}/
   harmonized_prefix  = "intermediate/core/harmonized", # {tax_year}/{form}/
   processed_prefix   = "processed/core",             # {tax_year}/{form}/
+  processed_merged_prefix = "processed_merged/core", # {tax_year}/{form}/ — merged panel (Option D)
   logs_prefix        = "logs/core"                   # {run_timestamp}/
 )
 

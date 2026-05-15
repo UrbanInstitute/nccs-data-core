@@ -32,6 +32,7 @@ TEST_FILES <- c(
   "test_transforms.R",
   "test_harmonize.R",
   "test_combined.R",
+  "test_legacy_merge.R",
   "test_dictionary.R",
   "test_pre_checks.R",
   "test_post_checks.R",

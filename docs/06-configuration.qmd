@@ -64,6 +64,11 @@ All paths are relative to the repo root. The orchestrator and individual scripts
 | `processed_legacy` | `data/processed_legacy` |
 | `processed_merged` | `data/processed_merged` |
 | `logs` | `data/logs` |
+| `logs_legacy` | `data/logs/legacy` |
+| `logs_merged` | `data/logs/merged` |
+| `quality_reports` | `docs/quality-reports` |
+| `quality_reports_legacy` | `docs/quality-reports/legacy` |
+| `quality_reports_merged` | `docs/quality-reports/merged` |
 | `crosswalks` | `data/crosswalks` |
 | `docs` | `docs` |
 

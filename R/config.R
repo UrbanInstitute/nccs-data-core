@@ -65,6 +65,11 @@ PATHS <- list(
   processed         = "data/processed",                       # SOI-current published tier
   processed_legacy  = "data/processed_legacy",                # legacy published tier (parallel to processed/)
   processed_merged  = "data/processed_merged",                # merged-panel published tier (legacy ∪ SOI-current)
+  logs_legacy       = "data/logs/legacy",                     # per-pipeline RDS quality subdir for legacy
+  logs_merged       = "data/logs/merged",                     # per-pipeline RDS quality subdir for merged
+  quality_reports        = "docs/quality-reports",            # SOI-current HTML quality reports (git-tracked, GH Pages)
+  quality_reports_legacy = "docs/quality-reports/legacy",     # legacy pipeline HTML reports
+  quality_reports_merged = "docs/quality-reports/merged",     # merged-panel HTML reports
   logs              = "data/logs",
   crosswalks        = "data/crosswalks",
   docs              = "docs"

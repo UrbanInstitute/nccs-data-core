@@ -166,7 +166,19 @@ The same applies to categorical columns like `subsection_cd`: where legacy and S
 
 ### Upload target
 
-Merged-panel output writes to `data/processed_merged/` locally and `s3://nccsdata/processed_merged/core/` on upload (new prefix, not a replacement for `processed/`). This keeps the SOI-current `processed/` tier untouched during the merged-panel bake-in period and gives analysts an explicit choice.
+Merged-panel output writes to `data/processed_merged/` locally and `s3://nccsdata/processed_merged/core/` on upload via `R/08_upload.R::run_upload_merged()` (wired into `R/run_build_panel.R` as phase 8). New prefix, not a replacement for `processed/` — this keeps the SOI-current `processed/` tier untouched during the merged-panel bake-in period and gives analysts an explicit choice. HTML quality reports for the merged tier are git-tracked under `docs/quality-reports/merged/` and served via GitHub Pages, mirroring the SOI-current `docs/quality-reports/` flow.
+
+### Per-pipeline logs to avoid RDS clobbering
+
+Phase 5 (quality) names its RDS files `quality_{form}_{tax_year}.rds` with no pipeline tag. SOI-current, legacy, and merge all produce a `990combined/2011` quality report, so writing all three to a shared `data/logs/` would clobber. Each orchestrator therefore passes its own `logs_dir` to `run_quality()` (and matching `logs_dir` to `run_render_reports()`):
+
+| Orchestrator | `logs_dir` | `reports_root` |
+|---|---|---|
+| `R/run_pipeline.R` (SOI-current) | `data/logs/` | `docs/quality-reports/` |
+| `R/run_legacy_pipeline.R` | `data/logs/legacy/` | `docs/quality-reports/legacy/` |
+| `R/run_build_panel.R` (merge) | `data/logs/merged/` | `docs/quality-reports/merged/` |
+
+The legacy + merged subdirs ride along automatically with the existing recursive `aws s3 sync data/logs/` in phase 8 of the SOI-current pipeline.
 
 ## Cross-references
 

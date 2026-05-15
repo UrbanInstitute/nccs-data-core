@@ -10,6 +10,7 @@ data/intermediate/
 data/harmonized/
 data/processed/
 data/processed_legacy/
+data/processed_merged/
 data/logs/
 
 # Quarto local cache + book build output (CI republishes on every push)

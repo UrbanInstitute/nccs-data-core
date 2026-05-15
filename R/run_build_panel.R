@@ -34,6 +34,8 @@ source(here("R", "create_logger.R"))
 source(here("R", "04_legacy_merge.R"))
 source(here("R", "05_quality.R"))
 source(here("R", "06_dictionary.R"))
+source(here("R", "07_render_report.R"))
+source(here("R", "08_upload.R"))
 
 `%||%` <- function(a, b) if (is.null(a) || length(a) == 0L) b else a
 
@@ -53,6 +55,7 @@ apply_cli_overrides <- function(args) {
   if (has_flag(args, "--no-merge"))      CONFIG$ENABLE_MERGE         <<- FALSE
   if (has_flag(args, "--no-quality"))    CONFIG$ENABLE_QUALITY       <<- FALSE
   if (has_flag(args, "--no-dictionary")) CONFIG$ENABLE_DICTIONARY    <<- FALSE
+  if (has_flag(args, "--no-render"))     CONFIG$ENABLE_RENDER_REPORT <<- FALSE
   if (has_flag(args, "--no-upload"))     CONFIG$ENABLE_S3_UPLOAD     <<- FALSE
   if (has_flag(args, "--upload"))        CONFIG$ENABLE_S3_UPLOAD     <<- TRUE
   if (has_flag(args, "--strict"))        CONFIG$STRICT_QUALITY_GATES <<- TRUE
@@ -120,13 +123,21 @@ run_build_panel <- function() {
 
   phase("5 quality (merged)", CONFIG$ENABLE_QUALITY, logger,
         function() run_quality(harmonized_root = PATHS$harmonized_merged,
-                               forms = c("990combined", "990pf"),
-                               strict = CONFIG$STRICT_QUALITY_GATES))
+                               forms    = c("990combined", "990pf"),
+                               strict   = CONFIG$STRICT_QUALITY_GATES,
+                               logs_dir = PATHS$logs_merged))
 
   phase("6 dictionary (merged)", CONFIG$ENABLE_DICTIONARY, logger,
         function() run_dictionary(harmonized_root = PATHS$harmonized_merged,
                                   processed_root  = PATHS$processed_merged,
                                   forms           = c("990combined", "990pf")))
+
+  phase("7 render (merged)", CONFIG$ENABLE_RENDER_REPORT, logger,
+        function() run_render_reports(logs_dir     = PATHS$logs_merged,
+                                      reports_root = PATHS$quality_reports_merged))
+
+  phase("8 upload (merged)", CONFIG$ENABLE_S3_UPLOAD, logger,
+        function() run_upload_merged(run_timestamp = run_timestamp))
 
   log4r::info(logger, sprintf("=== run_build_panel complete: timestamp=%s ===",
                               run_timestamp))

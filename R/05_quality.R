@@ -27,18 +27,20 @@ source(here("R", "quality", "post_checks.R"))
 # enough to catch deploy-time accidents (data loss, double-ingest), not
 # long-term drift.
 
-REPORT_PATH <- function(form, tax_year) {
-  file.path(PATHS$logs, sprintf("quality_%s_%d.rds", form, tax_year))
+REPORT_PATH <- function(form, tax_year, logs_dir = PATHS$logs) {
+  file.path(logs_dir, sprintf("quality_%s_%d.rds", form, tax_year))
 }
 
-BASELINE_PATH <- function(form, tax_year) {
-  file.path(PATHS$logs, sprintf("quality_%s_%d.prev.rds", form, tax_year))
+BASELINE_PATH <- function(form, tax_year, logs_dir = PATHS$logs) {
+  file.path(logs_dir, sprintf("quality_%s_%d.prev.rds", form, tax_year))
 }
 
 #' Promote current quality RDS reports to the `.prev.rds` baseline slot, so
-#' this run can compare its output against the previous run's output.
-snapshot_prior_reports <- function(logger = NULL) {
-  current <- list.files(PATHS$logs, pattern = "^quality_.*[^v]\\.rds$",
+#' this run can compare its output against the previous run's output. Scoped
+#' to `logs_dir` so per-pipeline subdirs (data/logs/legacy/, data/logs/merged/)
+#' snapshot independently of SOI-current's data/logs/.
+snapshot_prior_reports <- function(logger = NULL, logs_dir = PATHS$logs) {
+  current <- list.files(logs_dir, pattern = "^quality_.*[^v]\\.rds$",
                         full.names = TRUE)
   current <- current[!grepl("\\.prev\\.rds$", current)]
   if (length(current) == 0L) {
@@ -50,21 +52,25 @@ snapshot_prior_reports <- function(logger = NULL) {
     file.rename(f, dest)
   }
   if (!is.null(logger)) {
-    log4r::info(logger, sprintf("Snapshotted %d prior reports to .prev.rds baseline",
-                                length(current)))
+    log4r::info(logger, sprintf("Snapshotted %d prior reports to .prev.rds baseline in %s",
+                                length(current), logs_dir))
   }
   invisible(NULL)
 }
 
 #' @param strict logical: hard-failure on schema/EIN/type errors halts the run.
+#' @param logs_dir directory for RDS reports + the phase log. Per-pipeline
+#'   subdirs (data/logs/legacy/, data/logs/merged/) prevent RDS-name collisions
+#'   between pipelines that share (form, tax_year) keys (e.g. 990combined/2011).
 run_quality <- function(harmonized_root = PATHS$harmonized,
                         forms = c("990", "990ez", "990pf", "990combined"),
-                        strict = TRUE) {
+                        strict = TRUE,
+                        logs_dir = PATHS$logs) {
 
-  dir.create(PATHS$logs, recursive = TRUE, showWarnings = FALSE)
-  logger <- create_logger(file.path(PATHS$logs, "05_quality_log.txt"))
+  dir.create(logs_dir, recursive = TRUE, showWarnings = FALSE)
+  logger <- create_logger(file.path(logs_dir, "05_quality_log.txt"))
 
-  snapshot_prior_reports(logger)
+  snapshot_prior_reports(logger, logs_dir = logs_dir)
 
   tax_year_dirs <- sort(list.dirs(harmonized_root, recursive = FALSE, full.names = TRUE))
 
@@ -83,11 +89,11 @@ run_quality <- function(harmonized_root = PATHS$harmonized,
         form          = form,
         tax_year      = tax_year,
         xwalk_path    = CROSSWALK_FOR_SERIES(form, tax_year),
-        baseline_path = BASELINE_PATH(form, tax_year),
+        baseline_path = BASELINE_PATH(form, tax_year, logs_dir = logs_dir),
         strict        = strict,
         logger        = logger
       )
-      saveRDS(report, REPORT_PATH(form, tax_year))
+      saveRDS(report, REPORT_PATH(form, tax_year, logs_dir = logs_dir))
       n_reports <- n_reports + 1L
       if (!report$hard_passed) any_hard_failure <- TRUE
     }
@@ -96,7 +102,8 @@ run_quality <- function(harmonized_root = PATHS$harmonized,
   log4r::info(logger, sprintf("Quality run complete: %d reports written; any_hard_failure=%s",
                               n_reports, any_hard_failure))
   if (strict && any_hard_failure) {
-    stop("STRICT_QUALITY_GATES: hard-failure check did not pass. See data/logs/05_quality_log.txt for details.")
+    stop(sprintf("STRICT_QUALITY_GATES: hard-failure check did not pass. See %s/05_quality_log.txt for details.",
+                 logs_dir))
   }
   invisible(NULL)
 }

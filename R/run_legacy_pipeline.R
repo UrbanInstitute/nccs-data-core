@@ -29,6 +29,7 @@ source(here("R", "01_legacy_download.R"))
 source(here("R", "03_legacy_harmonize.R"))
 source(here("R", "05_quality.R"))
 source(here("R", "06_dictionary.R"))
+source(here("R", "07_render_report.R"))
 source(here("R", "09_parquet.R"))
 
 `%||%` <- function(a, b) if (is.null(a) || length(a) == 0L) b else a
@@ -116,14 +117,16 @@ run_legacy_pipeline <- function(dry_run = FALSE) {
         function() run_legacy_harmonize())
   phase("5 quality",         CONFIG$ENABLE_QUALITY,   logger,
         function() run_quality(harmonized_root = PATHS$harmonized_legacy,
-                               forms = c("990combined", "990pf"),
-                               strict = CONFIG$STRICT_QUALITY_GATES))
+                               forms    = c("990combined", "990pf"),
+                               strict   = CONFIG$STRICT_QUALITY_GATES,
+                               logs_dir = PATHS$logs_legacy))
   phase("6 dictionary",      CONFIG$ENABLE_DICTIONARY,logger,
         function() run_dictionary(harmonized_root = PATHS$harmonized_legacy,
                                   processed_root  = PATHS$processed_legacy,
                                   forms           = c("990combined", "990pf")))
   phase("7 render",          CONFIG$ENABLE_RENDER_REPORT, logger,
-        function() stub_phase("7 render (legacy)", logger))
+        function() run_render_reports(logs_dir     = PATHS$logs_legacy,
+                                      reports_root = PATHS$quality_reports_legacy))
   phase("9 parquet",         CONFIG$ENABLE_PARQUET,   logger,
         function() run_parquet())
   phase("8 upload",          CONFIG$ENABLE_S3_UPLOAD, logger,

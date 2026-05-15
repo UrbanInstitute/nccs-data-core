@@ -3,7 +3,7 @@
 Built in Phase 6 (2026-05-11). Entry points:
 - `R/quality/pre_checks.R::run_pre_checks_one()` — runs against an unpacked source file.
 - `R/quality/post_checks.R::run_post_checks()` — runs against a harmonized data.table.
-- `R/05_quality.R::run_quality()` — orchestrates post-checks across every `(form, tax_year)` output, writes RDS per `(form, tax_year)` to `data/logs/`.
+- `R/05_quality.R::run_quality()` — orchestrates post-checks across every `(form, tax_year)` output, writes RDS per `(form, tax_year)` to the `logs_dir` parameter (default `data/logs/`). The legacy orchestrator and the merge orchestrator pass `data/logs/legacy/` and `data/logs/merged/` respectively, so each pipeline's RDS files stay isolated at shared `(form, tax_year)` keys (e.g. `990combined/2011`).
 - `R/quality/stat_helpers.R` — eight reusable type-specific stat calculators (completeness, numeric, character, code, boolean, date, plus column / category report builders).
 
 ## Pre-checks (before harmonization)

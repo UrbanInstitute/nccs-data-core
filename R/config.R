@@ -86,6 +86,7 @@ S3 <- list(
   unpacked_prefix    = "intermediate/core/unpacked", # {processing_year}/{form}/
   harmonized_prefix  = "intermediate/core/harmonized", # {tax_year}/{form}/
   processed_prefix   = "processed/core",             # {tax_year}/{form}/
+  processed_legacy_prefix = "processed_legacy/core", # {tax_year}/{form}/ — raw legacy pipeline tier (pre-2012, mostly intermediate to the merge)
   processed_merged_prefix = "processed_merged/core", # {tax_year}/{form}/ — merged panel (Option D)
   logs_prefix        = "logs/core"                   # {run_timestamp}/
 )

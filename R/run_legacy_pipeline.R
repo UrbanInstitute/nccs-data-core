@@ -30,6 +30,7 @@ source(here("R", "03_legacy_harmonize.R"))
 source(here("R", "05_quality.R"))
 source(here("R", "06_dictionary.R"))
 source(here("R", "07_render_report.R"))
+source(here("R", "08_upload.R"))
 source(here("R", "09_parquet.R"))
 
 `%||%` <- function(a, b) if (is.null(a) || length(a) == 0L) b else a
@@ -130,7 +131,7 @@ run_legacy_pipeline <- function(dry_run = FALSE) {
   phase("9 parquet",         CONFIG$ENABLE_PARQUET,   logger,
         function() run_parquet())
   phase("8 upload",          CONFIG$ENABLE_S3_UPLOAD, logger,
-        function() stub_phase("8 upload (legacy)", logger))
+        function() run_upload_legacy(run_timestamp = run_timestamp))
 
   log4r::info(logger, sprintf("=== run_legacy_pipeline complete: timestamp=%s ===",
                               run_timestamp))

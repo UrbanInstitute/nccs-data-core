@@ -171,6 +171,61 @@ run_upload <- function(dry_run       = FALSE,
 }
 
 
+# ---- Legacy-pipeline upload (used by run_legacy_pipeline.R) ----
+
+#' Phase 8 of the legacy pipeline. Promotes harmonized_legacy/ CSVs into
+#' processed_legacy/ (alongside dictionaries written by phase 6), then syncs
+#' that tier to s3://nccsdata/processed_legacy/core/. Quality RDS + HTML
+#' artifacts live under data/logs/legacy/ and docs/quality-reports/legacy/
+#' respectively.
+#'
+#' Legacy is mostly an intermediate to the merge (analyst-facing artifact is
+#' the merged panel at s3://nccsdata/processed_merged/), so this upload exists
+#' for parity and rehydration — not as the primary distribution path.
+#'
+#' Mirror of run_upload_merged().
+run_upload_legacy <- function(dry_run       = FALSE,
+                              run_timestamp = format(Sys.time(), "%Y%m%dT%H%M%SZ", tz = "UTC"),
+                              enable_upload = CONFIG$ENABLE_S3_UPLOAD) {
+
+  dir.create(PATHS$logs_legacy, recursive = TRUE, showWarnings = FALSE)
+  logger <- create_logger(file.path(PATHS$logs_legacy, "08_upload_log.txt"))
+
+  log4r::info(logger, sprintf("Phase 8 (legacy) start: dry_run=%s, run_timestamp=%s",
+                              dry_run, run_timestamp))
+
+  promote_harmonized_to_processed(
+    harmonized_root = PATHS$harmonized_legacy,
+    processed_root  = PATHS$processed_legacy,
+    logger          = logger
+  )
+
+  if (!isTRUE(enable_upload)) {
+    log4r::warn(logger, "enable_upload is FALSE; skipping S3 sync of legacy tier")
+    return(invisible(NULL))
+  }
+
+  if (!isTRUE(CONFIG$ENABLE_UPLOAD_PROCESSED)) {
+    log4r::info(logger, "skip: ENABLE_UPLOAD_PROCESSED=FALSE (applies to legacy tier as well)")
+    return(invisible(NULL))
+  }
+
+  rc <- sync_processed_tier(
+    processed_root = PATHS$processed_legacy,
+    s3_dest        = s3_uri(S3$processed_legacy_prefix),
+    dry_run        = dry_run,
+    gzip_html      = isTRUE(CONFIG$ENABLE_GZIP_HTML_UPLOAD),
+    logger         = logger
+  )
+
+  log4r::info(logger, sprintf("Phase 8 (legacy) complete: rc=%d", rc))
+  if (rc != 0L) {
+    stop(sprintf("Legacy-tier upload had failures (rc=%d). See %s/08_upload_log.txt",
+                 rc, PATHS$logs_legacy))
+  }
+  invisible(NULL)
+}
+
 # ---- Merged-panel upload (used by run_build_panel.R) ----
 
 #' Phase 8 of the merged-panel pipeline. Promotes harmonized_merged/ CSVs into

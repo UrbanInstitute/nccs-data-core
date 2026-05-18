@@ -208,6 +208,25 @@ run_harmonize <- function(processing_years = CONFIG$EARLIEST_YEAR:CONFIG$LATEST_
     log4r::info(logger, sprintf("Combined %s: %d rows across %d processing years",
                                 form, nrow(combined), length(pieces)))
 
+    # Clamp tax_year to the SOI-current window (>= LEGACY_TAX_YEAR_MAX + 1).
+    # SOI 2012+ extracts contain a small tail of super-late-filer rows with
+    # TAXPER reaching back into the 1990s. Partitioning them yields tiny
+    # pre-2012 dirs (often 1-2 rows) that phase 5 then routes through the
+    # legacy crosswalk dispatch — fatal, since there's no legacy crosswalk
+    # for 990/990ez (legacy uses 990pz/990pf). The merged-panel pipeline picks
+    # up the same orgs from the legacy side anyway. Symmetric counterpart of
+    # the legacy clamp in R/03_legacy_harmonize.R.
+    if ("tax_year" %in% names(combined)) {
+      n_before <- nrow(combined)
+      combined <- combined[is.na(tax_year) | tax_year > LEGACY_TAX_YEAR_MAX]
+      n_dropped <- n_before - nrow(combined)
+      if (n_dropped > 0L) {
+        log4r::info(logger,
+                    sprintf("Dropped %d rows with tax_year <= %d (legacy boundary)",
+                            n_dropped, LEGACY_TAX_YEAR_MAX))
+      }
+    }
+
     # is_amendment flag: within (ein, tax_period), earliest extract_year is the
     # original filing (is_amendment=FALSE); any later extract_years are amendments.
     combined[, is_amendment := extract_year > min(extract_year),

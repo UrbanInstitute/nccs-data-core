@@ -140,6 +140,31 @@ harmonize_one <- function(processing_year, form, xwalk, logger) {
 
 partition_and_write <- function(dt, form, dest_root, logger) {
   yrs <- sort(unique(stats::na.omit(dt$tax_year)))
+
+  # Clean stale partitions before writing the new set. Partition dirs from
+  # a previous run may exist for years the current run no longer produces
+  # — e.g. pre-2012 dirs written before the LEGACY_TAX_YEAR_MAX clamp landed.
+  # Phase 5 quality walks the harmonized tree and would otherwise route stale
+  # pre-2012 partitions through the legacy crosswalk dispatch, which has no
+  # entry for 990/990ez (legacy uses 990pz/990pf), producing a hard failure.
+  # Mirrors the same block in R/03_legacy_harmonize.R.
+  if (dir.exists(dest_root)) {
+    existing_year_dirs <- list.dirs(dest_root, recursive = FALSE, full.names = FALSE)
+    existing_year_dirs <- existing_year_dirs[grepl("^\\d{4}$", existing_year_dirs)]
+    existing_years <- as.integer(existing_year_dirs)
+    stale_years <- setdiff(existing_years, yrs)
+    for (sy in stale_years) {
+      sy_form_dir <- file.path(dest_root, sy, form)
+      if (dir.exists(sy_form_dir)) {
+        unlink(sy_form_dir, recursive = TRUE)
+        log4r::info(logger, sprintf("Removed stale partition %s", sy_form_dir))
+        if (length(list.files(file.path(dest_root, sy))) == 0L) {
+          unlink(file.path(dest_root, sy), recursive = TRUE)
+        }
+      }
+    }
+  }
+
   written <- character(0)
   for (yr in yrs) {
     out_dir <- file.path(dest_root, yr, form)

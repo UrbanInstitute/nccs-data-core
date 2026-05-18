@@ -30,7 +30,11 @@ promote_harmonized_to_processed <- function(harmonized_root = PATHS$harmonized,
     dest_dir <- file.path(processed_root, tax_year, form)
     dir.create(dest_dir, recursive = TRUE, showWarnings = FALSE)
     dest <- file.path(dest_dir, basename(src))
-    if (!file.copy(src, dest, overwrite = TRUE)) {
+    # copy.date = TRUE preserves the intermediate CSV's mtime. Without it,
+    # the destination gets a fresh mtime > the dictionary's mtime (phase 6
+    # writes dicts before phase 7.5 promote runs), and the staleness check
+    # below then false-positives on every successful run.
+    if (!file.copy(src, dest, overwrite = TRUE, copy.date = TRUE)) {
       if (!is.null(logger)) log4r::error(logger, sprintf("FAILED promote %s -> %s", src, dest))
       next
     }

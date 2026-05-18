@@ -22,7 +22,7 @@ CONFIG <- list(
   # Per-tier upload toggles
   ENABLE_UPLOAD_RAW          = FALSE,
   ENABLE_UPLOAD_FORMS        = TRUE,  # data/raw/forms/ — small, archival, slow-changing
-  ENABLE_UPLOAD_INTERMEDIATE = FALSE,
+  ENABLE_UPLOAD_INTERMEDIATE = TRUE,
   ENABLE_UPLOAD_PROCESSED    = TRUE,
   ENABLE_UPLOAD_LOGS         = TRUE,
 

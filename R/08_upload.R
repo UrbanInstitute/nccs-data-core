@@ -43,6 +43,36 @@ promote_harmonized_to_processed <- function(harmonized_root = PATHS$harmonized,
   invisible(n)
 }
 
+#' Phase 7.5 entry points: promote data CSVs from harmonized/ into processed/
+#' before phase 9 (parquet) so parquet can convert the data files. Must run
+#' before parquet because parquet walks processed/, which otherwise contains
+#' only dictionaries written by phase 6.
+run_promote <- function() {
+  dir.create(PATHS$logs, recursive = TRUE, showWarnings = FALSE)
+  logger <- create_logger(file.path(PATHS$logs, "07_5_promote_log.txt"))
+  promote_harmonized_to_processed(logger = logger)
+}
+
+run_promote_legacy <- function() {
+  dir.create(PATHS$logs_legacy, recursive = TRUE, showWarnings = FALSE)
+  logger <- create_logger(file.path(PATHS$logs_legacy, "07_5_promote_log.txt"))
+  promote_harmonized_to_processed(
+    harmonized_root = PATHS$harmonized_legacy,
+    processed_root  = PATHS$processed_legacy,
+    logger          = logger
+  )
+}
+
+run_promote_merged <- function() {
+  dir.create(PATHS$logs_merged, recursive = TRUE, showWarnings = FALSE)
+  logger <- create_logger(file.path(PATHS$logs_merged, "07_5_promote_log.txt"))
+  promote_harmonized_to_processed(
+    harmonized_root = PATHS$harmonized_merged,
+    processed_root  = PATHS$processed_merged,
+    logger          = logger
+  )
+}
+
 #' Warn when a promoted data CSV has no companion dictionary, or has one that
 #' predates the CSV (indicating phase 6 wasn't re-run after harmonize). Pure
 #' diagnostic — does not block the upload. Catches the operational drift class
@@ -157,9 +187,6 @@ run_upload <- function(dry_run       = FALSE,
   log4r::info(logger, sprintf("Phase 8 start: dry_run=%s, run_timestamp=%s",
                               dry_run, run_timestamp))
 
-  # ---- Promotion (always runs unless ENABLE_S3_UPLOAD is the only switch) ----
-  promote_harmonized_to_processed(logger = logger)
-
   if (!isTRUE(enable_upload)) {
     log4r::warn(logger, "enable_upload is FALSE; skipping all S3 sync")
     return(invisible(NULL))
@@ -234,12 +261,6 @@ run_upload_legacy <- function(dry_run       = FALSE,
   log4r::info(logger, sprintf("Phase 8 (legacy) start: dry_run=%s, run_timestamp=%s",
                               dry_run, run_timestamp))
 
-  promote_harmonized_to_processed(
-    harmonized_root = PATHS$harmonized_legacy,
-    processed_root  = PATHS$processed_legacy,
-    logger          = logger
-  )
-
   if (!isTRUE(enable_upload)) {
     log4r::warn(logger, "enable_upload is FALSE; skipping S3 sync of legacy tier")
     return(invisible(NULL))
@@ -286,14 +307,6 @@ run_upload_merged <- function(dry_run       = FALSE,
 
   log4r::info(logger, sprintf("Phase 8 (merged) start: dry_run=%s, run_timestamp=%s",
                               dry_run, run_timestamp))
-
-  # Promotion is always attempted regardless of enable_upload — the promote
-  # step is local-only and harmless if S3 sync is skipped.
-  promote_harmonized_to_processed(
-    harmonized_root = PATHS$harmonized_merged,
-    processed_root  = PATHS$processed_merged,
-    logger          = logger
-  )
 
   if (!isTRUE(enable_upload)) {
     log4r::warn(logger, "enable_upload is FALSE; skipping S3 sync of merged tier")

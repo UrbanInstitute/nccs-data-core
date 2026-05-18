@@ -139,6 +139,9 @@ run_build_panel <- function() {
         function() run_render_reports(logs_dir     = PATHS$logs_merged,
                                       reports_root = PATHS$quality_reports_merged))
 
+  phase("7.5 promote (merged)", TRUE, logger,
+        function() run_promote_merged())
+
   phase("9 parquet (merged)", CONFIG$ENABLE_PARQUET, logger,
         function() run_parquet(processed_root = PATHS$processed_merged))
 

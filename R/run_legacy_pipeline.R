@@ -128,6 +128,8 @@ run_legacy_pipeline <- function(dry_run = FALSE) {
   phase("7 render",          CONFIG$ENABLE_RENDER_REPORT, logger,
         function() run_render_reports(logs_dir     = PATHS$logs_legacy,
                                       reports_root = PATHS$quality_reports_legacy))
+  phase("7.5 promote",       TRUE, logger,
+        function() run_promote_legacy())
   phase("9 parquet",         CONFIG$ENABLE_PARQUET,   logger,
         function() run_parquet(processed_root = PATHS$processed_legacy))
   phase("8 upload",          CONFIG$ENABLE_S3_UPLOAD, logger,

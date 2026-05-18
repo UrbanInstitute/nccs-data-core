@@ -165,6 +165,8 @@ run_pipeline <- function(processing_years = CONFIG$EARLIEST_YEAR:CONFIG$LATEST_Y
         function() run_dictionary())
   phase("7 render",    CONFIG$ENABLE_RENDER_REPORT, logger,
         function() run_render_reports())
+  phase("7.5 promote", TRUE,                         logger,
+        function() run_promote())
   phase("9 parquet",   CONFIG$ENABLE_PARQUET,       logger,
         function() run_parquet())
   phase("8 upload",    TRUE,                         logger,

@@ -16,17 +16,18 @@ Each pipeline phase has an `ENABLE_*` flag. Phase 8 (upload) has additional per-
 | `ENABLE_QUALITY` | `TRUE` | Skip phase 5; no `quality_*.rds` files |
 | `ENABLE_DICTIONARY` | `TRUE` | Skip phase 6; no dictionary CSVs |
 | `ENABLE_RENDER_REPORT` | `TRUE` | Skip phase 7; no HTML quality reports |
-| `ENABLE_S3_UPLOAD` | `FALSE` | Skip all of phase 8's S3 syncs; promotion to `processed/` still happens |
+| `ENABLE_PARQUET` | `FALSE` | Skip phase 9; no `.parquet` sibling files written next to the promoted `.csv` |
+| `ENABLE_S3_UPLOAD` | `FALSE` | Skip all of phase 8's S3 syncs; promotion to `processed/` and parquet generation still happen if their flags are on |
 | `ENABLE_UPLOAD_RAW` | `FALSE` | Don't sync `data/raw/soi_extracts/` to S3 |
 | `ENABLE_UPLOAD_FORMS` | `TRUE` | Don't sync `data/raw/forms/` to S3 |
-| `ENABLE_UPLOAD_INTERMEDIATE` | `FALSE` | Don't sync `data/intermediate/{unpacked,harmonized}/` to S3 |
+| `ENABLE_UPLOAD_INTERMEDIATE` | `TRUE` | Don't sync `data/intermediate/{unpacked,harmonized}/` to S3 |
 | `ENABLE_UPLOAD_PROCESSED` | `TRUE` | Don't sync `data/processed/` to S3 |
 | `ENABLE_UPLOAD_LOGS` | `TRUE` | Don't sync `data/logs/` (incl. quality RDS) to `s3://.../logs/core/{run_timestamp}/` |
 | `ENABLE_GZIP_HTML_UPLOAD` | `TRUE` | Skip the two-pass HTML-gzip on phase 8; HTMLs upload uncompressed |
 | `STRICT_QUALITY_GATES` | `TRUE` | Quality hard-fails downgrade to warnings; the run continues |
 | `ENABLE_CHECKPOINTS` | `TRUE` | Phase orchestrator does not honor per-phase resume markers |
 
-CLI overrides on `R/run_pipeline.R` map to a subset of these (`--strict`, `--no-strict`, `--upload`, `--no-upload`, `--no-{download,unpack,harmonize,combined,quality,dictionary,render}`). Sub-toggles for the upload tiers don't have CLI flags — edit `R/config.R` or override via env if you need them.
+CLI overrides on `R/run_pipeline.R` map to a subset of these (`--strict`, `--no-strict`, `--upload`, `--no-upload`, `--parquet`, `--no-parquet`, `--no-{download,unpack,harmonize,combined,quality,dictionary,render}`). `R/run_build_panel.R` additionally exposes `--no-merge`. Phase 7.5 (promote) has no on/off flag — it always runs when its orchestrator reaches it; data CSVs need to be in `data/processed*/` before phase 9 walks them. Sub-toggles for the upload tiers don't have CLI flags — edit `R/config.R` or override via env if you need them.
 
 ## Year window
 

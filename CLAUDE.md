@@ -25,9 +25,9 @@ The codebase has **three orchestrators** under `R/`, each runnable from the repo
 
 | Orchestrator | Tier produced | Phases used |
 |---|---|---|
-| `R/run_pipeline.R` | SOI-current → `data/processed/`, `s3://.../processed/core/` | 1 download · 2 unpack · 3 harmonize · 4 derive_combined · 5 quality · 6 dictionary · 7 render · 8 upload · 9 parquet |
-| `R/run_legacy_pipeline.R` | Legacy → `data/processed_legacy/`, `s3://.../processed_legacy/core/` | 1 legacy_download · 3 legacy_harmonize · 5 quality · 6 dictionary · 7 render · 8 upload · 9 parquet (no phase 2/4) |
-| `R/run_build_panel.R` | Merged → `data/processed_merged/`, `s3://.../processed_merged/core/` | 4 legacy_merge · 5 quality · 6 dictionary · 7 render · 8 upload (depends on outputs from both upstream pipelines) |
+| `R/run_pipeline.R` | SOI-current → `data/processed/`, `s3://.../processed/core/` | 1 download · 2 unpack · 3 harmonize · 4 derive_combined · 5 quality · 6 dictionary · 7 render · 7.5 promote · 9 parquet · 8 upload |
+| `R/run_legacy_pipeline.R` | Legacy → `data/processed_legacy/`, `s3://.../processed_legacy/core/` | 1 legacy_download · 3 legacy_harmonize · 5 quality · 6 dictionary · 7 render · 7.5 promote · 9 parquet · 8 upload (no phase 2/4) |
+| `R/run_build_panel.R` | Merged → `data/processed_merged/`, `s3://.../processed_merged/core/` | 4 legacy_merge · 5 quality · 6 dictionary · 7 render · 7.5 promote · 9 parquet · 8 upload (depends on outputs from both upstream pipelines) |
 
 Phase scripts:
 
@@ -41,8 +41,8 @@ Phase scripts:
 | `05_quality.R` | Per-(form, tax_year) post-checks (schema, EIN format, tax_period range, type validation, YoY tripwire); writes RDS to `logs_dir` (parametrized — see "Per-pipeline RDS isolation" below) |
 | `06_dictionary.R` | Generate per-output data dictionary CSV |
 | `07_render_report.R` | Render Quarto quality reports per (form, tax_year) to HTML |
-| `08_upload.R` | Promote harmonized → processed/ then `aws s3 sync` per tier; one of `run_upload()` / `run_upload_legacy()` / `run_upload_merged()` per orchestrator |
-| `09_parquet.R` | Write `.parquet` alongside `.csv` (shared by SOI-current + legacy) |
+| `08_upload.R` | Two roles: phase 7.5 `promote_harmonized_to_processed()` copies harmonized CSVs into the `processed*/` tier so phase 9 can see them (preserves mtime to keep phase-6 dictionaries non-stale); phase 8 `run_upload*()` runs `aws s3 sync` per tier (`run_upload()` / `run_upload_legacy()` / `run_upload_merged()`). |
+| `09_parquet.R` | Write `.parquet` alongside each promoted `.csv` (runs after 7.5 promote in all three orchestrators). |
 
 Shared modules: `R/config.R` (paths, S3 prefixes, IRS URL templates, CONFIG flags), `R/data.R` (form/scope constants, crosswalk path lookups), `R/create_logger.R` (log4r setup), `R/aws_s3_sync.R` (CLI wrapper), `R/utils.R`, `R/transforms/` (six pure column transforms), `R/quality/` (pre/post-check validators).
 
@@ -84,7 +84,7 @@ Rscript R/run_build_panel.R                                 # merge + publish me
 Rscript R/run_pipeline.R --no-download --no-upload          # re-use existing local mirror
 Rscript R/run_build_panel.R --no-merge --no-quality         # just dictionary + render + upload
 
-# Test harness (209 tests across seven test files):
+# Test harness (~212 tests across nine test files):
 Rscript tests/run_all.R                                     # exits nonzero on failure
 Rscript tests/test_legacy_merge.R                           # individual file
 ```

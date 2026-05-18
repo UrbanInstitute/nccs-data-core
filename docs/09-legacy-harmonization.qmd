@@ -1,6 +1,6 @@
 # Legacy Harmonization
 
-This chapter covers the **legacy CORE pipeline** for pre-2012 NCCS files. It is currently *planned, not built* — the SOI-current pipeline (`R/run_pipeline.R`) is what actually runs today. The eventual entry point will be `R/run_legacy_pipeline.R`. This chapter documents the scope, the source-data shape, and the design decisions already locked in so that the build, when it happens, doesn't relitigate them.
+This chapter covers the **legacy CORE pipeline** for pre-2012 NCCS files. The pipeline shipped 2026-05-14 — entry point `R/run_legacy_pipeline.R`, wrapper `scripts/run_legacy_pipeline.sh`, outputs at `data/processed_legacy/` and `s3://nccsdata/processed_legacy/core/`. The merge with SOI-current (`R/run_build_panel.R` → `processed_merged/`) shipped 2026-05-15. This chapter documents the source-data shape, the design decisions, and the merge semantics; the "Planned design" subsection below is the original architectural plan, which the shipped pipeline follows.
 
 ## Why a separate pipeline
 
@@ -132,7 +132,7 @@ The reusable transforms and quality validators are the main payoff of having bui
 
 The two pipelines write to the same `(tax_year, form)` output grain. Where they overlap, **SOI wins** — the IRS extracts are the authoritative source for 2012+ and have been since the SOI EO program launched.
 
-The "clean cutover at 2011/2012" framing from the planning phase turned out to be wrong in practice: both pipelines partition by the first 4 chars of `TAXPER` (per `CLAUDE.md`), not by publication year. The 2011 NCCS legacy file contains late filers with `TAXPER` in 2012, and SOI 2012+ extracts contain late filers with `TAXPER` going back into the 1990s. Real (ein, tax_period) overlap exists across the boundary in both directions. The merge phase below was built to handle this.
+The "clean cutover at 2011/2012" framing from the planning phase turned out to be more complex in practice: both pipelines partition by the first 4 chars of `TAXPER` (per `CLAUDE.md`), not by publication year. The 2011 NCCS legacy file contains late filers with `TAXPER` in 2012, and SOI 2012+ extracts contain late filers with `TAXPER` going back into the 1990s. Both pipelines now apply symmetric `LEGACY_TAX_YEAR_MAX` clamps in harmonize (legacy keeps `tax_year ≤ 2011`, SOI-current keeps `tax_year ≥ 2012`), so the on-disk partition trees are disjoint by `tax_year`. The merge phase then runs on disjoint inputs and effectively concatenates pre-2012 legacy with 2012+ SOI rows — see `R/03_harmonize.R` and `R/03_legacy_harmonize.R` for the clamp; `R/04_legacy_merge.R` for the merge.
 
 Pre-2012 990-PF output from the legacy pipeline fills the gap below the SOI-current `990pf` series. The combined panel runs 1989–present.
 
@@ -147,6 +147,13 @@ Pre-2012 990-PF output from the legacy pipeline fills the gap below the SOI-curr
 - SOI-only columns: SOI value (NA on legacy-only rows).
 
 **Row tags**: `source_pipeline ∈ {legacy, soi_current}` (primary origin) + `has_legacy_augment: bool` (TRUE iff overlap row).
+
+**Pre-merge dedup (per side, per partition)**: `R/04_legacy_merge.R::dedupe_side()` collapses duplicate `(ein, tax_period)` rows on each side before the join, keeping the **first occurrence** in on-disk order. For SOI-current this is the earliest `extract_year` (aligns with `is_amendment = FALSE` from `R/03_harmonize.R`). For legacy this is the earliest publication-year file. Dropped row counts are logged per `(tax_year, form)` partition; they are not preserved in the merged output. Legacy duplicate rates can be large (e.g. ~36% of `1998/990combined` rows are duplicates).
+
+**Where to look if you need every filing.** The merged tier (`data/processed_merged/`, `s3://nccsdata/processed_merged/core/`) is deliberately one row per `(ein, tax_period)` — analysts who need the merged panel almost always want this collapsed view. If you need every original filing + amendment, **go to the per-pipeline files** instead of the merged tier:
+
+- SOI-current (`data/processed/`): keeps every row across processing years, with `is_amendment ∈ {TRUE, FALSE}` so you can filter to originals or revisions as needed.
+- Legacy (`data/processed_legacy/`): keeps every row across legacy source files. No amendment flag — duplicates exist but are not tagged, so dedup policy is the analyst's call.
 
 **Disagreement audit**: per `(year, form)` CSV at `data/logs/merge_disagreements_{year}_{form}.csv` capturing every shared-column row where both sides are non-NA but values disagree. The audit is the only place the legacy value survives an overwrite — analysts who need it can join the audit back onto the merged panel.
 

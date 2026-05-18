@@ -39,7 +39,7 @@ Rscript R/run_pipeline.R --years 2012-2024 --forms 990,990ez,990pf --strict
 bash scripts/run_pipeline.sh --years 2012-2024 --forms 990,990ez,990pf --strict
 ```
 
-CLI flags: `--years`, `--forms`, `--strict` / `--no-strict`, `--upload` / `--no-upload`, plus `--no-{download,unpack,harmonize,combined,quality,dictionary,render}` to skip individual phases. See `R/run_pipeline.R` for the full list.
+CLI flags: `--years`, `--forms`, `--strict` / `--no-strict`, `--upload` / `--no-upload`, `--parquet` / `--no-parquet`, plus `--no-{download,unpack,harmonize,combined,quality,dictionary,render}` to skip individual phases. See `R/run_pipeline.R` for the full list.
 
 Env-var knobs (read at runtime; useful for tuning cron without code changes):
 
@@ -49,19 +49,21 @@ Env-var knobs (read at runtime; useful for tuning cron without code changes):
 
 ## Pipeline structure
 
-Nine phases, each as a standalone script under `R/`, all wired together by `R/run_pipeline.R`:
+Ten phases (the numbering carries the historical labels — 7.5 was extracted from 8, and 9 runs after 7.5), each as a standalone script under `R/`, all wired together by `R/run_pipeline.R`:
 
 | Phase | Script | What it does |
 |---|---|---|
 | 1 | `01_download.R` | Fetches IRS SOI extract zips. Idempotent (skips files already on disk). |
 | 2 | `02_unpack.R` | Unzips into `data/intermediate/unpacked/{processing_year}/{form}/`. |
 | 2.5 | `quality/pre_checks.R` | File-level validation (header present, col count within ±5% of the IRS dictionary's per-vintage expected, no duplicate headers). |
-| 3 | `03_harmonize.R` | Applies the FINAL crosswalk per form: lowercases headers, renames source vars to harmonized names, coalesces synonyms, NA-pads vintage gaps, applies type-specific transforms, partitions by `tax_year`. |
+| 3 | `03_harmonize.R` | Applies the FINAL crosswalk per form: lowercases headers, renames source vars to harmonized names, coalesces synonyms, NA-pads vintage gaps, applies type-specific transforms, partitions by `tax_year`. Clamps SOI-current output to `tax_year > LEGACY_TAX_YEAR_MAX`; symmetric clamp on the legacy side. |
 | 4 | `04_derive_combined.R` | Stacks 990 + 990-EZ on the 53 shared harmonized columns → `990combined`. |
 | 5 | `05_quality.R` + `quality/{pre,post}_checks.R` | Post-harmonization checks: schema, EIN format (`XX-XXXXXXX`), `tax_period` range, `subsection_cd` whitelist, type validation, YoY row-count tripwire. Writes RDS reports to `data/logs/`. |
 | 6 | `06_dictionary.R` | Auto-generates per-output data dictionary CSV from the FINAL crosswalk + harmonized data stats. |
 | 7 | `07_render_report.R` | Renders the Quarto template `docs/quality_report_template.qmd` to HTML per `(form, tax_year)`. |
-| 8 | `08_upload.R` | Promotes harmonized CSVs into `data/processed/{tax_year}/{form}/`, then per-tier `aws s3 sync` to `s3://nccsdata/`. |
+| 7.5 | `08_upload.R::promote_harmonized_to_processed()` | Copies harmonized data CSVs from `data/intermediate/harmonized*/` into `data/processed*/` so phase 9 has them to read. Preserves mtime to keep phase 6 dictionaries non-stale. |
+| 9 | `09_parquet.R` | Writes `.parquet` next to every `.csv` under `data/processed*/` for API/R-package consumption. Gated by `ENABLE_PARQUET` / `--parquet`. |
+| 8 | `08_upload.R::run_upload*()` | Per-tier `aws s3 sync` to `s3://nccsdata/`. Gated by `ENABLE_S3_UPLOAD` / `--upload` with per-tier sub-toggles. |
 
 Two additional orchestrators sit alongside `run_pipeline.R`:
 

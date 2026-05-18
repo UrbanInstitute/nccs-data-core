@@ -18,6 +18,10 @@ When `cols < exp`: a source column the var_matrix expects is missing — could b
 
 Low row counts for tax_years 2016–2018 in 990pf outputs are *expected*: most 990pf forms for those tax_years would have come from py2017–py2019 extracts, which the IRS never published. Don't flag these as anomalies.
 
+## Legacy 1993/990pf row count is ~75% lower than neighbors
+
+`processed_legacy/1993/990pf/` and `processed_merged/1993/990pf/` contain ~10–12k rows vs. ~40k for 1992 and 1994. **`CORE-1993-501C3-PRIVFOUND-PF.csv` is missing from `s3://nccsdata/legacy/core/`** (verified 2026-05-18). The 1993 rows that do exist are late-filer spillover from neighbor-year PF files whose `TAXPER` starts "1993". Don't flag this as a pipeline regression.
+
 ## Pre-check `cols=N` vs reader `cols=N±1` off-by-one
 
 The pre-check log's `cols=N` is the raw `strsplit` count of header fields (includes trailing empties). The reader's `cols=M` comes from `fread(fill=TRUE)` and may differ by ±1 depending on how trailing commas resolve. The tolerance check uses `n_named` (empties excluded), which is what matches the `exp` value. A 1-count gap between the two log lines is cosmetic, not a real mismatch.

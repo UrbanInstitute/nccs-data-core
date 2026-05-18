@@ -21,7 +21,7 @@ Both upstream pipelines partition by the first 4 chars of `TAXPER` (not publicat
 
 ## SOI-current pipeline phases
 
-`R/run_pipeline.R` runs nine phases in sequence. Each is a standalone, idempotent script under `R/` that can also be invoked directly (`Rscript R/01_download.R`, etc.) for debugging or re-runs.
+`R/run_pipeline.R` runs ten phases in sequence (the numbering carries the historical labels — phase 7.5 was extracted out of phase 8, and phase 9 runs *after* 7.5 but before 8). Each phase is a standalone, idempotent script under `R/` that can also be invoked directly (`Rscript R/01_download.R`, etc.) for debugging or re-runs.
 
 ```text
                   +-------------+
@@ -66,8 +66,19 @@ Both upstream pipelines partition by the first 4 chars of `TAXPER` (not publicat
                         |
                         v
                   +-------------+
-                  | 8 upload    |  (a) promote harmonized CSV -> processed/ so all three
-                  +-------------+  artifacts live in one dir, (b) per-tier aws s3 sync.
+                  | 7.5 promote |  copy harmonized data CSVs from
+                  +-------------+  data/intermediate/harmonized/ into data/processed/
+                        |         (preserves source mtime so phase 6's dictionaries
+                        v         stay non-stale relative to the data CSV).
+                  +-------------+
+                  | 9 parquet   |  write .parquet alongside each data CSV under
+                  +-------------+  data/processed/ for API/R-package consumption.
+                        |
+                        v
+                  +-------------+
+                  | 8 upload    |  per-tier aws s3 sync of processed/, intermediate/,
+                  +-------------+  raw/, and data/logs/ subtrees. HTML reports gzip-
+                                   encoded; CSV+parquet uploaded as-is.
 ```
 
 ## Phase toggles
@@ -89,7 +100,9 @@ The pipeline is deliberately re-runnable on the same inputs without producing di
 - **Phase 3** reads the *union* of every `data/intermediate/unpacked/{processing_year}/{form}/` on disk and produces the harmonized output from scratch. Same input set → identical output, regardless of how many times you re-run.
 - **Phase 4** rebuilds `990combined` from the union of all `data/intermediate/harmonized/{tax_year}/{990,990ez}/`.
 - **Phases 5–7** overwrite their per-(form, tax_year) outputs each run.
-- **Phase 8** uses `aws s3 sync` which by default only transfers changed files (no `--delete`, so old S3 objects persist until manually removed).
+- **Phase 7.5 (promote)** overwrites the `processed/` data CSVs from harmonized/, preserving source mtime. Phase 3 also includes a stale-partition sweep (introduced 2026-05-18) — pre-2012 dirs that the SOI-current `LEGACY_TAX_YEAR_MAX` clamp now excludes get removed on re-harmonize, with the symmetric counterpart in legacy harmonize for post-2011 spillover.
+- **Phase 9 (parquet)** rewrites every `processed/` data CSV to a sibling `.parquet`. Idempotent — rerunning produces byte-identical output for the same input CSV.
+- **Phase 8** uses `aws s3 sync` which by default only transfers changed files (no `--delete`, so old S3 objects persist until manually removed; if a partition is dropped on disk after a schema change or the symmetric `LEGACY_TAX_YEAR_MAX` clamp, the orphan year-prefix in S3 needs an explicit `aws s3 rm --recursive` to clear).
 
 **Important consequence:** Phase 3 reading the *union* of all unpacked sources means that if you delete `data/intermediate/unpacked/2012/` between runs, the 2012 rows silently drop from the output. Treat `data/intermediate/unpacked/` as durable state. The [Developer Guide](07-developer-guide.qmd#rolling-out-a-new-processing-year-eg-2025) documents the S3 rehydration SOP for fresh-machine or new-year scenarios.
 

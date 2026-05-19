@@ -16,8 +16,8 @@ CONFIG <- list(
   ENABLE_QUALITY           = TRUE,
   ENABLE_DICTIONARY        = TRUE,
   ENABLE_RENDER_REPORT     = TRUE,
-  ENABLE_PARQUET           = FALSE,  # write .parquet next to processed .csv for API/R-package consumption
-  ENABLE_S3_UPLOAD         = FALSE,
+  ENABLE_PARQUET           = TRUE,  # write .parquet next to processed .csv for API/R-package consumption
+  ENABLE_S3_UPLOAD         = TRUE,
 
   # Per-tier upload toggles
   ENABLE_UPLOAD_RAW          = FALSE,

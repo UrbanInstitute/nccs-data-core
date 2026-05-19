@@ -216,7 +216,7 @@ totassetsend,total_assets_eoy,Total assets -- eoy,990 Core_Pt X-16(B),2012-2024
 totcntrbgfts,total_contributions,Total contributions,990 Core_Pt VIII-1h(A),2012-2024
 totcomprelatede,total_reportable_comp_from_related,Reportable compensation from related orgs,990 Core_Pt VII-A-1d(E),2013-2024
 totestcompf,total_estimated_other_compensation,Other compensation,990 Core_Pt VII-A-1d(F),2013-2024
-totfuncexpns,total_functional_expenses,Total functional expenses,990 Core_Pt IX-25(A),2012-2024
+totfuncexpns,total_expenses,Total functional expenses (Form 990 Part IX Line 25; equivalent to Form 990-EZ Part I Line 17 total expenses),990 Core_Pt IX-25(A),2012-2024
 totgftgrntrcvd509,total_gifts_grants_received_sec509,Gifts grants membership fees received (509),990 Sch A_Pt III-1(f),2012-2024
 totliabend,total_liabilities_eoy,Total liabilities -- eoy,990 Core_Pt X-26(B),2012-2024
 totnetassetend,total_net_assets_eoy,Total Net Assets -- eoy,990 Core_Pt X-33(B),2012-2024

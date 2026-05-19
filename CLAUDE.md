@@ -36,7 +36,7 @@ Phase scripts:
 | `01_download.R` / `01_legacy_download.R` | Fetch IRS SOI zips / mirror raw legacy CSVs from S3 |
 | `02_unpack.R` | Unzip SOI extracts (SOI-current only) |
 | `03_harmonize.R` / `03_legacy_harmonize.R` | Apply crosswalk: rename source cols → harmonized names, coalesce synonyms, NA-pad vintage gaps, apply type-specific transforms, partition by `tax_year` |
-| `04_derive_combined.R` | Stack 990 + 990-EZ on 53 shared columns → `990combined` |
+| `04_derive_combined.R` | Stack 990 + 990-EZ on 54 shared columns → `990combined` |
 | `04_legacy_merge.R` | Column-merge legacy ∪ SOI-current on `(ein, tax_period)` with SOI precedence; emits a per-(year, form) disagreement audit CSV |
 | `05_quality.R` | Per-(form, tax_year) post-checks (schema, EIN format, tax_period range, type validation, YoY tripwire); writes RDS to `logs_dir` (parametrized — see "Per-pipeline RDS isolation" below) |
 | `06_dictionary.R` | Generate per-output data dictionary CSV |

@@ -84,17 +84,17 @@ Legacy CORE files carry NCCS-appended BMF metadata columns (`NCCSKEY`, `EOSTATUS
 | `990` | (none — pre-2012 990 rows live inside legacy PZ along with 990-EZ rows) | IRS `eoextract990` (SOI-current) |
 | `990ez` | (none as standalone) | IRS `eoextract990EZ` (SOI-current) |
 | `990pf` | raw legacy `*-PF` | IRS `eoextract990PF` (SOI-current) |
-| `990combined` | raw legacy `*-PZ` (501C3 ∪ 501CE) | derived from 990 + 990-EZ on shared 53 cols |
+| `990combined` | raw legacy `*-PZ` (501C3 ∪ 501CE) | derived from 990 + 990-EZ on shared 54 cols |
 
 The legacy pipeline does *not* attempt to demultiplex pre-2012 PZ rows into separate `990` and `990ez` series — there isn't enough signal in the data to do so reliably across vintages. Instead, all pre-2012 full-form filings land in `990combined` regardless of whether they were filed on Form 990 or 990-EZ.
 
 ## Schema width: why legacy and SOI-current `990combined` differ
 
-A naive column-count comparison — legacy `990combined` ≈ 180 cols vs SOI-current `990combined` 53 cols — looks like a yawning gap. It is mostly an artifact of three orthogonal factors, only one of which is "NCCS derivations." Understanding them matters for any merge / dedup decision because some legacy-only columns are real form fields with no SOI-current analog, while others are reasonably-droppable noise.
+A naive column-count comparison — legacy `990combined` ≈ 180 cols vs SOI-current `990combined` 54 cols — looks like a yawning gap. It is mostly an artifact of three orthogonal factors, only one of which is "NCCS derivations." Understanding them matters for any merge / dedup decision because some legacy-only columns are real form fields with no SOI-current analog, while others are reasonably-droppable noise.
 
 | Factor | Approximate cols | Nature |
 |---|---|---|
-| SOI-current `990combined` is an **intersect** of SOI 990 + SOI 990-EZ | ~67 cols would be retained if we compared against SOI 990 (full, ~255 cols) instead of the 53-col intersect | Pipeline-design choice, not a data limitation |
+| SOI-current `990combined` is an **intersect** of SOI 990 + SOI 990-EZ | ~67 cols would be retained if we compared against SOI 990 (full, ~255 cols) instead of the 54-col intersect | Pipeline-design choice, not a data limitation |
 | **Form redesign in 2008**: Schedule A Parts IV/VI (public-support tests, lobbying detail) and pre-2008 line items present in legacy but consolidated / removed post-2008 | ~25-40 cols | Genuinely upstream — IRS changed the form |
 | **NCCS derivations** — `*Estimate` cols, NCCS-imputed values for missing fields | ~5-10 cols | NCCS curation choices |
 
@@ -102,7 +102,7 @@ Two consequences worth pinning down:
 
 1. **Most of the legacy "extra" columns are real form fields, not derivation noise.** A column-level merge that preserves legacy-only cols is preserving genuine pre-2008 Form 990 detail that has no post-2008 analog. Dropping them on dedup loses analytical fidelity for any longitudinal study spanning the 2008 redesign.
 
-2. **The 53-col narrowness of SOI-current `990combined` is partly downstream of the legacy pipeline's own design constraint.** Legacy can't demultiplex pre-2012 PZ rows into separate 990 vs 990-EZ series (no `FORMTYPE` column at row level in early vintages), so SOI-current's `990combined` was defined as the intersect of 990 + 990-EZ to give analysts a panel that stacks cleanly across the 2011 / 2012 boundary. If legacy could demux, SOI-current would publish 990 and 990-EZ separately and the apparent width gap would close.
+2. **The 54-col narrowness of SOI-current `990combined` is partly downstream of the legacy pipeline's own design constraint.** Legacy can't demultiplex pre-2012 PZ rows into separate 990 vs 990-EZ series (no `FORMTYPE` column at row level in early vintages), so SOI-current's `990combined` was defined as the intersect of 990 + 990-EZ to give analysts a panel that stacks cleanly across the 2011 / 2012 boundary. If legacy could demux, SOI-current would publish 990 and 990-EZ separately and the apparent width gap would close.
 
 This framing should guide the legacy / SOI-current merge: legacy is wider than SOI `990combined` for reasons that don't reduce to "NCCS curation noise," so a row-level dedup that drops the legacy view on overlap rows is throwing away real form-evolution detail. A column-level merge with a SOI-precedence rule for shared columns preserves both provenance and width.
 

@@ -65,18 +65,19 @@ cat("\n[project_to_shared: doesn't fabricate universal cols if absent]\n")
   check("extract_year not added when absent", !("extract_year" %in% names(out)))
 }
 
-cat("\n[shared_990_990ez_cols: matches the documented 53-col shared schema]\n")
+cat("\n[shared_990_990ez_cols: matches the documented 54-col shared schema]\n")
 {
   # Integration check against the actual production crosswalks. The repo's
-  # README / 04-crosswalks.qmd document a 53-column shared schema between
+  # README / 04-crosswalks.qmd document a 54-column shared schema between
   # 990 and 990-EZ — drift in either crosswalk should fail this check, which
   # is exactly the regression signal we want.
   shared <- shared_990_990ez_cols()
   check("shared schema is non-empty",   length(shared) > 0L)
-  check("shared schema is 53 cols",     length(shared) == 53L)
+  check("shared schema is 54 cols",     length(shared) == 54L)
   check("ein is in shared schema",      "ein" %in% shared)
   check("tax_period is in shared schema","tax_period" %in% shared)
   check("subsection_cd is in shared schema", "subsection_cd" %in% shared)
+  check("total_expenses is in shared schema", "total_expenses" %in% shared)
 }
 
 if (!exists("TEST_RUN_ALL", envir = globalenv())) {

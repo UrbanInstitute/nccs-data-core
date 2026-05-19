@@ -9,7 +9,7 @@ Per `(tax_year, form)` CSV plus a per-output data dictionary and a per-output qu
 - `990` — full 990 schedule, 990 filers only
 - `990ez` — full 990-EZ schedule, 990-EZ filers only
 - `990pf` — full 990-PF schedule, private foundations + §4947(a)(1) trusts treated as private foundations
-- `990combined` — 990 + 990-EZ stacked on their 53 shared harmonized columns (a `source_form` column preserves provenance)
+- `990combined` — 990 + 990-EZ stacked on their 54 shared harmonized columns (a `source_form` column preserves provenance)
 
 `tax_year` is the calendar year the fiscal period **ended**, derived from the first 4 chars of the IRS extract's `TAXPER` field — not the year the form was filed.
 
@@ -57,7 +57,7 @@ Ten phases (the numbering carries the historical labels — 7.5 was extracted fr
 | 2 | `02_unpack.R` | Unzips into `data/intermediate/unpacked/{processing_year}/{form}/`. |
 | 2.5 | `quality/pre_checks.R` | File-level validation (header present, col count within ±5% of the IRS dictionary's per-vintage expected, no duplicate headers). |
 | 3 | `03_harmonize.R` | Applies the FINAL crosswalk per form: lowercases headers, renames source vars to harmonized names, coalesces synonyms, NA-pads vintage gaps, applies type-specific transforms, partitions by `tax_year`. Clamps SOI-current output to `tax_year > LEGACY_TAX_YEAR_MAX`; symmetric clamp on the legacy side. |
-| 4 | `04_derive_combined.R` | Stacks 990 + 990-EZ on the 53 shared harmonized columns → `990combined`. |
+| 4 | `04_derive_combined.R` | Stacks 990 + 990-EZ on the 54 shared harmonized columns → `990combined`. |
 | 5 | `05_quality.R` + `quality/{pre,post}_checks.R` | Post-harmonization checks: schema, EIN format (`XX-XXXXXXX`), `tax_period` range, `subsection_cd` whitelist, type validation, YoY row-count tripwire. Writes RDS reports to `data/logs/`. |
 | 6 | `06_dictionary.R` | Auto-generates per-output data dictionary CSV from the FINAL crosswalk + harmonized data stats. |
 | 7 | `07_render_report.R` | Renders the Quarto template `docs/quality_report_template.qmd` to HTML per `(form, tax_year)`. |

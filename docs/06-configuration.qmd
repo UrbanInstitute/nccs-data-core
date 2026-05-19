@@ -42,7 +42,7 @@ CLI overrides on `R/run_pipeline.R` map to a subset of these (`--strict`, `--no-
 |---|---|
 | `FORMS` | `c("990", "990ez", "990pf")` |
 
-The fourth output series, `990combined`, is derived in phase 4 from the 990 + 990-EZ harmonized outputs on their 53 shared columns. It is not listed in `FORMS` because it's not separately downloaded / unpacked / harmonized.
+The fourth output series, `990combined`, is derived in phase 4 from the 990 + 990-EZ harmonized outputs on their 54 shared columns. It is not listed in `FORMS` because it's not separately downloaded / unpacked / harmonized.
 
 ## Local paths (`PATHS`)
 

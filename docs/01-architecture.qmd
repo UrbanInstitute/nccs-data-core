@@ -46,7 +46,7 @@ Both upstream pipelines partition by the first 4 chars of `TAXPER` (not publicat
                         |         is_amendment, ...), partition by tax_year.
                         v        Output: data/intermediate/harmonized/{tax_year}/{form}/
                   +-------------+
-                  | 4 combined  |  stacks 990 + 990-EZ on their 54 shared harmonized columns.
+                  | 4 combined  |  stacks 990 + 990-EZ on their 58 shared harmonized columns.
                   +-------------+  Output: data/intermediate/harmonized/{tax_year}/990combined/
                         |
                         v

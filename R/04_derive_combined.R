@@ -1,6 +1,6 @@
 # R/04_derive_combined.R
 # Phase 5: derive `990combined` by stacking harmonized 990 + 990-EZ rows on the
-# 53 (intersect-of-crosswalks) shared harmonized columns plus the universal
+# 58 (intersect-of-crosswalks) shared harmonized columns plus the universal
 # pipeline columns. One CSV per tax_year at
 # data/intermediate/harmonized/{tax_year}/990combined/core_{tax_year}_990combined.csv.
 

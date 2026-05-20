@@ -18,7 +18,7 @@ source(here("R", "quality", "post_checks.R"))
 
 # CROSSWALK_FOR_SERIES is defined in R/data.R (sourced above) — the 990combined
 # series shares the 990 crosswalk because its schema is the 990 + 990-EZ
-# intersect (53 cols), all of which appear in the 990 crosswalk.
+# intersect (58 cols), all of which appear in the 990 crosswalk.
 
 # Baseline strategy: snapshot-on-each-run. Before a run starts, every
 # `quality_{form}_{tax_year}.rds` is renamed to `.prev.rds`, overwriting any

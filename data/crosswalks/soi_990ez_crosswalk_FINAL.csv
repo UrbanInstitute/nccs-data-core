@@ -20,12 +20,12 @@ filedf990tcd,filed_form_990t_cd,Organization Filed 990T,990-EZ_Pt V-35b,2013-202
 gftgrntrcvd170,gifts_grants_received_sec170,Gifts grants membership fees received (170),990-EZ Sch A_Pt II-1(f),"2012, 2017-2024",ez_only
 gftgrntsrcvd170,gifts_grants_received_sec170,Gifts grants membership fees received (170),990-EZ Sch A_Pt II-1(f),2013-2016,from_990
 gnsaleofastothr,gain_loss_sales_other_assets,Gain or (loss) from sale of assets,990-EZ_Pt I-5c,2012-2024,ez_only
-grsalesminusret,gross_sales_inventory_less_returns,Gross sales of inventory,990-EZ_Pt I-7a,2012-2024,ez_only
+grsalesminusret,gross_sales_inventory,Gross sales of inventory,990-EZ_Pt I-7a,2012-2024,from_990
 grsamtsalesastothr,gross_sales_other_assets,Gross amount from sale of assets,990-EZ_Pt I-5a,2012-2024,ez_only
 grsinc170,gross_income_interest_sec170,Gross income from interest etc (170),990-EZ Sch A_Pt II-8(f),2012-2024,from_990
 grsinc509,gross_income_interest_sec509,Gross income from interest etc (509),990-EZ Sch A_Pt III-10a(f),2013-2024,from_990
 grsincgaming,gross_income_gaming_activities,Gross income from gaming,990-EZ_Pt I-6a,2012-2024,from_990
-grsprft,gross_profit_inventory_sales,Gross profit (or loss) from sales of inventory,990-EZ_Pt I-7c,2012-2024,ez_only
+grsprft,net_income_inventory_sales,Gross profit (or loss) from sales of inventory,990-EZ_Pt I-7c,2012-2024,from_990
 grspublicrcpts,gross_receipts_public_use,Gross receipts for public use of club facilities,990-EZ_Pt V-39b,2012-2024,ez_only
 grsrcptsactivities509,gross_receipts_related_activities_sec509,Gross receipts from related activities (509),990-EZ Sch A_Pt III-3(f),2013-2016,from_990
 grsrcptsactvts509,gross_receipts_related_activities_sec509,Gross receipts from related activities (509),990-EZ Sch A_Pt III-3(f),2017-2024,ez_only
@@ -36,7 +36,7 @@ grsrcptsrelated170,gross_receipts_related_activities_sec170,Gross receipts from 
 grsrevnuefndrsng,gross_income_fundraising_events,Special events gross revenue,990-EZ_Pt I-6b,2012-2024,ez_only
 initiationfee,initiation_fees,Initiation fees and capital contributions,990-EZ_Pt V-39a,2012-2024,ez_only
 loanstoofficers,loans_to_officers_amount,Amount of loans to/from officers,990-EZ_Pt V-38b,2013-2024,ez_only
-loanstoofficerscd,loans_to_officers_cd,"Loans to/from officers, directors or trustees?",990-EZ_Pt V-38a,2013-2024,ez_only
+loanstoofficerscd,loan_to_interested_person_cd,"Loans to/from officers, directors or trustees?",990-EZ_Pt V-38a,2013-2024,from_990
 netincfndrsng,net_income_fundraising_events,Special events net income (or loss),990-EZ_Pt I-6d,2012-2024,from_990
 netincunrelatd170,net_ubi_sec170,Net UBI (170),990-EZ Sch A_Pt II-9(f),2017-2024,ez_only
 netincunrelatd509,net_ubi_excl_10b_sec509,Net income from UBI not in 10b (509),990-EZ Sch A_Pt III-11(f),2013-2016,from_990
@@ -45,7 +45,7 @@ netincunreltd509,net_ubi_excl_10b_sec509,Net income from UBI not in 10b (509),99
 networthend,total_net_assets_eoy,Net assets EOY,990-EZ_Pt I-21,2013-2024,ez_only
 nonpfrea,non_pf_status_reason,Reason for non-PF status,990-EZ Sch A_Pt I-1-11,2012-2024,from_990
 othrchgsnetassetfnd,other_changes_net_assets_fund_balances,Other changes in net assets,990-EZ_Pt I-20,2012-2024,ez_only
-othrevnue,other_revenue,Other revenue - total,990-EZ_Pt I-8,2012-2024,ez_only
+othrevnue,other_revenue_total_11e,Other revenue - total,990-EZ_Pt I-8,2012-2024,from_990
 othrinc170,other_income_sec170,Other income (170),990-EZ Sch A_Pt II-10(f),2013-2024,from_990
 othrinc509,other_income_sec509,Other income (509),990-EZ Sch A_Pt III-12(f),2013-2024,from_990
 othrinvstinc,investment_income,Investment income,990-EZ_Pt I-4,2012-2024,ez_only

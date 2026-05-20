@@ -15,7 +15,7 @@ Per `(tax_year, form)` CSV plus a per-output data dictionary and quality report:
 - `990` — full 990 schedule, 990 filers only.
 - `990ez` — full 990-EZ schedule, current-only (no pre-2012 source).
 - `990pf` — full 990-PF schedule, private foundations.
-- `990combined` — 990 + 990-EZ stacked on the 54 shared harmonized columns.
+- `990combined` — 990 + 990-EZ stacked on the 58 shared harmonized columns.
 
 ## Where to start
 

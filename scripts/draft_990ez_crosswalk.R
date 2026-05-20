@@ -136,6 +136,8 @@ overrides <- data.table(
     "grsrevnuefndrsng",      # line 6b — gross income from fundraising events (synonym of 990 grsincfndrsng)
     "networthend",           # Pt II line 27B — total net assets EOY (synonym of totnetassetsend)
     "prgmservrev",           # line 2 — program service revenue (cross-form alignment)
+    "othrevnue",             # line 8 — other revenue total (≡ 990 Pt VIII-11e(A) miscrevtot11e)
+    "loanstoofficerscd",     # line 38a — loans to/from insiders (≡ 990 Pt IV-26 loantofficercd)
     # Group D — form precision improvements
     "basisalesexpnsothr",    # line 5b
     "grsalesminusret",       # line 7a
@@ -170,10 +172,12 @@ overrides <- data.table(
     "gross_income_fundraising_events",
     "total_net_assets_eoy",
     "program_service_revenue",
+    "other_revenue_total_11e",
+    "loan_to_interested_person_cd",
     # Group D
     "cost_basis_other_assets",
-    "gross_sales_inventory_less_returns",
-    "gross_profit_inventory_sales",
+    "gross_sales_inventory",
+    "net_income_inventory_sales",
     "excess_or_deficit_for_year",
     "other_changes_net_assets_fund_balances",
     "loans_to_officers_amount",

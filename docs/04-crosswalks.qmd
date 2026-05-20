@@ -20,14 +20,80 @@ review changes — but never silently overwrites manual edits.
 
 ## Cross-form alignment
 
-The 990 and 990-EZ FINAL crosswalks share 54 harmonized column names. This shared
+The 990 and 990-EZ FINAL crosswalks share 58 harmonized column names. This shared
 subset drives the `990combined` series.
 
 | Form | Source vars | Unique harmonized | Cross-form aligned |
 |---|---|---|---|
-| 990    | 247 | 246 | 54 shared with 990-EZ |
-| 990-EZ | 86  | 71  | 54 shared with 990    |
+| 990    | 247 | 246 | 58 shared with 990-EZ |
+| 990-EZ | 86  | 71  | 58 shared with 990    |
 | 990-PF | 363 | 182 | 21 shared with 990 (mostly header / identity) |
+
+## EZ ↔ 990 harmonization decisions
+
+When a concept appears on both Form 990 and Form 990-EZ, the harmonized name
+should be **identical across both crosswalks** so the variable lands in the
+`990combined` intersect. Where a name collision is not safe — because the IRS
+defines the underlying line items differently across the two forms — the
+variables stay form-specific.
+
+This section records mapping decisions with line citations against the SOI
+extract documentation (`irs-soi-extract-documentation-YYYY.xlsx`) and the IRS
+form instructions. Verified on the 2024 vintage; relationships are stable
+across 2012–2024 unless noted.
+
+### Confirmed unifications
+
+| EZ source | EZ line | 990 source | 990 line | Unified harmonized name | Notes |
+|---|---|---|---|---|---|
+| `totexpns` | EZ Pt I-17 (Total expenses) | `totfuncexpns` | 990 Pt IX-25(A) (Total functional expenses) | `total_expenses` | Unified in commit a951c99. Same dollar concept (operating + program + management); 990-EZ collapses functional categories into one line. |
+| `grsalesminusret` | EZ Pt I-7a (Gross sales of inventory, less returns and allowances) | `grsalesinvent` | 990 Pt VIII-10a (same line text) | `gross_sales_inventory` | Identical IRS line text on both forms. |
+| `grsprft` | EZ Pt I-7c (Gross profit (or loss) from sales of inventory) | `netincsales` | 990 Pt VIII-10c (Income from sales of inventory) | `net_income_inventory_sales` | Both are defined as `(line a) − (line b)`. Differing labels ("gross profit" vs "income") describe the same definitional formula. `cost_of_goods_sold` (EZ 7b / 990 10b) is already a shared name, so this completes the inventory triple. |
+| `othrevnue` | EZ Pt I-8 (Other revenue — total) | `miscrevtot11e` | 990 Pt VIII-11e(A) (Other revenue [total]) | `other_revenue_total_11e` | EZ reports a single bucket; 990 splits into 11a–11d with codes plus 11e total. The EZ value ≡ the 990 11e total. Per-category 11a–11d split remains 990-only. |
+| `loanstoofficerscd` | EZ Pt V-38a (Loans to/from officers, directors, trustees?) | `loantofficercd` | 990 Pt IV-26 (Loan to interested person?) | `loan_to_interested_person_cd` | Both indicators gate Schedule L Part II reporting. Scope is near-identical: 990 covers a slightly broader interested-person set (key employees, creators/founders, substantial contributors, 35%-controlled entities), but those categories are mostly inapplicable to EZ filers anyway, so the binary indicator carries the same meaning in practice. |
+
+### Rejected — concept exists on both forms but lines are not equivalent
+
+| EZ source | EZ line | 990 source(s) | 990 line(s) | Why kept separate |
+|---|---|---|---|---|
+| `grsamtsalesastothr` | EZ Pt I-5a (Gross amount from sale of assets) | `grsalesecur` + `grsalesothr` | 990 Pt VIII-7a(i) securities + 7a(ii) other | EZ Line 5a is a **single combined number** for all non-inventory asset sales (securities AND other). 990 splits into two columns. Renaming EZ → `gross_sales_other` would silently misattribute EZ filers' securities sales as "other" sales. Kept as EZ-only `gross_sales_other_assets`. |
+| `basisalesexpnsothr` | EZ Pt I-5b (Cost or other basis and sales expenses) | `cstbasisecur` + `cstbasisothr` | 990 Pt VIII-7b(i) + 7b(ii) | Same combined-vs-split mismatch as 5a/7a. Kept as EZ-only `cost_basis_other_assets`. |
+| `gnsaleofastothr` | EZ Pt I-5c (Gain or (loss) from sale of assets) | `gnlsecur` + `gnlsothr` | 990 Pt VIII-7c(i) + 7c(ii) | Same combined-vs-split mismatch. Kept as EZ-only `gain_loss_sales_other_assets`. |
+| `direxpns` | EZ Pt I-6c (Special events direct expenses, combined) | `lessdirfndrsng` + `lessdirgaming` | 990 Pt VIII-8b fundraising + 9b gaming | EZ rolls fundraising and gaming direct expenses into one line; 990 splits. Same combined-vs-split issue. Kept as EZ-only `gaming_fundraising_direct_expenses`. |
+| `contractioncd` | EZ Pt V-36 (Liquidation, dissolution, termination, or contraction?) | `sellorexchcd` | 990 Pt IV-32 (Partial liquidation, sale, or transfer of substantial assets?) | Different concepts — EZ is full dissolution/termination, 990 IV-32 is partial liquidation or significant asset sales. Kept as EZ-only `liquidated_terminated_cd`. |
+
+### Out of scope — concept absent from SOI 990-EZ extract
+
+Form 990-EZ Part I expense lines 10–16 are **not present** in the IRS SOI 990-EZ
+extract (verified against `irs-soi-extract-documentation-2024.xlsx`, EZ sheet,
+which jumps from line 9 `totrevnue` straight to line 17 `totexpns`). This means
+the following 990 harmonized names cannot be brought into `990combined` by any
+crosswalk-rename strategy — there is no EZ source variable to map:
+
+- `benefits_to_members` (990 Pt IX-4) — EZ Line 11 not in SOI extract
+- `salaries_etc` family (`other_salaries_wages`, `payroll_taxes`,
+  `other_employee_benefits`, `compensation_current_officers`) — EZ Line 12
+  not in SOI extract
+- `grants_paid_us`, `grants_paid_foreign` — EZ Line 10 not in SOI extract
+- `occupancy`, `printing_publications`, `other_expenses` — EZ Lines 14–16 not
+  in SOI extract
+
+Surfacing these in `990combined` would require either (a) switching
+`R/04_derive_combined.R` from intersect projection to union projection
+(NA-pad EZ rows on 990-only columns), or (b) sourcing the EZ values from a
+non-SOI dataset.
+
+### Other 990-EZ-only concepts (no corresponding 990 SOI variable)
+
+Several EZ-only harmonized names map to concepts the SOI 990 extract does not
+expose at all (the line exists on Form 990 but isn't pulled into the SOI
+data file). These remain EZ-only by necessity rather than design:
+
+`changes_to_governing_docs_cd` (EZ Pt V-34), `excess_or_deficit_for_year`
+(EZ Pt I-18 ≈ 990 Pt I-19), `filed_form_1120pol_cd` (EZ Pt V-37b),
+`loans_to_officers_amount` (EZ Pt V-38b), `membership_dues_assessments`
+(EZ Pt I-3), `other_changes_net_assets_fund_balances` (EZ Pt I-20),
+`political_expenditures` (EZ Pt V-37a), `significant_new_activity_cd` (EZ Pt V-33).
 
 ## Source-vintage variants and typos
 

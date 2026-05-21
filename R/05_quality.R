@@ -8,10 +8,12 @@
 suppressPackageStartupMessages({
   library(here)
   library(data.table)
+  library(parallel)
 })
 
 source(here("R", "config.R"))
 source(here("R", "data.R"))
+source(here("R", "utils.R"))
 source(here("R", "create_logger.R"))
 source(here("R", "quality", "pre_checks.R"))
 source(here("R", "quality", "post_checks.R"))
@@ -62,10 +64,36 @@ snapshot_prior_reports <- function(logger = NULL, logs_dir = PATHS$logs) {
 #' @param logs_dir directory for RDS reports + the phase log. Per-pipeline
 #'   subdirs (data/logs/legacy/, data/logs/merged/) prevent RDS-name collisions
 #'   between pipelines that share (form, tax_year) keys (e.g. 990combined/2011).
+#' Run post-checks for one (tax_year, form). Pure per-partition unit so the
+#' parallel runner can map it across cores. Returns
+#' list(form, tax_year, hard_passed) so the parent can aggregate.
+run_quality_one <- function(csv_path, form, tax_year, logs_dir, strict, logger) {
+  # na.strings: harmonize writes NA as "" via fwrite's default, so reading
+  # back without explicit na.strings would surface empty cells as "" rather
+  # than NA. check_tax_period then counts those empties as "malformed"
+  # (regex fails the empty string), producing a false hard-fail. Match the
+  # harmonize convention here.
+  dt <- fread(csv_path,
+              colClasses = c(ein = "character", tax_period = "character"),
+              na.strings = c("", "NA"))
+  report <- run_post_checks(
+    dt            = dt,
+    form          = form,
+    tax_year      = tax_year,
+    xwalk_path    = CROSSWALK_FOR_SERIES(form, tax_year),
+    baseline_path = BASELINE_PATH(form, tax_year, logs_dir = logs_dir),
+    strict        = strict,
+    logger        = logger
+  )
+  saveRDS(report, REPORT_PATH(form, tax_year, logs_dir = logs_dir))
+  list(form = form, tax_year = tax_year, hard_passed = isTRUE(report$hard_passed))
+}
+
 run_quality <- function(harmonized_root = PATHS$harmonized,
                         forms = c("990", "990ez", "990pf", "990combined"),
                         strict = TRUE,
-                        logs_dir = PATHS$logs) {
+                        logs_dir = PATHS$logs,
+                        workers = NULL) {
 
   dir.create(logs_dir, recursive = TRUE, showWarnings = FALSE)
   logger <- create_logger(file.path(logs_dir, "05_quality_log.txt"))
@@ -74,36 +102,36 @@ run_quality <- function(harmonized_root = PATHS$harmonized,
 
   tax_year_dirs <- sort(list.dirs(harmonized_root, recursive = FALSE, full.names = TRUE))
 
-  any_hard_failure <- FALSE
-  n_reports <- 0L
-
+  tasks <- list()
   for (yd in tax_year_dirs) {
     tax_year <- as.integer(basename(yd))
     for (form in forms) {
       f <- file.path(yd, form, sprintf("core_%d_%s.csv", tax_year, form))
       if (!file.exists(f)) next
-
-      # na.strings: harmonize writes NA as "" via fwrite's default, so reading
-      # back without explicit na.strings would surface empty cells as "" rather
-      # than NA. check_tax_period then counts those empties as "malformed"
-      # (regex fails the empty string), producing a false hard-fail. Match the
-      # harmonize convention here.
-      dt <- fread(f, colClasses = c(ein = "character", tax_period = "character"),
-                  na.strings = c("", "NA"))
-      report <- run_post_checks(
-        dt            = dt,
-        form          = form,
-        tax_year      = tax_year,
-        xwalk_path    = CROSSWALK_FOR_SERIES(form, tax_year),
-        baseline_path = BASELINE_PATH(form, tax_year, logs_dir = logs_dir),
-        strict        = strict,
-        logger        = logger
-      )
-      saveRDS(report, REPORT_PATH(form, tax_year, logs_dir = logs_dir))
-      n_reports <- n_reports + 1L
-      if (!report$hard_passed) any_hard_failure <- TRUE
+      tasks[[length(tasks) + 1L]] <- list(csv = f, form = form, tax_year = tax_year)
     }
   }
+
+  n_workers <- resolve_workers("NCCS_QUALITY_WORKERS", workers)
+  log4r::info(logger, sprintf("Running post-checks on %d partitions with %d worker(s)",
+                              length(tasks), n_workers))
+
+  run_one <- function(task) {
+    tryCatch(
+      run_quality_one(task$csv, task$form, task$tax_year, logs_dir, strict, logger),
+      error = function(e) {
+        log4r::error(logger, sprintf("[%s/%d] post-checks errored: %s",
+                                     task$form, task$tax_year, conditionMessage(e)))
+        list(form = task$form, tax_year = task$tax_year, hard_passed = FALSE)
+      }
+    )
+  }
+
+  results <- parallel_map(tasks, run_one, n_workers)
+
+  is_ok <- function(r) is.list(r) && isTRUE(r$hard_passed)
+  any_hard_failure <- !all(vapply(results, is_ok, logical(1)))
+  n_reports <- length(results)
 
   log4r::info(logger, sprintf("Quality run complete: %d reports written; any_hard_failure=%s",
                               n_reports, any_hard_failure))

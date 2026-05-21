@@ -12,9 +12,11 @@
 
 suppressPackageStartupMessages({
   library(here)
+  library(parallel)
 })
 
 source(here("R", "config.R"))
+source(here("R", "utils.R"))
 source(here("R", "create_logger.R"))
 
 #' Convert one CSV to a sibling Parquet file.
@@ -52,7 +54,8 @@ source(here("R", "create_logger.R"))
 #' @param processed_root directory to walk. Defaults to PATHS$processed.
 #' @param overwrite if TRUE, regenerate parquets that are already newer than their csv.
 run_parquet <- function(processed_root = PATHS$processed,
-                        overwrite = FALSE) {
+                        overwrite = FALSE,
+                        workers = NULL) {
   dir.create(PATHS$logs, recursive = TRUE, showWarnings = FALSE)
   logger <- create_logger(file.path(PATHS$logs, "09_parquet_log.txt"))
 
@@ -63,13 +66,16 @@ run_parquet <- function(processed_root = PATHS$processed,
 
   csvs <- list.files(processed_root, pattern = "\\.csv$", recursive = TRUE,
                      full.names = TRUE, ignore.case = TRUE)
-  log4r::info(logger, sprintf("Walking %s: %d CSVs", processed_root, length(csvs)))
+  n_workers <- resolve_workers("NCCS_PARQUET_WORKERS", workers)
+  log4r::info(logger, sprintf("Walking %s: %d CSVs, %d worker(s)",
+                              processed_root, length(csvs), n_workers))
 
-  n_ok <- 0L; n_fail <- 0L
-  for (p in csvs) {
-    ok <- .csv_to_parquet(p, overwrite = overwrite, logger = logger)
-    if (isTRUE(ok)) n_ok <- n_ok + 1L else n_fail <- n_fail + 1L
-  }
+  results <- parallel_map(as.list(csvs),
+                          function(p) .csv_to_parquet(p, overwrite = overwrite,
+                                                      logger = logger),
+                          n_workers)
+  ok_mask <- vapply(results, isTRUE, logical(1))
+  n_ok <- sum(ok_mask); n_fail <- length(results) - n_ok
   log4r::info(logger, sprintf("=== run_parquet done: %d ok, %d failed ===",
                               n_ok, n_fail))
   invisible(list(n_ok = n_ok, n_fail = n_fail))

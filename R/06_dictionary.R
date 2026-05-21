@@ -6,6 +6,7 @@
 suppressPackageStartupMessages({
   library(here)
   library(data.table)
+  library(parallel)
 })
 
 source(here("R", "config.R"))
@@ -108,29 +109,48 @@ build_dictionary_one <- function(dt, form, tax_year, xwalk_path, logger = NULL) 
 
 run_dictionary <- function(harmonized_root = PATHS$harmonized,
                            processed_root  = PATHS$processed,
-                           forms = c("990", "990ez", "990pf", "990combined")) {
+                           forms = c("990", "990ez", "990pf", "990combined"),
+                           workers = NULL) {
   dir.create(PATHS$logs, recursive = TRUE, showWarnings = FALSE)
   logger <- create_logger(file.path(PATHS$logs, "06_dictionary_log.txt"))
 
   tax_year_dirs <- sort(list.dirs(harmonized_root, recursive = FALSE, full.names = TRUE))
-  n <- 0L
+
+  tasks <- list()
   for (yd in tax_year_dirs) {
     tax_year <- as.integer(basename(yd))
     for (form in forms) {
       f <- file.path(yd, form, sprintf("core_%d_%s.csv", tax_year, form))
       if (!file.exists(f)) next
-      dt <- fread(f, colClasses = c(ein = "character", tax_period = "character"))
-      dict <- build_dictionary_one(dt, form, tax_year,
-                                   CROSSWALK_FOR_SERIES(form, tax_year), logger)
-
-      out_dir <- file.path(processed_root, tax_year, form)
-      dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
-      out_path <- file.path(out_dir, sprintf("core_%d_%s_dictionary.csv", tax_year, form))
-      fwrite(dict, out_path)
-      n <- n + 1L
-      log4r::info(logger, sprintf("WROTE %s (%d rows)", out_path, nrow(dict)))
+      tasks[[length(tasks) + 1L]] <- list(csv = f, form = form, tax_year = tax_year)
     }
   }
+
+  n_workers <- resolve_workers("NCCS_DICT_WORKERS", workers)
+  log4r::info(logger, sprintf("Building dictionaries for %d partitions with %d worker(s)",
+                              length(tasks), n_workers))
+
+  run_one <- function(task) {
+    tryCatch({
+      dt <- fread(task$csv, colClasses = c(ein = "character", tax_period = "character"))
+      dict <- build_dictionary_one(dt, task$form, task$tax_year,
+                                   CROSSWALK_FOR_SERIES(task$form, task$tax_year), logger)
+      out_dir <- file.path(processed_root, task$tax_year, task$form)
+      dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+      out_path <- file.path(out_dir,
+                            sprintf("core_%d_%s_dictionary.csv", task$tax_year, task$form))
+      fwrite(dict, out_path)
+      log4r::info(logger, sprintf("WROTE %s (%d rows)", out_path, nrow(dict)))
+      TRUE
+    }, error = function(e) {
+      log4r::error(logger, sprintf("[%s/%d] dictionary errored: %s",
+                                   task$form, task$tax_year, conditionMessage(e)))
+      FALSE
+    })
+  }
+
+  results <- parallel_map(tasks, run_one, n_workers)
+  n <- sum(vapply(results, isTRUE, logical(1)))
   log4r::info(logger, sprintf("Dictionary run complete: %d files written", n))
   invisible(NULL)
 }

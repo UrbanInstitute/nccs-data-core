@@ -45,9 +45,11 @@
 suppressPackageStartupMessages({
   library(here)
   library(data.table)
+  library(parallel)
 })
 
 source(here("R", "config.R"))
+source(here("R", "utils.R"))
 source(here("R", "create_logger.R"))
 
 MERGE_FORMS <- c("990combined", "990pf")
@@ -268,7 +270,8 @@ write_disagreements <- function(disagreements, tax_year, form, logger) {
 run_legacy_merge <- function(legacy_root = PATHS$harmonized_legacy,
                              soi_root    = PATHS$harmonized,
                              dest_root   = PATHS$harmonized_merged,
-                             forms       = MERGE_FORMS) {
+                             forms       = MERGE_FORMS,
+                             workers     = NULL) {
   dir.create(PATHS$logs, recursive = TRUE, showWarnings = FALSE)
   logger <- create_logger(file.path(PATHS$logs, "04_legacy_merge_log.txt"))
 
@@ -279,6 +282,9 @@ run_legacy_merge <- function(legacy_root = PATHS$harmonized_legacy,
     stop("No harmonized input available for merge.")
   }
 
+  # Build the (form, year) task list serially so the per-form summary lines
+  # stay grouped + readable. Workers run the per-(form, year) merge.
+  tasks <- list()
   for (form in forms) {
     legacy_yrs <- if (dir.exists(legacy_root)) list_partitions(legacy_root, form) else integer()
     soi_yrs    <- if (dir.exists(soi_root))    list_partitions(soi_root,    form) else integer()
@@ -287,16 +293,34 @@ run_legacy_merge <- function(legacy_root = PATHS$harmonized_legacy,
                 sprintf("==== FORM %s: %d tax_years (legacy=%d soi=%d) ====",
                         form, length(yrs), length(legacy_yrs), length(soi_yrs)))
     for (yr in yrs) {
-      log4r::info(logger, sprintf("---- %d / %s ----", yr, form))
-      legacy_dt <- if (yr %in% legacy_yrs) read_partition(legacy_root, yr, form) else NULL
-      soi_dt    <- if (yr %in% soi_yrs)    read_partition(soi_root,    yr, form) else NULL
-      result <- merge_partition(legacy_dt, soi_dt, yr, form, logger)
-      if (is.null(result$merged)) next
-      write_partition(result$merged, yr, form, dest_root, logger)
-      write_disagreements(result$disagreements, yr, form, logger)
+      tasks[[length(tasks) + 1L]] <- list(form = form, yr = yr,
+                                          has_legacy = yr %in% legacy_yrs,
+                                          has_soi    = yr %in% soi_yrs)
     }
   }
 
+  n_workers <- resolve_workers("NCCS_MERGE_WORKERS", workers)
+  log4r::info(logger, sprintf("Merging %d (form, tax_year) partitions with %d worker(s)",
+                              length(tasks), n_workers))
+
+  run_one <- function(task) {
+    tryCatch({
+      log4r::info(logger, sprintf("---- %d / %s ----", task$yr, task$form))
+      legacy_dt <- if (task$has_legacy) read_partition(legacy_root, task$yr, task$form) else NULL
+      soi_dt    <- if (task$has_soi)    read_partition(soi_root,    task$yr, task$form) else NULL
+      result <- merge_partition(legacy_dt, soi_dt, task$yr, task$form, logger)
+      if (is.null(result$merged)) return(TRUE)
+      write_partition(result$merged, task$yr, task$form, dest_root, logger)
+      write_disagreements(result$disagreements, task$yr, task$form, logger)
+      TRUE
+    }, error = function(e) {
+      log4r::error(logger, sprintf("[%s/%d] merge errored: %s",
+                                   task$form, task$yr, conditionMessage(e)))
+      FALSE
+    })
+  }
+
+  parallel_map(tasks, run_one, n_workers)
   invisible(NULL)
 }
 

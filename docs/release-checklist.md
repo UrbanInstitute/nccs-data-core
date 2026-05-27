@@ -34,7 +34,7 @@ For each of `processed/`, `processed_legacy/`, `processed_merged/`, pick **one p
 | 3.3 | `tax_year` matches first 4 chars of `tax_period` | `all(substr(tax_period,1,4) == tax_year)` |
 | 3.4 | `subsection_cd` values are in `data/lookups/subsection_codes.csv` whitelist | Quality report flags none outside |
 | 3.5 | Financial columns parse as numeric | `class(...)` is `numeric` / `double` |
-| 3.6 | No surprising NA explosion since last release | Spot-check a column's NA rate against prior release |
+| 3.6 | No surprising NA explosion since last release | Spot-check a column's NA **rate** (not absolute count) against prior release — the current tax year is partial-filed and will have far fewer rows than the prior full year, so absolute NA counts will always look smaller. Compare `mean(is.na(col))` across years instead |
 | 3.7 | **Merged tier only**: `source_pipeline` is `"legacy"` for tax_year ≤ 2011, `"soi_current"` for ≥ 2012 | `table(source_pipeline, tax_year >= 2012)` is diagonal |
 | 3.8 | **Merged tier only**: `has_legacy_augment` is `FALSE` everywhere post-clamp | Should be ~all FALSE; non-zero rows indicate the disjoint-clamp assumption is wrong |
 | 3.9 | **SOI-current only**: `is_amendment == FALSE` for ~99 %+ of rows | A handful TRUE expected (per harmonize log) |

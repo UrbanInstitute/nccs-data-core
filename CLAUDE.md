@@ -111,3 +111,17 @@ When the user pastes `run_pipeline` console output, log4r logs, or other multi-p
 - **Don't propose fixes for unverified findings.** If the conclusion hasn't been verified against code or data, the fix it implies hasn't either.
 - **Consult `docs/log-triage-gotchas.md` before drawing conclusions** — it lists known log-shape quirks in this pipeline that look like bugs but aren't.
 - **Maintain `docs/log-triage-gotchas.md` as you go.** If triage surfaces a new log-shape quirk worth remembering, or an existing entry becomes stale (pipeline change, schema change, fixed quirk), update the gotchas doc in the same turn — don't defer.
+
+## Contract-change guard (ADR 0022)
+
+A PR that touches what/where this repo publishes — the processed/core,
+processed_legacy/core, or processed_merged/core tiers, or the schema/manifest
+shape — must acknowledge the [`nccs-contracts`](https://github.com/UrbanInstitute/nccs-contracts)
+impact, or CI fails. The `.github/workflows/contracts-guard.yml` caller (a thin
+wrapper over the reusable guard in `nccs-contracts`) fires on PRs that change
+`R/08_upload.R`, `R/09_parquet.R`, `R/config.R`, or `R/run_*.R`. To pass: add an
+`ADR NNNN` breadcrumb to a commit message or the PR body and queue the
+`nccs-contracts` reconcile, **or** add the `contracts-ack` label if there is
+genuinely no contract impact. The guard checks *acknowledgment, not
+correctness*. Keep the caller's `paths_regex` in sync with this repo's publish
+surface (`core-990`, `core-legacy`, `core-panel` contracts).

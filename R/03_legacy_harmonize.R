@@ -201,6 +201,10 @@ apply_transforms <- function(dt, logger) {
                             c(IDENTITY_COLS, indicator_cols, INDICATOR_EXCLUDE))
   if (length(financial_cols)) transform_financial_amounts(dt, financial_cols, logger)
 
+  # ADR 0036: additive coercion-safe EIN renderings. Added LAST so they are not
+  # swept into the financial coercion above; derived from canonical `ein`.
+  if ("ein" %in% names(dt)) add_ein_renderings(dt)
+
   dt
 }
 

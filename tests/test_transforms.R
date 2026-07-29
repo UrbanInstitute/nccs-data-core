@@ -48,6 +48,27 @@ check("empty -> NA",             is.na(dt$ein[5]))
 check("non-numeric -> NA",       is.na(dt$ein[6]))
 check("NA in -> NA out",         is.na(dt$ein[7]))
 
+# ----- additive EIN renderings (ADR 0036) -----
+cat("\n[ein renderings]\n")
+# Twins of nccs-data-bmf/R/ein.R::ein_to_prefixed / ein_to_ein2.
+check("ein_to_prefixed lowercase ein- prefix",
+      identical(ein_to_prefixed("38-2787387"), "ein-38-2787387"))
+check("ein_to_ein2 uppercase EIN- prefix",
+      identical(ein_to_ein2("38-2787387"), "EIN-38-2787387"))
+check("ein_to_prefixed preserves NA",  is.na(ein_to_prefixed(NA_character_)))
+check("ein_to_ein2 preserves NA",      is.na(ein_to_ein2(NA_character_)))
+dt <- data.table(ein = c("123456789", "", NA))
+transform_ein(dt)
+add_ein_renderings(dt)
+check("add_ein_renderings adds both cols",
+      all(c("ein_prefixed", "EIN2") %in% names(dt)))
+check("ein_prefixed = ein- + canonical ein",
+      identical(dt$ein_prefixed, c("ein-12-3456789", NA, NA)))
+check("EIN2 = EIN- + canonical ein",
+      identical(dt$EIN2, c("EIN-12-3456789", NA, NA)))
+check("renderings character-typed",
+      is.character(dt$ein_prefixed) && is.character(dt$EIN2))
+
 # ----- subsection_cd -----
 cat("\n[subsection_cd]\n")
 dt <- data.table(subsection_cd = c("03", "3", "4", "92", "99", "", NA))

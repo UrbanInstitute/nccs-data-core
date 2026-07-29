@@ -224,7 +224,8 @@ check_schema <- function(dt, xwalk_path, form = NULL) {
   extras  <- setdiff(names(dt), c(required,
                 "tax_year", "tax_month", "is_501c3", "extract_year",
                 "is_amendment", "source_form", "soi_year",
-                "source_subsection_class"))
+                "source_subsection_class",
+                "ein_prefixed", "EIN2"))  # ADR 0036 additive EIN renderings
   list(passed = length(missing) == 0L, missing = missing, extras = extras)
 }
 

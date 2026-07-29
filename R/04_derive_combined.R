@@ -15,9 +15,13 @@ source(here("R", "create_logger.R"))
 
 # Universal pipeline-added columns preserved in 990combined alongside the
 # crosswalk intersection. `source_form` is added by this step to record which
-# form each row came from.
+# form each row came from. `ein_prefixed`/`EIN2` are the ADR 0036 additive EIN
+# renderings — kept here so the 990combined tier carries them like every other
+# tier (they are not crosswalk columns, so project_to_shared would drop them
+# otherwise).
 COMBINED_UNIVERSAL_COLS <- c("tax_year", "tax_month", "is_501c3",
-                             "extract_year", "is_amendment")
+                             "extract_year", "is_amendment",
+                             "ein_prefixed", "EIN2")
 
 #' Compute the set of harmonized column names shared between 990 and 990-EZ.
 shared_990_990ez_cols <- function() {

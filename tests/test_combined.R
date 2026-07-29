@@ -46,12 +46,19 @@ cat("\n[project_to_shared: keeps COMBINED_UNIVERSAL_COLS when present]\n")
 {
   dt <- data.table(ein = "12-3456789", tax_period = "202312",
                    tax_year = 2023L, tax_month = 12L,
-                   is_501c3 = TRUE, extract_year = 2024L, is_amendment = FALSE)
+                   is_501c3 = TRUE, extract_year = 2024L, is_amendment = FALSE,
+                   ein_prefixed = "ein-12-3456789", EIN2 = "EIN-12-3456789")
   shared <- c("ein", "tax_period")
   out <- project_to_shared(copy(dt), shared)
-  for (col in c("tax_year", "tax_month", "is_501c3", "extract_year", "is_amendment")) {
+  # ADR 0036: ein_prefixed/EIN2 are universal cols and must survive into 990combined.
+  for (col in c("tax_year", "tax_month", "is_501c3", "extract_year", "is_amendment",
+                "ein_prefixed", "EIN2")) {
     check(sprintf("universal col '%s' preserved", col), col %in% names(out))
   }
+  check("ein_prefixed value intact through projection",
+        identical(out$ein_prefixed[1], "ein-12-3456789"))
+  check("EIN2 value intact through projection",
+        identical(out$EIN2[1], "EIN-12-3456789"))
 }
 
 cat("\n[project_to_shared: doesn't fabricate universal cols if absent]\n")

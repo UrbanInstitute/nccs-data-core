@@ -1,4 +1,11 @@
 # R/08_upload.R
+#
+# Producer of three core contracts — see
+# https://github.com/UrbanInstitute/nccs-contracts/blob/main/contracts/
+#   run_upload()        → core-990   (processed/core/)
+#   run_upload_legacy() → core-legacy (processed_legacy/core/)
+#   run_upload_merged() → core-panel  (processed_merged/core/)
+#
 # Phase 8: promote harmonized CSVs into the processed/ tier, then sync each
 # data tier to S3. Uses `aws s3 sync` via the AWS CLI for native batching,
 # concurrency, and retry. Per-tier toggles from CONFIG (R/config.R).

@@ -20,6 +20,23 @@ processed, with S3 paths at each tier.
 Raw + unpacked are partitioned by **processing year** (when IRS published the extract).
 Harmonized + processed are partitioned by **tax year** (`substr(tax_period, 1, 4)`).
 
+## Anonymous access
+
+The `nccsdata` bucket is publicly readable — analysts do **not** need AWS credentials. Pass `--no-sign-request` to the AWS CLI to list or download without configured creds:
+
+```bash
+# List partitions
+aws s3 ls s3://nccsdata/processed_merged/core/ --no-sign-request
+
+# Download one file
+aws s3 cp s3://nccsdata/processed_merged/core/2020/990combined/core_2020_990combined.parquet . --no-sign-request
+
+# Or fetch directly over HTTPS, no CLI required
+curl -O https://nccsdata.s3.amazonaws.com/processed_merged/core/2020/990combined/core_2020_990combined.parquet
+```
+
+Anonymous list is scoped to the published tiers (`processed/`, `processed_legacy/`, `processed_merged/`). For DuckDB / R-arrow over S3, point at the parquet URIs directly — `open_dataset()` and glob queries work without credentials.
+
 ## Forms archive
 
 `data/raw/forms/` mirrors `s3://nccsdata/raw/core/forms/` and holds blank IRS Form 990, 990-EZ, 990-PF and their 16 common schedules (A through O, plus R), with accompanying instructions. Filenames follow the convention `<basename>_<YYYY>.pdf` — e.g. `f990_2024.pdf` for the 2024 form, `i990sj_2018.pdf` for the 2018 Schedule J instructions.

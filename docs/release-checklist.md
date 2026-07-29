@@ -30,6 +30,7 @@ For each of `processed/`, `processed_legacy/`, `processed_merged/`, pick **one p
 | # | Check | What to look for |
 |---|---|---|
 | 3.1 | `ein` is `XX-XXXXXXX` format, 10 chars (incl. hyphen) | `unique(nchar(ein))` returns only `10` |
+| 3.1b | Additive EIN columns present and consistent (once PR #11 / ADR 0036 lands) | `ein_prefixed` is `ein-` + `ein` (13 chars), `EIN2` is `EIN-` + `ein` (13 chars); both NA exactly where `ein` is NA |
 | 3.2 | `tax_period` is 6-char `YYYYMM` | All values match `^[12][09][0-9]{2}(0[1-9]|1[0-2])$` |
 | 3.3 | `tax_year` matches first 4 chars of `tax_period` | `all(substr(tax_period,1,4) == tax_year)` |
 | 3.4 | `subsection_cd` values are in `data/lookups/subsection_codes.csv` whitelist | Quality report flags none outside |

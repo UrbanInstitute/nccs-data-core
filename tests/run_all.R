@@ -38,6 +38,7 @@ TEST_FILES <- c(
   "test_pre_checks.R",
   "test_post_checks.R",
   "test_render.R",
+  "test_harmonized_compat.R",
   "test_parquet.R"
 )
 

@@ -1,0 +1,23 @@
+{
+  "tax_year": 2005,
+  "built_at": "2026-11-10T00:06:14Z",
+  "source_rows": {
+    "legacy_pz": 490488
+  },
+  "families": {
+    "501C3-CHARITIES-PZ": {
+      "row_count": 324768,
+      "repeated_ein_tax_period": 60293,
+      "csv": "CORE-2005-501C3-CHARITIES-PZ-HRMN-V2.csv",
+      "parquet": "CORE-2005-501C3-CHARITIES-PZ-HRMN-V2.parquet"
+    },
+    "501CE-NONPROFIT-PZ": {
+      "row_count": 165720,
+      "repeated_ein_tax_period": 37300,
+      "csv": "CORE-2005-501CE-NONPROFIT-PZ-HRMN-V2.csv",
+      "parquet": "CORE-2005-501CE-NONPROFIT-PZ-HRMN-V2.parquet"
+    }
+  },
+  "failures": [],
+  "passed": true
+}

@@ -15,6 +15,7 @@ source(here("R", "transforms", "subsection.R"))
 source(here("R", "transforms", "financial_amounts.R"))
 source(here("R", "transforms", "indicators.R"))
 source(here("R", "transforms", "efile_indicator.R"))
+source(here("R", "transforms", "repeated_returns.R"))
 
 # Counters are kept module-global so the run_all.R harness can accumulate
 # results across files. When this file is run standalone via Rscript the
@@ -125,6 +126,29 @@ check("indicators errors on missing col",
 
 # Print the standalone summary + exit only when not running under the
 # run_all.R harness (which manages its own aggregate output and exit code).
+cat("\n[drop_repeated_returns: one row per return, newest NCCS file wins]\n")
+{
+  dt <- data.table(
+    ein              = c("11-1111111", "11-1111111", "22-2222222", "33-3333333", "33-3333333", "44-4444444"),
+    tax_period       = c("200506",     "200506",     "200512",     NA,           NA,           "200512"),
+    source_file_year = c(2005L,        2006L,        2005L,        2004L,        2005L,        2006L),
+    total_revenue    = c(100,          150,          7,            1,            2,            9)
+  )
+  out <- drop_repeated_returns(copy(dt))
+  check("repeated return kept once",
+        sum(out$ein == "11-1111111") == 1L)
+  check("the row from the newest NCCS file is the one kept",
+        out[ein == "11-1111111", total_revenue] == 150)
+  check("a return seen once is kept",
+        "22-2222222" %in% out$ein && "44-4444444" %in% out$ein)
+  check("rows with no tax_period are never treated as repeats",
+        sum(out$ein == "33-3333333") == 2L)
+  check("dropped count recorded",
+        attr(out, "n_dropped") == 1L)
+  check("errors without source_file_year",
+        tryCatch({ drop_repeated_returns(dt[, !"source_file_year"]); FALSE }, error = function(e) TRUE))
+}
+
 if (!exists("TEST_RUN_ALL", envir = globalenv())) {
   cat(sprintf("\n%d passed, %d failed\n", PASS, FAIL))
   if (FAIL > 0L) quit(status = 1L)

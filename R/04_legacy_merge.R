@@ -55,11 +55,10 @@ source(here("R", "create_logger.R"))
 MERGE_FORMS <- c("990combined", "990pf")
 MERGE_KEY   <- c("ein", "tax_period")
 
-# Columns that are pipeline-emitted metadata rather than harmonized fields.
-# These are NOT subject to disagreement audit (they are pipeline state, not
-# IRS data) and are reconciled with simple precedence (SOI wins where
-# present).
-MERGE_META_COLS <- c("source_subsection_class")
+# Columns the pipeline adds about where a row came from. They are not
+# IRS data, so they are not compared between the two sides for
+# disagreement. When both sides have a value, the SOI side's value is kept.
+MERGE_META_COLS <- c("source_subsection_class", "source_file_year")
 
 partition_path <- function(root, tax_year, form) {
   file.path(root, as.character(tax_year), form,

@@ -56,8 +56,9 @@ read_current_crosswalk <- function(file_name, source_name_column, source_form) {
   )
 
   crosswalk <- dplyr::filter(crosswalk, !is.na(current_name), current_name != "")
+  crosswalk <- dplyr::distinct(crosswalk)
 
-  dplyr::distinct(crosswalk)
+  return(crosswalk)
 }
 
 # ---- Read the old-format table ----

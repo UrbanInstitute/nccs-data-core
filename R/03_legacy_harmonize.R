@@ -42,6 +42,10 @@
 #     filename is authoritative. Any TAXPER / FisYr column in the source rows
 #     is renamed via crosswalk to tax_period (when present) for downstream
 #     compatibility but is NOT used to derive tax_year.
+#   - source_file_year records the year of the NCCS file each row came from.
+#     Yearly NCCS files carried returns forward, so one return can sit in
+#     several files; after the union, one row per (ein, tax_period) is kept,
+#     the one from the newest file (R/transforms/repeated_returns.R).
 #   - Crosswalk rows with harmonized_name == "" represent NCCS-appended BMF
 #     metadata that the schema-parity decision (docs/09) says to drop. They
 #     are filtered out before the rename step.
@@ -58,6 +62,7 @@ source(here("R", "transforms", "tax_period.R"))
 source(here("R", "transforms", "ein.R"))
 source(here("R", "transforms", "subsection.R"))
 source(here("R", "transforms", "financial_amounts.R"))
+source(here("R", "transforms", "repeated_returns.R"))
 source(here("R", "transforms", "indicators.R"))
 source(here("R", "transforms", "efile_indicator.R"))
 
@@ -79,7 +84,7 @@ LEGACY_FILENAME_RE <-
 # Identity / derived columns excluded from blanket financial coercion.
 IDENTITY_COLS <- c("ein", "tax_period", "tax_year", "tax_month",
                    "subsection_cd", "is_501c3", "efile_indicator",
-                   "source_subsection_class")
+                   "source_subsection_class", "source_file_year")
 # subsection_cd has the _cd suffix but is an integer code.
 INDICATOR_EXCLUDE <- c("subsection_cd")
 
@@ -276,6 +281,7 @@ harmonize_legacy_form <- function(form, xwalk, source_root, logger) {
     }
     dt[is.na(tax_year), tax_year := tax_year_fn]
     dt[, source_subsection_class := subclass]
+    dt[, source_file_year := tax_year_fn]
     if ("subsection_cd" %in% names(dt)) {
       dt[, is_501c3 := !is.na(subsection_cd) & subsection_cd == 3L]
     }
@@ -286,6 +292,13 @@ harmonize_legacy_form <- function(form, xwalk, source_root, logger) {
   combined <- rbindlist(pieces, use.names = TRUE, fill = TRUE)
   log4r::info(logger, sprintf("Combined %s: %d rows across %d source files",
                               form, nrow(combined), length(files)))
+
+  # One return, one row. The yearly NCCS files carried returns forward, so
+  # the same return sits in two or more files and would land in the same
+  # output year twice. Keep the copy from the newest file.
+  combined <- drop_repeated_returns(combined)
+  log4r::info(logger, sprintf("Dropped %d repeated-return rows (same ein + tax_period; kept the newest NCCS file's copy)",
+                              attr(combined, "n_dropped")))
 
   # Clamp tax_year to the plausibility window.
   #

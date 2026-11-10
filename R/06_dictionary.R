@@ -20,7 +20,7 @@ UNIVERSAL_DICTIONARY_ROWS <- function() {
   data.table(
     harmonized_name = c("tax_year", "tax_month", "is_501c3",
                        "extract_year", "is_amendment", "source_form", "soi_year",
-                       "source_subsection_class", "ein_prefixed", "EIN2"),
+                       "source_subsection_class", "source_file_year", "ein_prefixed", "EIN2"),
     description = c(
       "Calendar year the filing's fiscal period ended (substr(tax_period, 1, 4)).",
       "Month the filing's fiscal period ended (substr(tax_period, 5, 6)).",
@@ -30,6 +30,7 @@ UNIVERSAL_DICTIONARY_ROWS <- function() {
       "990combined only: '990' or '990ez' indicating which source form this row came from.",
       "990-PF only: IRS-assigned SOI year (calendar year covering most of activity).",
       "Legacy only: the NCCS subsection-class partition the row was sourced from (501C3-CHARITIES, 501CE-NONPROFIT, or 501C3-PRIVFOUND).",
+      "Legacy only: the year of the NCCS CORE file this row came from. One row per (ein, tax_period) is kept, from the newest file.",
       "Coercion-safe EIN key: canonical `ein` with a lowercase `ein-` prefix (ein-XX-XXXXXXX). Bijective with `ein`; the leading alpha forces text typing so leading zeros and CSV round-trips survive. Use for forward joins (ADR 0036).",
       "Legacy-compatibility alias; identical key to `ein_prefixed` in legacy `EIN-XX-XXXXXXX` format; retained for existing merges (ADR 0036)."
     ),

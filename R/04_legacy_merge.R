@@ -59,7 +59,7 @@ MERGE_KEY   <- c("ein", "tax_period")
 # These are NOT subject to disagreement audit (they are pipeline state, not
 # IRS data) and are reconciled with simple precedence (SOI wins where
 # present).
-MERGE_META_COLS <- c("source_subsection_class")
+MERGE_META_COLS <- c("source_subsection_class", "source_file_year")
 
 partition_path <- function(root, tax_year, form) {
   file.path(root, as.character(tax_year), form,

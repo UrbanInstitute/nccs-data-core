@@ -3,7 +3,8 @@
 # (ADR 0056), from local mirrors of processed/core/ and
 # processed_legacy/core/, into a local folder that mirrors harmonized/core/.
 # Runs every check the decision record requires and writes one summary
-# JSON per year. Does NOT upload: the upload order is a separate,
+# JSON per year. Output file names are the frozen keys (HRMN-V1), so the
+# output folder mirrors harmonized/core/ exactly. Does NOT upload: the upload order is a separate,
 # maintainer-run step (ADR 0056 Decision 13).
 #
 # Usage:
@@ -29,18 +30,24 @@ build_harmonized_year <- function(tax_year, current_root, legacy_root, output_ro
 
   if (tax_year >= 2012L) {
     source_tables <- list(
-      "990" = read_source_rows_for_year(current_root, "990", tax_year),
-      "990ez" = read_source_rows_for_year(current_root, "990ez", tax_year)
+      "990" = select_source_rows(current_root, "990", tax_year),
+      "990ez" = select_source_rows(current_root, "990ez", tax_year)
     )
+    failures <- character(0)
     families <- build_harmonized_families(source_tables[["990"]], source_tables[["990ez"]], column_map)
   } else {
     source_tables <- list(
-      "legacy_pz" = read_source_rows_for_year(legacy_root, "990combined", tax_year)
+      "legacy_pz" = select_source_rows(legacy_root, "990combined", tax_year)
     )
+    failures <- check_legacy_prerequisite(source_tables[["legacy_pz"]])
     families <- build_harmonized_families_legacy(source_tables[["legacy_pz"]], column_map)
   }
 
-  failures <- check_renamed_against_source(source_tables, families, column_map)
+  if (sum(vapply(source_tables, nrow, integer(1))) == 0) {
+    failures <- c(failures, "no source rows selected for this year")
+  }
+
+  failures <- c(failures, check_families_against_source(families, source_tables, column_map))
 
   family_summaries <- list()
 
@@ -62,6 +69,7 @@ build_harmonized_year <- function(tax_year, current_root, legacy_root, output_ro
     tax_year = tax_year,
     built_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
     source_rows = lapply(source_tables, nrow),
+    source_rows_with_unknown_period = lapply(source_tables, function(table) attr(table, "n_unknown_period")),
     families = family_summaries,
     failures = failures,
     passed = length(failures) == 0

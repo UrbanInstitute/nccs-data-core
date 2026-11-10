@@ -38,6 +38,9 @@ ROW_CONTEXT_COLUMNS <- c("ein", "tax_period", "is_amendment", "extract_year", "i
 # across years within a family).
 HARMONIZED_FORMAT_FOLDER <- file.path("data", "crosswalks", "harmonized_format")
 
+# Current-CORE columns published after the frozen columns, in this order.
+CARRIED_COLUMNS <- c("ein", "tax_period", "source_form", "is_amendment", "extract_year")
+
 # A real dollar amount is never this close to zero without being zero.
 # Values in this range are the signature of the 2025 defect (ADR 0056).
 DAMAGED_VALUE_CEILING <- 1e-300
@@ -111,13 +114,15 @@ column_map_for_table <- function(column_map, source_form, current_table) {
 
 #' Rename one current CORE table to the older column names
 #'
-#' @param current_table A data frame read from a current per-form CORE
-#'   file (for example `core_2022_990.parquet`).
 #' @param source_form The form the table holds: "990" or "990ez".
 #' @param column_map The name table from `read_harmonized_column_map()`.
-#' @return A tibble with the older column names, plus `TAX_YEAR`, `EIN2`,
-#'   `source_form` and the columns in `ROW_CONTEXT_COLUMNS`. Columns of
-#'   `current_table` that have no older name are dropped.
+#' @param current_table A table from `select_source_rows()`: it carries
+#'   `period_end_year` and `source_row_id`.
+#' @return A tibble with the older column names, plus `TAX_YEAR` (the
+#'   period-end year, never the source's `tax_year`, whose meaning may
+#'   change under ADR 0053), `EIN2`, `source_form`, `source_row_id` and the
+#'   columns in `ROW_CONTEXT_COLUMNS`. Columns of `current_table` that have
+#'   no older name are dropped.
 #' @details When two older names point at the same current column, both
 #'   older columns are created and hold the same values. `EIN2` is the
 #'   current `ein` (XX-XXXXXXX) with the prefix "EIN-".
@@ -132,9 +137,10 @@ rename_to_harmonized_format <- function(current_table, source_form, column_map) 
     renamed_table[[old_name]] <- current_table[[current_name]]
   }
 
-  renamed_table$TAX_YEAR <- as.integer(current_table$tax_year)
+  renamed_table$TAX_YEAR <- as.integer(current_table$period_end_year)
   renamed_table$EIN2 <- stringr::str_c("EIN-", current_table$ein)
   renamed_table$source_form <- source_form
+  renamed_table$source_row_id <- current_table$source_row_id
 
   for (column_name in ROW_CONTEXT_COLUMNS) {
     if (column_name %in% names(current_table)) {
@@ -211,7 +217,8 @@ read_frozen_columns <- function(family_token) {
 #' @return The same rows with: every frozen column present, in the frozen
 #'   order (a column the source cannot fill is all NA); then the carried
 #'   current-CORE columns (`ein`, `tax_period`, `source_form`,
-#'   `is_amendment`, `extract_year`) at the end.
+#'   `is_amendment`, `extract_year`) at the end, then `source_row_id`, which
+#'   is internal: the checks use it and `write_family_year()` drops it.
 #' @details Keeping the old header whole means code written against the
 #'   frozen files keeps running. A column the source cannot fill is empty
 #'   rather than missing, and the dictionary lists it as such. Any other
@@ -220,7 +227,7 @@ read_frozen_columns <- function(family_token) {
 #'   carried columns.
 conform_to_frozen_columns <- function(family_table, family_token) {
   frozen_columns <- read_frozen_columns(family_token)
-  carried_columns <- c("ein", "tax_period", "source_form", "is_amendment", "extract_year")
+  carried_columns <- c(CARRIED_COLUMNS, "source_row_id")
 
   for (column_name in setdiff(frozen_columns, names(family_table))) {
     family_table[[column_name]] <- NA_real_
@@ -258,64 +265,52 @@ count_damaged_values <- function(family_table) {
   damaged_counts
 }
 
-#' List output columns whose values differ from their source column
-#'
-#' @param current_table The current per-form CORE table that was renamed.
-#' @param renamed_table The result of `rename_to_harmonized_format()` for
-#'   that same table, with rows in the same order.
-#' @param source_form The form the table holds: "990" or "990ez".
-#' @param column_map The name table from `read_harmonized_column_map()`.
-#' @return A character vector of older column names whose values are not
-#'   identical, row for row, to the current column the name table assigns
-#'   them. Length zero when every column agrees.
-#' @details This catches two columns being swapped, which row counts and
-#'   missing-value counts cannot. The publish step must stop when this
-#'   returns anything.
-find_columns_differing_from_source <- function(current_table, renamed_table,
-                                               source_form, column_map) {
-  form_map <- column_map_for_table(column_map, source_form, current_table)
-
-  differing_columns <- character(0)
-
-  for (row_number in seq_len(nrow(form_map))) {
-    old_name <- form_map$old_name[[row_number]]
-    current_name <- form_map$current_name[[row_number]]
-
-    if (!identical(renamed_table[[old_name]], current_table[[current_name]])) {
-      differing_columns <- c(differing_columns, old_name)
-    }
-  }
-
-  differing_columns
-}
-
 # ---- Source rows for one period-end year ----
 
-#' Read the current CORE rows whose accounting period ends in one year
+#' Path of one source partition
+#'
+#' @param source_root Local mirror root.
+#' @param folder_year The year folder.
+#' @param form The form folder: "990", "990ez" or "990combined".
+#' @return The parquet path, whether or not it exists.
+source_partition_path <- function(source_root, folder_year, form) {
+  file.path(source_root, folder_year, form, sprintf("core_%d_%s.parquet", folder_year, form))
+}
+
+#' Select the source rows whose accounting period ends in one year
 #'
 #' @param source_root Local folder mirroring `processed/core/` (2012 on) or
-#'   `processed_legacy/core/` (before 2012): `{root}/{year}/{form}/core_{year}_{form}.parquet`.
+#'   `processed_legacy/core/` (before 2012):
+#'   `{root}/{year}/{form}/core_{year}_{form}.parquet`.
 #' @param form The form folder: "990", "990ez" or "990combined".
 #' @param tax_year The period-end year wanted.
-#' @return A tibble of the rows whose `tax_period` ends in `tax_year`,
-#'   gathered from the `tax_year` and `tax_year + 1` folders when they
-#'   exist.
+#' @return A tibble of the selected rows with two added columns:
+#'   `period_end_year` (from `tax_period`, or the source's `tax_year` when
+#'   the period is unknown) and `source_row_id` (`{form}:{folder}:{row}`),
+#'   which identifies the source row through every later step. The
+#'   attribute `n_unknown_period` counts selected rows with no period.
 #' @details The folder a row sits in is not trusted for the year. Today
-#'   the folders are by period-end year, so only the `tax_year` folder
-#'   holds matches. If ADR 0053 is accepted and rows move to folders by
-#'   starting year, a return ending June 2023 sits under `2022/`, which is
-#'   the `tax_year - 1` folder for 2023. Reading `tax_year - 1`, `tax_year`
-#'   and `tax_year + 1` and filtering on `tax_period` covers both layouts.
-read_source_rows_for_year <- function(source_root, form, tax_year) {
-  candidate_years <- c(tax_year - 1L, tax_year, tax_year + 1L)
+#'   the folders are by period-end year. If ADR 0053 is accepted and rows
+#'   move to folders by starting year, a return ending June 2023 sits
+#'   under `2022/`. So the `tax_year - 1`, `tax_year` and `tax_year + 1`
+#'   folders are all read and the rows are selected by `tax_period`.
+#'   The `tax_year` folder itself must exist for the form: a missing
+#'   required input stops the build rather than producing an empty file.
+#'   A row with no `tax_period` keeps the year its producer assigned it
+#'   (`tax_year`, the filename fallback of the legacy pipeline) and is
+#'   counted, so nothing is dropped silently.
+select_source_rows <- function(source_root, form, tax_year) {
+  required_path <- source_partition_path(source_root, tax_year, form)
 
+  if (!file.exists(required_path)) {
+    stop("Required source input is missing: ", required_path)
+  }
+
+  wanted_year <- as.integer(tax_year)
   pieces <- list()
 
-  for (folder_year in candidate_years) {
-    path <- file.path(
-      source_root, folder_year, form,
-      sprintf("core_%d_%s.parquet", folder_year, form)
-    )
+  for (folder_year in c(wanted_year - 1L, wanted_year, wanted_year + 1L)) {
+    path <- source_partition_path(source_root, folder_year, form)
 
     if (!file.exists(path)) {
       next
@@ -323,16 +318,44 @@ read_source_rows_for_year <- function(source_root, form, tax_year) {
 
     piece <- arrow::read_parquet(path)
     piece$tax_period <- as.character(piece$tax_period)
-    piece <- dplyr::filter(piece, substr(.data$tax_period, 1, 4) == as.character(tax_year))
+    piece$source_row_id <- sprintf("%s:%d:%d", form, folder_year, seq_len(nrow(piece)))
 
-    pieces[[as.character(folder_year)]] <- piece
+    period_year <- suppressWarnings(as.integer(substr(piece$tax_period, 1, 4)))
+    piece$period_end_year <- dplyr::if_else(is.na(period_year), as.integer(piece$tax_year), period_year)
+
+    pieces[[as.character(folder_year)]] <- piece[!is.na(piece$period_end_year) & piece$period_end_year == wanted_year, ]
   }
 
-  if (length(pieces) == 0) {
-    return(tibble::tibble())
+  selected <- dplyr::bind_rows(pieces)
+  attr(selected, "n_unknown_period") <- sum(is.na(selected$tax_period))
+
+  selected
+}
+
+#' Check that pre-2012 input carries the ADR 0057 correction
+#'
+#' @param legacy_table The selected `990combined` rows for a year.
+#' @return A character vector of failure messages, empty when the input
+#'   is corrected: it has `source_file_year`, and no `ein` plus
+#'   `tax_period` (with a known period) appears twice.
+#' @details The harmonized rewrite does not deduplicate. It refuses input
+#'   that the legacy pipeline has not corrected, so the rule lives in one
+#'   place (ADR 0057).
+check_legacy_prerequisite <- function(legacy_table) {
+  failures <- character(0)
+
+  if (!"source_file_year" %in% names(legacy_table)) {
+    failures <- c(failures, "legacy input has no source_file_year: it predates the ADR 0057 correction")
   }
 
-  dplyr::bind_rows(pieces)
+  known <- legacy_table[!is.na(legacy_table$tax_period), ]
+  n_repeated <- sum(duplicated(paste(known$ein, known$tax_period)))
+
+  if (n_repeated > 0) {
+    failures <- c(failures, sprintf("legacy input repeats ein + tax_period in %d rows: not corrected per ADR 0057", n_repeated))
+  }
+
+  failures
 }
 
 # ---- Pre-2012 years ----
@@ -340,7 +363,7 @@ read_source_rows_for_year <- function(source_root, form, tax_year) {
 #' Build the two PZ families for one pre-2012 year
 #'
 #' @param legacy_table The `processed_legacy/core/{year}/990combined` rows
-#'   for the year, from `read_source_rows_for_year()`.
+#'   for the year, from `select_source_rows()`.
 #' @param column_map The name table rows for the year, from
 #'   `read_harmonized_column_map()`.
 #' @return A named list of two tibbles: `501C3-CHARITIES-PZ` and
@@ -378,20 +401,24 @@ FAMILY_FOLDERS <- c(
 #' @param tax_year The period-end year.
 #' @param output_root Local folder that mirrors `harmonized/core/`.
 #' @return A named character vector with the `csv` and `parquet` paths written.
-#' @details File names follow the frozen pattern with the version token
-#'   V2: `{folder}/marts/CORE-{year}-{FAMILY}-HRMN-V2.csv`. The CSV is
-#'   written with `data.table::fwrite`, the same writer the frozen files
-#'   used, with NA written as empty.
+#' @details File names are exactly the frozen keys being replaced
+#'   (`{folder}/marts/CORE-{year}-{FAMILY}-HRMN-V1.csv`, ADR 0056), so a
+#'   mirror of `output_root` lands on the damaged files. The internal
+#'   `source_row_id` column is dropped here. The CSV is written with
+#'   `data.table::fwrite`, the same writer the frozen files used, with NA
+#'   written as empty.
 write_family_year <- function(family_table, family_token, tax_year, output_root) {
   marts_folder <- file.path(output_root, FAMILY_FOLDERS[[family_token]], "marts")
   dir.create(marts_folder, recursive = TRUE, showWarnings = FALSE)
 
-  stem <- file.path(marts_folder, sprintf("CORE-%d-%s-HRMN-V2", tax_year, family_token))
+  stem <- file.path(marts_folder, sprintf("CORE-%d-%s-HRMN-V1", tax_year, family_token))
   csv_path <- paste0(stem, ".csv")
   parquet_path <- paste0(stem, ".parquet")
 
-  data.table::fwrite(family_table, csv_path, na = "")
-  arrow::write_parquet(family_table, parquet_path)
+  published <- dplyr::select(family_table, -source_row_id)
+
+  data.table::fwrite(published, csv_path, na = "")
+  arrow::write_parquet(published, parquet_path)
 
   c(csv = csv_path, parquet = parquet_path)
 }
@@ -409,82 +436,137 @@ write_family_year <- function(family_table, family_token, tax_year, output_root)
 #' @details Checks: the header equals the frozen header plus the five
 #'   carried columns; no damaged values; the CSV and the parquet read back
 #'   with the same rows and the same values. The value-for-value check
-#'   against the source runs earlier, in `check_renamed_against_source()`,
-#'   because it needs the source table.
+#'   against the source is `check_families_against_source()`.
 check_family_file <- function(family_table, family_token, paths) {
   failures <- character(0)
+  published <- dplyr::select(family_table, -source_row_id)
 
-  expected_header <- c(
-    read_frozen_columns(family_token),
-    "ein", "tax_period", "source_form", "is_amendment", "extract_year"
-  )
+  expected_header <- c(read_frozen_columns(family_token), CARRIED_COLUMNS)
 
-  if (!identical(names(family_table), expected_header)) {
+  if (!identical(names(published), expected_header)) {
     failures <- c(failures, "header differs from the frozen header plus carried columns")
   }
 
-  if (length(count_damaged_values(family_table)) > 0) {
+  if (length(count_damaged_values(published)) > 0) {
     failures <- c(failures, "damaged values present")
   }
 
   from_parquet <- arrow::read_parquet(paths[["parquet"]])
 
-  if (!isTRUE(all.equal(as.data.frame(family_table), as.data.frame(from_parquet), check.attributes = FALSE))) {
+  if (!isTRUE(all.equal(as.data.frame(published), as.data.frame(from_parquet), check.attributes = FALSE))) {
     failures <- c(failures, "parquet read-back differs from the built table")
   }
 
-  from_csv <- data.table::fread(paths[["csv"]], colClasses = list(character = c("EIN2", "ein", "tax_period")))
-  from_csv <- tibble::as_tibble(from_csv)
-
-  if (nrow(from_csv) != nrow(family_table) || !identical(names(from_csv), names(family_table))) {
-    failures <- c(failures, "CSV read-back has different rows or columns")
-  } else {
-    numeric_columns <- names(family_table)[vapply(family_table, is.numeric, logical(1))]
-    for (column_name in numeric_columns) {
-      if (!isTRUE(all.equal(as.numeric(family_table[[column_name]]), as.numeric(from_csv[[column_name]])))) {
-        failures <- c(failures, paste("CSV read-back differs in", column_name))
-        break
-      }
-    }
-  }
+  failures <- c(failures, compare_csv_to_table(paths[["csv"]], published))
 
   list(
     passed = length(failures) == 0,
     failures = failures,
-    row_count = nrow(family_table),
-    repeated_ein_tax_period = sum(duplicated(paste(family_table$ein, family_table$tax_period)))
+    row_count = nrow(published),
+    repeated_ein_tax_period = sum(duplicated(paste(published$ein, published$tax_period)))
   )
 }
 
-#' Check that every renamed column equals its source, and that the split keeps every row
+#' Compare a written CSV with the table it was written from, every column
 #'
-#' @param source_tables A named list of source tables by form ("990",
-#'   "990ez" or "legacy_pz").
-#' @param families The family tables built from them.
-#' @param column_map The name table rows for the year.
-#' @return A character vector of failure messages, empty when all is well.
-check_renamed_against_source <- function(source_tables, families, column_map) {
-  failures <- character(0)
+#' @param csv_path The CSV file.
+#' @param table The table that was written.
+#' @return A character vector of failure messages, empty when every
+#'   column, text and logical ones included, reads back equal.
+#' @details The CSV is read back with each column typed as in `table`, so
+#'   a changed identifier or flag is caught, not only a changed number.
+#'   NA in `table` matches an empty field in the CSV.
+compare_csv_to_table <- function(csv_path, table) {
+  type_of <- function(column) {
+    if (is.logical(column)) "logical" else if (is.integer(column)) "integer" else if (is.numeric(column)) "numeric" else "character"
+  }
+  column_classes <- vapply(table, type_of, character(1))
 
-  for (source_form in names(source_tables)) {
-    renamed <- rename_to_harmonized_format(source_tables[[source_form]], source_form, column_map)
-    differing <- find_columns_differing_from_source(source_tables[[source_form]], renamed, source_form, column_map)
-    if (length(differing) > 0) {
-      failures <- c(failures, paste(source_form, "columns differ from source:", paste(differing, collapse = ", ")))
+  from_csv <- data.table::fread(csv_path, colClasses = column_classes, na.strings = "")
+  from_csv <- tibble::as_tibble(from_csv)
+
+  if (nrow(from_csv) != nrow(table) || !identical(names(from_csv), names(table))) {
+    return("CSV read-back has different rows or columns")
+  }
+
+  for (column_name in names(table)) {
+    built <- table[[column_name]]
+    read_back <- from_csv[[column_name]]
+    if (is.character(built)) {
+      built[is.na(built)] <- ""
+      read_back[is.na(read_back)] <- ""
+    }
+    if (!isTRUE(all.equal(built, read_back, check.attributes = FALSE))) {
+      return(paste("CSV read-back differs in", column_name))
     }
   }
 
-  source_rows <- sum(vapply(source_tables, nrow, integer(1)))
-  pz_rows <- sum(vapply(families[grepl("-PZ$", names(families))], nrow, integer(1)))
+  character(0)
+}
 
-  if (pz_rows != source_rows) {
-    failures <- c(failures, sprintf("PZ families hold %d rows, sources hold %d", pz_rows, source_rows))
+#' Check the final family tables against the source rows they came from
+#'
+#' @param families The family tables as they will be written (still
+#'   carrying `source_row_id`).
+#' @param source_tables A named list of selected source tables by form
+#'   ("990", "990ez" or "legacy_pz"), from `select_source_rows()`.
+#' @param column_map The name table rows for the year.
+#' @return A character vector of failure messages, empty when all is well.
+#' @details Three things are checked on the final tables, not on an
+#'   intermediate: (1) every mapped old column equals its source column
+#'   row for row, matched by `source_row_id`; (2) every source row appears
+#'   in exactly one family of its kind (PC families partition the Form 990
+#'   source; PZ families partition every source); (3) no family holds a
+#'   row whose source does not exist or that is in the wrong family.
+check_families_against_source <- function(families, source_tables, column_map) {
+  failures <- character(0)
+
+  source_by_id <- dplyr::bind_rows(lapply(names(source_tables), function(form_name) {
+    table <- source_tables[[form_name]]
+    table$source_form <- form_name
+    table
+  }))
+
+  for (family_token in names(families)) {
+    family <- families[[family_token]]
+    matched <- dplyr::left_join(
+      dplyr::select(family, source_row_id),
+      source_by_id,
+      by = "source_row_id"
+    )
+
+    if (any(is.na(matched$source_form))) {
+      failures <- c(failures, paste(family_token, "holds rows with no source row"))
+      next
+    }
+
+    wants_501c3 <- grepl("^501C3", family_token)
+    if (!all(matched$is_501c3 == wants_501c3)) {
+      failures <- c(failures, paste(family_token, "holds rows that belong to the other family"))
+    }
+
+    for (form_name in unique(matched$source_form)) {
+      in_form <- matched$source_form == form_name
+      form_map <- column_map_for_table(column_map, form_name, matched)
+      for (row_number in seq_len(nrow(form_map))) {
+        old_name <- form_map$old_name[[row_number]]
+        current_name <- form_map$current_name[[row_number]]
+        if (!isTRUE(all.equal(family[[old_name]][in_form], matched[[current_name]][in_form], check.attributes = FALSE))) {
+          failures <- c(failures, paste(family_token, old_name, "differs from its source column", current_name))
+        }
+      }
+    }
   }
 
-  if ("990" %in% names(source_tables)) {
-    pc_rows <- sum(vapply(families[grepl("-PC$", names(families))], nrow, integer(1)))
-    if (pc_rows != nrow(source_tables[["990"]])) {
-      failures <- c(failures, sprintf("PC families hold %d rows, Form 990 source holds %d", pc_rows, nrow(source_tables[["990"]])))
+  pz_ids <- unlist(lapply(families[grepl("-PZ$", names(families))], function(family) family$source_row_id))
+  if (!setequal(pz_ids, source_by_id$source_row_id) || any(duplicated(pz_ids))) {
+    failures <- c(failures, "PZ families do not hold every source row exactly once")
+  }
+
+  if ("990" %in% names(source_tables) && any(grepl("-PC$", names(families)))) {
+    pc_ids <- unlist(lapply(families[grepl("-PC$", names(families))], function(family) family$source_row_id))
+    if (!setequal(pc_ids, source_tables[["990"]]$source_row_id) || any(duplicated(pc_ids))) {
+      failures <- c(failures, "PC families do not hold every Form 990 source row exactly once")
     }
   }
 

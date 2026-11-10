@@ -32,6 +32,8 @@ toy_990 <- tibble::tibble(
   is_amendment = c(FALSE, FALSE),
   extract_year = c(2023L, 2023L),
   is_501c3 = c(TRUE, FALSE),
+  period_end_year = c(2022L, 2022L),
+  source_row_id = c("990:2022:1", "990:2022:2"),
   total_assets_eoy = c(5576975, 100),
   information_technology = c(52670, 0),
   column_with_no_old_name = c("a", "b")
@@ -44,6 +46,8 @@ toy_990ez <- tibble::tibble(
   is_amendment = FALSE,
   extract_year = 2023L,
   is_501c3 = TRUE,
+  period_end_year = 2022L,
+  source_row_id = "990ez:2022:1",
   total_assets_eoy = 2500
 )
 
@@ -85,7 +89,8 @@ cat("\n[build_harmonized_families: split by subsection and form]\n")
   check("frozen column order kept exactly", identical(pz_names[seq_along(frozen_pz_columns)], frozen_pz_columns))
   check("column the source cannot fill is present and empty",
         "F9_10_ASSET_TOT_BOY" %in% pz_names && all(is.na(families[["501C3-CHARITIES-PZ"]]$F9_10_ASSET_TOT_BOY)))
-  check("carried columns follow the frozen ones", identical(tail(pz_names, 5), c("ein", "tax_period", "source_form", "is_amendment", "extract_year")))
+  check("carried columns follow the frozen ones, then the internal row id",
+        identical(tail(pz_names, 6), c("ein", "tax_period", "source_form", "is_amendment", "extract_year", "source_row_id")))
   check("c3 PC holds the 990 charity only", identical(families[["501C3-CHARITIES-PC"]]$ein, "06-0964699"))
   check("c3 PZ holds 990 and 990-EZ charities", nrow(families[["501C3-CHARITIES-PZ"]]) == 2L)
   check("other-subsection PC holds the c4", identical(families[["501CE-NONPROFIT-PC"]]$ein, "94-1153307"))
@@ -111,17 +116,135 @@ cat("\n[count_damaged_values: catches the 2025 defect signature]\n")
   check("damaged value counted", damaged_counts[["F9_10_ASSET_TOT_EOY"]] == 1L)
 }
 
-cat("\n[find_columns_differing_from_source: catches swapped columns]\n")
+# ---- Fixtures on disk: a small source mirror with three year folders ----
+
+make_source_mirror <- function() {
+  root <- tempfile("mirror_")
+  for (year in 2021:2023) {
+    for (form in c("990", "990ez")) {
+      folder <- file.path(root, year, form)
+      dir.create(folder, recursive = TRUE)
+      rows <- tibble::tibble(
+        ein = sprintf("%02d-%07d", year - 2000L, seq_len(3)),
+        tax_year = rep(year, 3),
+        tax_period = c(sprintf("%d06", year), sprintf("%d12", year), sprintf("%d12", year)),
+        is_amendment = FALSE,
+        extract_year = year + 1L,
+        is_501c3 = c(TRUE, TRUE, FALSE),
+        total_assets_eoy = as.numeric(seq_len(3)) * year,
+        information_technology = if (form == "990") as.numeric(seq_len(3)) else NULL
+      )
+      arrow::write_parquet(rows, file.path(folder, sprintf("core_%d_%s.parquet", year, form)))
+    }
+  }
+  root
+}
+
+cat("\n[select_source_rows: only the requested period-end year, from any folder]\n")
 {
-  renamed <- rename_to_harmonized_format(toy_990, "990", toy_column_map)
-  check("faithful rename reports nothing",
-        length(find_columns_differing_from_source(toy_990, renamed, "990", toy_column_map)) == 0L)
-  swapped <- renamed
-  swapped$F9_10_ASSET_TOT_EOY <- renamed$F9_09_EXP_INFO_TECH_TOT
-  swapped$F9_09_EXP_INFO_TECH_TOT <- renamed$F9_10_ASSET_TOT_EOY
-  differing <- find_columns_differing_from_source(toy_990, swapped, "990", toy_column_map)
-  check("both swapped columns reported",
-        setequal(differing, c("F9_10_ASSET_TOT_EOY", "F9_09_EXP_INFO_TECH_TOT")))
+  root <- make_source_mirror()
+  selected <- select_source_rows(root, "990", 2022L)
+  check("every selected row ends in 2022", all(substr(selected$tax_period, 1, 4) == "2022"))
+  check("rows from neighbouring years are not selected", nrow(selected) == 3L)
+  check("each selected row carries a source row id", "source_row_id" %in% names(selected) && !any(duplicated(selected$source_row_id)))
+  check("period-end year is carried", all(selected$period_end_year == 2022L))
+  # A return ending June 2022 that sits in the 2021 folder (starting-year layout) is still found.
+  moved <- arrow::read_parquet(file.path(root, 2021, "990", "core_2021_990.parquet"))
+  moved$tax_period[[1]] <- "202206"
+  arrow::write_parquet(moved, file.path(root, 2021, "990", "core_2021_990.parquet"))
+  check("a 2022 period end sitting in the 2021 folder is selected", nrow(select_source_rows(root, "990", 2022L)) == 4L)
+}
+
+cat("\n[select_source_rows: a missing required input stops the build]\n")
+{
+  check("nonexistent mirror errors",
+        tryCatch({ select_source_rows(tempfile("none_"), "990", 2022L); FALSE }, error = function(e) TRUE))
+  root <- make_source_mirror()
+  unlink(file.path(root, 2022, "990ez"), recursive = TRUE)
+  check("missing year folder for a form errors even when neighbours exist",
+        tryCatch({ select_source_rows(root, "990ez", 2022L); FALSE }, error = function(e) TRUE))
+}
+
+cat("\n[select_source_rows: rows with no period are kept by their source year and counted]\n")
+{
+  root <- make_source_mirror()
+  path <- file.path(root, 2022, "990", "core_2022_990.parquet")
+  rows <- arrow::read_parquet(path)
+  rows$tax_period[[2]] <- NA_character_
+  arrow::write_parquet(rows, path)
+  selected <- select_source_rows(root, "990", 2022L)
+  check("row with no period is kept", nrow(selected) == 3L)
+  check("count of no-period rows is reported", attr(selected, "n_unknown_period") == 1L)
+}
+
+cat("\n[rename_to_harmonized_format: TAX_YEAR comes from the period end, not the source tax_year]\n")
+{
+  shifted <- toy_990
+  shifted$tax_year <- c(2021L, 2021L)
+  shifted$period_end_year <- c(2022L, 2022L)
+  shifted$source_row_id <- c("990:1", "990:2")
+  renamed <- rename_to_harmonized_format(shifted, "990", toy_column_map)
+  check("TAX_YEAR equals the period-end year", identical(renamed$TAX_YEAR, c(2022L, 2022L)))
+}
+
+cat("\n[check_family_against_source: a changed final value is caught]\n")
+{
+  root <- make_source_mirror()
+  column_map <- tibble::tribble(
+    ~old_name,                 ~source_form, ~current_name,            ~transform,
+    "F9_10_ASSET_TOT_EOY",     "990",        "total_assets_eoy",       "",
+    "F9_09_EXP_INFO_TECH_TOT", "990",        "information_technology", "",
+    "F9_10_ASSET_TOT_EOY",     "990ez",      "total_assets_eoy",       ""
+  )
+  sources <- list("990" = select_source_rows(root, "990", 2022L), "990ez" = select_source_rows(root, "990ez", 2022L))
+  families <- build_harmonized_families(sources[["990"]], sources[["990ez"]], column_map)
+  check("faithful families pass", length(check_families_against_source(families, sources, column_map)) == 0L)
+  tampered <- families
+  tampered[["501C3-CHARITIES-PZ"]]$F9_10_ASSET_TOT_EOY[[1]] <- 999
+  check("a changed value in a final family is reported", length(check_families_against_source(tampered, sources, column_map)) > 0L)
+  dropped <- families
+  dropped[["501C3-CHARITIES-PZ"]] <- dropped[["501C3-CHARITIES-PZ"]][-1, ]
+  check("a missing row is reported", length(check_families_against_source(dropped, sources, column_map)) > 0L)
+  misplaced <- families
+  misplaced[["501CE-NONPROFIT-PZ"]] <- dplyr::bind_rows(misplaced[["501CE-NONPROFIT-PZ"]], families[["501C3-CHARITIES-PZ"]][1, ])
+  check("a row in the wrong family is reported", length(check_families_against_source(misplaced, sources, column_map)) > 0L)
+}
+
+cat("\n[check_family_file: V1 file names, and every CSV column is compared]\n")
+{
+  root <- make_source_mirror()
+  column_map <- tibble::tribble(
+    ~old_name,             ~source_form, ~current_name,      ~transform,
+    "F9_10_ASSET_TOT_EOY", "990",        "total_assets_eoy", "",
+    "F9_10_ASSET_TOT_EOY", "990ez",      "total_assets_eoy", ""
+  )
+  sources <- list("990" = select_source_rows(root, "990", 2022L), "990ez" = select_source_rows(root, "990ez", 2022L))
+  families <- build_harmonized_families(sources[["990"]], sources[["990ez"]], column_map)
+  out <- tempfile("out_")
+  paths <- write_family_year(families[["501C3-CHARITIES-PZ"]], "501C3-CHARITIES-PZ", 2022L, out)
+  check("file name matches the frozen V1 key", basename(paths[["csv"]]) == "CORE-2022-501C3-CHARITIES-PZ-HRMN-V1.csv")
+  check("written files have no source_row_id column", !("source_row_id" %in% names(arrow::read_parquet(paths[["parquet"]]))))
+  check("clean file passes", check_family_file(families[["501C3-CHARITIES-PZ"]], "501C3-CHARITIES-PZ", paths)$passed)
+  lines <- readLines(paths[["csv"]])
+  lines[[2]] <- sub("EIN-22-0000001", "EIN-99-9999999", lines[[2]])
+  writeLines(lines, paths[["csv"]])
+  check("a changed text value in the CSV is caught", !check_family_file(families[["501C3-CHARITIES-PZ"]], "501C3-CHARITIES-PZ", paths)$passed)
+}
+
+cat("\n[legacy input must carry the ADR 0057 correction]\n")
+{
+  legacy <- tibble::tibble(
+    ein = c("1", "1", "2"), tax_year = 2005L, tax_period = c("200512", "200512", "200506"),
+    period_end_year = 2005L, source_row_id = c("legacy_pz:1", "legacy_pz:2", "legacy_pz:3"),
+    source_subsection_class = "501C3-CHARITIES", subsection_cd = 3L, is_501c3 = TRUE,
+    source_file_year = c(2005L, 2006L, 2005L), total_assets_eoy = c(1, 2, 3)
+  )
+  check("repeated return in legacy input is a failure",
+        length(check_legacy_prerequisite(legacy)) > 0L)
+  check("corrected legacy input passes",
+        length(check_legacy_prerequisite(legacy[-2, ])) == 0L)
+  check("missing source_file_year is a failure",
+        length(check_legacy_prerequisite(legacy[-2, !names(legacy) %in% "source_file_year"])) > 0L)
 }
 
 if (!exists("TEST_RUN_ALL", envir = globalenv())) {

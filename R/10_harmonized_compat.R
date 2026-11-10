@@ -246,6 +246,26 @@ conform_to_frozen_header <- function(kind_table, file_kind) {
 
 # ---- Split into the four file kinds ----
 
+#' Say which source rows belong to a charities kind
+#'
+#' @param source_rows Selected source rows, with `source_subsection_class`
+#'   (pre-2012) or `is_501c3` (2012 on).
+#' @param source_form "990", "990ez" or "legacy_pz".
+#' @return A logical vector, TRUE for rows that go to a charities kind.
+#' @details This is the one place that decides the split. The builder and
+#'   the check both call it, so they cannot disagree. From 2012 on the
+#'   current CORE's `is_501c3` decides. Before 2012 the class of the NCCS
+#'   file the row came from (`source_subsection_class`) decides, because
+#'   about 1% of those rows have no subsection code and some carry a code
+#'   that contradicts their file (2,104 rows in 2005).
+belongs_to_charities <- function(source_rows, source_form) {
+  if (source_form == "legacy_pz") {
+    return(source_rows$source_subsection_class == "501C3-CHARITIES")
+  }
+
+  return(source_rows$is_501c3)
+}
+
 #' Take one file kind out of a renamed, stacked table
 #'
 #' @param stacked A renamed table that still has `is_501c3`.
@@ -298,13 +318,11 @@ build_file_kinds <- function(form_990_table, form_990ez_table, column_map) {
 #' @param column_map The name table rows for the year.
 #' @return A named list of two tibbles: `501C3-CHARITIES-PZ` and
 #'   `501CE-NONPROFIT-PZ`.
-#' @details The split uses `source_subsection_class`, the class the row
-#'   carried in the original NCCS file, because about 1% of pre-2012 rows
-#'   have no subsection code. Rows of class 501C3-PRIVFOUND are left out.
-#'   There are no PC kinds before 2012.
+#' @details The split follows `belongs_to_charities()`. Rows of class
+#'   501C3-PRIVFOUND are left out. There are no PC kinds before 2012.
 build_file_kinds_legacy <- function(legacy_table, column_map) {
   legacy_table <- dplyr::filter(legacy_table, .data$source_subsection_class != "501C3-PRIVFOUND")
-  legacy_table$is_501c3 <- legacy_table$source_subsection_class == "501C3-CHARITIES"
+  legacy_table$is_501c3 <- belongs_to_charities(legacy_table, "legacy_pz")
 
   renamed <- rename_to_harmonized_format(legacy_table, "legacy_pz", column_map)
 
@@ -596,13 +614,15 @@ check_written_file <- function(kind_table, file_kind, paths) {
 
 # ---- Checks against the source ----
 
-#' Label one source table with its form
+#' Label one source table with its form and with the kind it belongs to
 #'
 #' @param source_table A selected source table.
 #' @param form_name Its form: "990", "990ez" or "legacy_pz".
-#' @return The table with a `source_form` column.
+#' @return The table with `source_form` and `expected_charity` columns,
+#'   the latter from `belongs_to_charities()`.
 label_source_form <- function(source_table, form_name) {
   source_table$source_form <- form_name
+  source_table$expected_charity <- belongs_to_charities(source_table, form_name)
 
   return(source_table)
 }
@@ -683,7 +703,7 @@ check_one_kind <- function(kind_table, file_kind, source_by_id, column_map) {
   failures <- character(0)
   wants_501c3 <- grepl("^501C3", file_kind)
 
-  if (!all(matched_source$is_501c3 == wants_501c3)) {
+  if (!all(matched_source$expected_charity == wants_501c3)) {
     failures <- c(failures, paste(file_kind, "holds rows that belong to the other kind"))
   }
 

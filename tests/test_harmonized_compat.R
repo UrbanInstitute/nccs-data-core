@@ -375,6 +375,32 @@ cat("\n[check_legacy_prerequisite: input must carry the ADR 0057 correction]\n")
   check("missing source_file_year is a failure", length(check_legacy_prerequisite(without_source_year)) > 0L)
 }
 
+cat("\n[pre-2012 rows: the NCCS file class decides the kind, even when is_501c3 disagrees]\n")
+{
+  legacy <- tibble::tibble(
+    ein = c("1", "2", "3"),
+    tax_year = 2005L,
+    tax_period = c("200512", "200506", "200512"),
+    period_end_year = 2005L,
+    source_row_id = c("legacy_pz:2005:1", "legacy_pz:2005:2", "legacy_pz:2005:3"),
+    source_subsection_class = c("501C3-CHARITIES", "501CE-NONPROFIT", "501CE-NONPROFIT"),
+    subsection_cd = c(3L, 4L, 3L),
+    is_501c3 = c(TRUE, FALSE, TRUE),
+    source_file_year = 2005L,
+    total_assets_eoy = c(1, 2, 3)
+  )
+  column_map <- tibble::tribble(
+    ~old_name,             ~source_form, ~current_name,      ~transform,
+    "F9_10_ASSET_TOT_EOY", "legacy_pz",  "total_assets_eoy", ""
+  )
+
+  kind_tables <- build_file_kinds_legacy(legacy, column_map)
+  sources <- list("legacy_pz" = legacy)
+
+  check("row 3 lands in the nonprofit kind by its NCCS file class", "3" %in% kind_tables[["501CE-NONPROFIT-PZ"]]$ein)
+  check("the check agrees with the builder", length(check_file_kinds_against_source(kind_tables, sources, column_map)) == 0L)
+}
+
 if (!exists("TEST_RUN_ALL", envir = globalenv())) {
   cat(sprintf("\n%d passed, %d failed\n", PASS, FAIL))
   if (FAIL > 0L) quit(status = 1L)

@@ -348,6 +348,25 @@ source_file_path <- function(source_root, folder_year, form) {
   return(file.path(source_root, folder_year, form, file_name))
 }
 
+#' Turn 64-bit whole-number columns into plain numbers
+#'
+#' @param table A table read from parquet.
+#' @return The same table with every `integer64` column converted to double.
+#' @details CORE years differ in how large whole numbers are stored (ADR
+#'   0027): some years hold them as 64-bit whole numbers, others as plain
+#'   numbers. Stacking the two fails, and mixing them silently is exactly
+#'   what damaged the frozen files in 2025. Dollar amounts fit in a double
+#'   exactly, so converting on read is safe and makes every year the same.
+whole_number_columns_to_double <- function(table) {
+  is_integer64 <- purrr::map_lgl(table, inherits, what = "integer64")
+
+  for (column_name in names(table)[is_integer64]) {
+    table[[column_name]] <- as.numeric(table[[column_name]])
+  }
+
+  return(table)
+}
+
 #' Read one source file and keep the rows whose period ends in one year
 #'
 #' @param path The parquet file.
@@ -359,6 +378,7 @@ source_file_path <- function(source_root, folder_year, form) {
 #'   it (`tax_year`, the filename fallback of the legacy pipeline).
 read_rows_ending_in_year <- function(path, form, folder_year, wanted_year) {
   source_rows <- arrow::read_parquet(path)
+  source_rows <- whole_number_columns_to_double(source_rows)
 
   source_rows$tax_period <- as.character(source_rows$tax_period)
   source_rows[[SOURCE_ROW_ID]] <- sprintf("%s:%d:%d", form, folder_year, seq_len(nrow(source_rows)))

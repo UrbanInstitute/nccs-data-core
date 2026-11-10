@@ -258,6 +258,27 @@ cat("\n[select_source_rows: rows with no period are kept by their source year an
   check("count of no-period rows is reported", attr(selected, "n_unknown_period") == 1L)
 }
 
+cat("\n[select_source_rows: 64-bit whole numbers in one year stack with plain numbers in the next]\n")
+{
+  root <- make_source_mirror()
+  path_2023 <- file.path(root, 2023, "990", "core_2023_990.parquet")
+
+  rows_2023 <- arrow::read_parquet(path_2023)
+  rows_2023$information_technology <- bit64::as.integer64(c(7, 8, 9))
+  rows_2023$tax_period[[1]] <- "202212"
+  arrow::write_parquet(rows_2023, path_2023)
+
+  # Newer arrow versions hand 64-bit whole numbers back as integer64; make the
+  # test behave that way on every version.
+  previous_option <- options(arrow.int64_downcast = FALSE)
+  selected <- select_source_rows(root, "990", 2022L)
+  options(previous_option)
+
+  check("the 2022 row from the 2023 folder is selected despite the type difference", nrow(selected) == 4L)
+  check("the column is a plain number after reading", is.double(selected$information_technology))
+  check("the 64-bit value is carried exactly", 7 %in% selected$information_technology)
+}
+
 # ---- Checks against the source ----
 
 cat("\n[check_file_kinds_against_source: a changed final value, a lost row, a misplaced row]\n")

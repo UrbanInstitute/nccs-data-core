@@ -231,6 +231,33 @@ cat("\n[check_family_file: V1 file names, and every CSV column is compared]\n")
   check("a changed text value in the CSV is caught", !check_family_file(families[["501C3-CHARITIES-PZ"]], "501C3-CHARITIES-PZ", paths)$passed)
 }
 
+cat("\n[check_families_against_source: full committed name table, mapped column absent from a family header]\n")
+{
+  root <- tempfile("full_")
+  for (form in c("990", "990ez")) {
+    folder <- file.path(root, 2022, form)
+    dir.create(folder, recursive = TRUE)
+    full_map <- read_harmonized_column_map(2022L)
+    current_names <- unique(full_map$current_name[full_map$source_form == form])
+    rows <- tibble::tibble(ein = c("11-1111111", "22-2222222"), tax_year = 2022L, tax_period = c("202206", "202212"),
+                           is_amendment = FALSE, extract_year = 2023L, is_501c3 = c(TRUE, FALSE))
+    for (column_name in setdiff(current_names, names(rows))) rows[[column_name]] <- c(1, 2)
+    arrow::write_parquet(rows, file.path(folder, sprintf("core_2022_%s.parquet", form)))
+  }
+  full_map <- read_harmonized_column_map(2022L)
+  sources <- list("990" = select_source_rows(root, "990", 2022L), "990ez" = select_source_rows(root, "990ez", 2022L))
+  families <- build_harmonized_families(sources[["990"]], sources[["990ez"]], full_map)
+  check("a mapped Form 990 column is absent from the charities PZ header (the case under test)",
+        "F9_08_REV_MISC_OTH_EXCL" %in% full_map$old_name && !("F9_08_REV_MISC_OTH_EXCL" %in% names(families[["501C3-CHARITIES-PZ"]])))
+  check("faithful build with the full name table passes", length(check_families_against_source(families, sources, full_map)) == 0L)
+  tampered <- families
+  tampered[["501C3-CHARITIES-PC"]]$F9_10_ASSET_TOT_EOY[[1]] <- 999
+  check("a changed value is still caught with the full name table", length(check_families_against_source(tampered, sources, full_map)) > 0L)
+  missing_column <- families
+  missing_column[["501C3-CHARITIES-PC"]]$F9_10_ASSET_TOT_EOY <- NULL
+  check("an expected column missing from a family is reported", length(check_families_against_source(missing_column, sources, full_map)) > 0L)
+}
+
 cat("\n[legacy input must carry the ADR 0057 correction]\n")
 {
   legacy <- tibble::tibble(

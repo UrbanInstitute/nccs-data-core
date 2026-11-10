@@ -513,8 +513,10 @@ compare_csv_to_table <- function(csv_path, table) {
 #' @param column_map The name table rows for the year.
 #' @return A character vector of failure messages, empty when all is well.
 #' @details Three things are checked on the final tables, not on an
-#'   intermediate: (1) every mapped old column equals its source column
-#'   row for row, matched by `source_row_id`; (2) every source row appears
+#'   intermediate: (1) every mapped old column that is in the family's
+#'   frozen header is present and equals its source column row for row,
+#'   matched by `source_row_id` (a mapped name outside the header is
+#'   dropped on purpose by `conform_to_frozen_columns()`); (2) every source row appears
 #'   in exactly one family of its kind (PC families partition the Form 990
 #'   source; PZ families partition every source); (3) no family holds a
 #'   row whose source does not exist or that is in the wrong family.
@@ -545,12 +547,21 @@ check_families_against_source <- function(families, source_tables, column_map) {
       failures <- c(failures, paste(family_token, "holds rows that belong to the other family"))
     }
 
+    frozen_columns <- read_frozen_columns(family_token)
+
     for (form_name in unique(matched$source_form)) {
       in_form <- matched$source_form == form_name
       form_map <- column_map_for_table(column_map, form_name, matched)
+      # Only old names in this family's frozen header are written to it;
+      # a mapped name outside the header is dropped on purpose.
+      form_map <- dplyr::filter(form_map, .data$old_name %in% frozen_columns)
       for (row_number in seq_len(nrow(form_map))) {
         old_name <- form_map$old_name[[row_number]]
         current_name <- form_map$current_name[[row_number]]
+        if (!old_name %in% names(family)) {
+          failures <- c(failures, paste(family_token, "is missing expected column", old_name))
+          next
+        }
         if (!isTRUE(all.equal(family[[old_name]][in_form], matched[[current_name]][in_form], check.attributes = FALSE))) {
           failures <- c(failures, paste(family_token, old_name, "differs from its source column", current_name))
         }

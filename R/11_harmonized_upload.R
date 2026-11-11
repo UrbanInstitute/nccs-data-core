@@ -154,9 +154,9 @@ s3_storage <- function(s3_uri) {
 #' Lists the folder by the file's exact name. A listing that succeeds and
 #' holds the name means the file exists. A listing that succeeds and does
 #' not hold it means the file is absent. A listing that fails (expired
-#' login, no permission, no network) stops with an error: a failure is
-#' never read as "absent", because an absent file is recorded in the
-#' upload plan as having no original to keep.
+#' login, no permission, no network) stops with an error. A failure is
+#' never read as "absent", because the upload plan records an absent file
+#' as having no original to keep.
 #'
 #' @param s3_uri The S3 folder, for example `s3://nccsdata/harmonized/core`.
 #' @param key The key of the file inside that folder.

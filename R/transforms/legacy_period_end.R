@@ -43,18 +43,18 @@ LEGACY_PERIOD_END_COLUMNS <- c("taxper", "fisyr", "accper")
 #' @param accounting_month character or integer vector, the same length:
 #'   the month the accounting period ended (raw column ACCPER).
 #' @return character vector of period ends written YYYYMM. A row is `NA`
-#'   when its fiscal year is not a four-digit year or its accounting month
-#'   is not 1 to 12.
+#'   when its fiscal year is not exactly four digits or its accounting
+#'   month is not 1 to 12.
 #' @details The month is padded to two digits, so "6" and "06" both give
 #'   "...06".
 rebuild_period_end <- function(fiscal_year, accounting_month) {
-  year_number <- suppressWarnings(as.integer(fiscal_year))
+  year_text <- trimws(as.character(fiscal_year))
   month_number <- suppressWarnings(as.integer(accounting_month))
 
-  is_usable_year <- !is.na(year_number) & year_number >= 1000L & year_number <= 9999L
-  is_usable_month <- !is.na(month_number) & month_number >= 1L & month_number <= 12L
+  is_usable_year <- grepl("^[0-9]{4}$", year_text)
+  is_usable_month <- month_number %in% 1:12
 
-  rebuilt_period_end <- sprintf("%04d%02d", year_number, month_number)
+  rebuilt_period_end <- sprintf("%s%02d", year_text, month_number)
   rebuilt_period_end[!(is_usable_year & is_usable_month)] <- NA_character_
 
   return(rebuilt_period_end)

@@ -22,3 +22,7 @@ docs/GUIDEBOOK/
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
 .metrics/
+
+# Output of the code quality tools (crapper, dryer, mutator)
+.metrics/
+target/

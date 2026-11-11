@@ -40,16 +40,27 @@ read_text_file <- function(root, key) {
   return(paste(readLines(file.path(root, key)), collapse = "\n"))
 }
 
-key_pz_2005_csv <- "501c3-pz/marts/CORE-2005-501C3-CHARITIES-PZ-HRMN-V1.csv"
-key_pz_2005_parquet <- "501c3-pz/marts/CORE-2005-501C3-CHARITIES-PZ-HRMN-V1.parquet"
+key_pz_2022_csv <- "501c3-pz/marts/CORE-2022-501C3-CHARITIES-PZ-HRMN-V1.csv"
+key_pz_2022_parquet <- "501c3-pz/marts/CORE-2022-501C3-CHARITIES-PZ-HRMN-V1.parquet"
 key_pz_2023_csv <- "501c3-pz/marts/CORE-2023-501C3-CHARITIES-PZ-HRMN-V1.csv"
 key_pz_2024_csv <- "501c3-pz/marts/CORE-2024-501C3-CHARITIES-PZ-HRMN-V1.csv"
-key_pc_2012_csv <- "501c3-pc/marts/CORE-2012-501C3-CHARITIES-PC-HRMN-V1.csv"
+key_pc_2023_csv <- "501c3-pc/marts/CORE-2023-501C3-CHARITIES-PC-HRMN-V1.csv"
+key_pz_2023_parquet <- "501c3-pz/marts/CORE-2023-501C3-CHARITIES-PZ-HRMN-V1.parquet"
+key_pc_2023_parquet <- "501c3-pc/marts/CORE-2023-501C3-CHARITIES-PC-HRMN-V1.parquet"
+key_pc_all_years <- "501c3-pc/full/CORE-FULL-501C3-CHARITIES-PC-HRMN-V1.parquet"
+key_pc_dictionary <- "501c3-pc/dd/DD-CORE-501C3-CHARITIES-PC-HRMN-V1.csv"
 key_pz_all_years <- "501c3-pz/full/CORE-FULL-501C3-CHARITIES-PZ-HRMN-V1.parquet"
 key_pz_dictionary <- "501c3-pz/dd/DD-CORE-501C3-CHARITIES-PZ-HRMN-V1.csv"
 key_name_table <- "dd/HARMONIZED-COLUMN-MAP.csv"
-key_base_file <- "501c3-pz/CORE-2005-501C3-CHARITIES-PZ-HRMN.csv"
-key_private_foundation <- "501c3-pf/marts/CORE-2005-501C3-PRIVFOUND-PF-HRMN-V0.csv"
+key_base_file <- "501c3-pz/CORE-2022-501C3-CHARITIES-PZ-HRMN.csv"
+key_private_foundation <- "501c3-pf/marts/CORE-2022-501C3-PRIVFOUND-PF-HRMN-V0.csv"
+
+# A small version of the four kinds of yearly file: two kinds, two years.
+small_file_kinds <- tibble::tribble(
+  ~file_kind,             ~folder,     ~first_year,
+  "501C3-CHARITIES-PC",   "501c3-pc",  2023L,
+  "501C3-CHARITIES-PZ",   "501c3-pz",  2022L
+)
 
 make_folders <- function() {
   top <- tempfile("harmonized_upload_")
@@ -59,9 +70,9 @@ make_folders <- function() {
   dir.create(work_root, recursive = TRUE)
 
   # The live folder: damaged originals, plus two files that are never touched.
-  write_text_file(live_root, key_pz_2005_csv, "damaged 2005")
+  write_text_file(live_root, key_pz_2022_csv, "damaged 2022")
   write_text_file(live_root, key_pz_2023_csv, "damaged 2023")
-  write_text_file(live_root, key_pc_2012_csv, "damaged pc 2012")
+  write_text_file(live_root, key_pc_2023_csv, "damaged pc 2023")
   write_text_file(live_root, key_pz_all_years, "damaged all years")
   write_text_file(live_root, key_pz_dictionary, "old dictionary")
   write_text_file(live_root, key_base_file, "clean base file")
@@ -72,11 +83,11 @@ make_folders <- function() {
       object_count = 7,
       total_bytes = 1,
       files = list(
-        "501c3-pz/CORE-2005-501C3-CHARITIES-PZ-HRMN.csv" = list(
+        "501c3-pz/CORE-2022-501C3-CHARITIES-PZ-HRMN.csv" = list(
           file = key_base_file, bytes = 16, etag = "abc-1"
         ),
-        "501c3-pz/marts/CORE-2005-501C3-CHARITIES-PZ-HRMN-V1.csv" = list(
-          file = key_pz_2005_csv, bytes = 13, etag = "def-1"
+        "501c3-pz/marts/CORE-2022-501C3-CHARITIES-PZ-HRMN-V1.csv" = list(
+          file = key_pz_2022_csv, bytes = 13, etag = "def-1"
         )
       )
     ),
@@ -85,15 +96,20 @@ make_folders <- function() {
   )
 
   # The replacement folder: corrected files, a 2024 file and a build summary.
-  write_text_file(replacement_root, key_pz_2005_csv, "corrected 2005")
-  write_text_file(replacement_root, key_pz_2005_parquet, "corrected 2005 parquet")
+  write_text_file(replacement_root, key_pz_2022_csv, "corrected 2022")
+  write_text_file(replacement_root, key_pz_2022_parquet, "corrected 2022 parquet")
   write_text_file(replacement_root, key_pz_2023_csv, "corrected 2023")
   write_text_file(replacement_root, key_pz_2024_csv, "partial 2024")
-  write_text_file(replacement_root, key_pc_2012_csv, "corrected pc 2012")
+  write_text_file(replacement_root, key_pc_2023_csv, "corrected pc 2023")
   write_text_file(replacement_root, key_pz_all_years, "corrected all years")
   write_text_file(replacement_root, key_pz_dictionary, "new dictionary")
   write_text_file(replacement_root, key_name_table, "name table")
-  write_text_file(replacement_root, "_build_2005.json", "{}")
+  write_text_file(replacement_root, key_pz_2023_parquet, "corrected 2023 parquet")
+  write_text_file(replacement_root, key_pc_2023_parquet, "corrected pc 2023 parquet")
+  write_text_file(replacement_root, key_pc_all_years, "corrected pc all years")
+  write_text_file(replacement_root, key_pc_dictionary, "new pc dictionary")
+  write_text_file(replacement_root, "_build_2022.json", '{"tax_year": 2022, "passed": true}')
+  write_text_file(replacement_root, "_build_2023.json", '{"tax_year": 2023, "passed": true}')
 
   folders <- list(
     live_root = live_root,
@@ -110,7 +126,8 @@ make_folders <- function() {
 
 make_plan <- function(folders) {
   upload_plan <- write_upload_plan(
-    folders$replacement_root, folders$originals_root, folders$storage, folders$plan_path
+    folders$replacement_root, folders$originals_root, folders$storage, folders$plan_path,
+    file_kinds = small_file_kinds
   )
 
   return(upload_plan)
@@ -143,7 +160,7 @@ check(
 
 check(
   "build summaries are left out",
-  !"_build_2005.json" %in% replacement_files$key
+  !"_build_2022.json" %in% replacement_files$key
 )
 
 check(
@@ -151,10 +168,10 @@ check(
   identical(
     replacement_files$key,
     c(
-      key_pc_2012_csv,
-      key_pz_2005_csv, key_pz_2005_parquet, key_pz_2023_csv,
-      key_pz_all_years,
-      key_pz_dictionary, key_name_table
+      key_pc_2023_csv, key_pc_2023_parquet,
+      key_pz_2022_csv, key_pz_2022_parquet, key_pz_2023_csv, key_pz_2023_parquet,
+      key_pc_all_years, key_pz_all_years,
+      key_pc_dictionary, key_pz_dictionary, key_name_table
     )
   )
 )
@@ -182,34 +199,34 @@ plan_row <- function(key) upload_plan[upload_plan$key == key, ]
 
 check(
   "the plan records the sha256 of the replacement and of the original",
-  plan_row(key_pz_2005_csv)$replacement_sha256 ==
-    sha256_of_file(file.path(folders$replacement_root, key_pz_2005_csv)) &&
-    plan_row(key_pz_2005_csv)$original_sha256 ==
-      sha256_of_file(file.path(folders$live_root, key_pz_2005_csv))
+  plan_row(key_pz_2022_csv)$replacement_sha256 ==
+    sha256_of_file(file.path(folders$replacement_root, key_pz_2022_csv)) &&
+    plan_row(key_pz_2022_csv)$original_sha256 ==
+      sha256_of_file(file.path(folders$live_root, key_pz_2022_csv))
 )
 
 check(
   "the plan records the sizes",
-  plan_row(key_pz_2005_csv)$replacement_bytes ==
-    file.size(file.path(folders$replacement_root, key_pz_2005_csv)) &&
-    plan_row(key_pz_2005_csv)$original_bytes ==
-      file.size(file.path(folders$live_root, key_pz_2005_csv))
+  plan_row(key_pz_2022_csv)$replacement_bytes ==
+    file.size(file.path(folders$replacement_root, key_pz_2022_csv)) &&
+    plan_row(key_pz_2022_csv)$original_bytes ==
+      file.size(file.path(folders$live_root, key_pz_2022_csv))
 )
 
 check(
   "an added file has no original in the plan",
-  is.na(plan_row(key_pz_2005_parquet)$original_sha256) &&
-    is.na(plan_row(key_pz_2005_parquet)$original_bytes)
+  is.na(plan_row(key_pz_2022_parquet)$original_sha256) &&
+    is.na(plan_row(key_pz_2022_parquet)$original_bytes)
 )
 
 check(
   "the originals are downloaded and kept locally",
-  read_text_file(folders$originals_root, key_pz_2005_csv) == "damaged 2005"
+  read_text_file(folders$originals_root, key_pz_2022_csv) == "damaged 2022"
 )
 
 check(
   "writing the plan changes nothing in the live folder",
-  read_text_file(folders$live_root, key_pz_2005_csv) == "damaged 2005" &&
+  read_text_file(folders$live_root, key_pz_2022_csv) == "damaged 2022" &&
     !file.exists(file.path(folders$live_root, COPY_ASIDE_FOLDER))
 )
 
@@ -226,13 +243,113 @@ check(
   grepl("never rewritten", error_message(make_plan(folders)))
 )
 
+refused_plan_message <- function(change_folders) {
+  changed_folders <- make_folders()
+  change_folders(changed_folders)
+  message_text <- error_message(make_plan(changed_folders))
+  attr(message_text, "plan_was_written") <- file.exists(changed_folders$plan_path)
+  return(message_text)
+}
+
+without_aggregate_files <- refused_plan_message(function(changed_folders) {
+  unlink(file.path(changed_folders$replacement_root, key_pz_all_years))
+  unlink(file.path(changed_folders$replacement_root, key_pz_dictionary))
+  unlink(file.path(changed_folders$replacement_root, key_name_table))
+})
+
+check(
+  "a folder without an all-years file, a dictionary and the name table is refused, and each is named",
+  grepl("not complete. 3 expected file", without_aggregate_files) &&
+    grepl(key_pz_all_years, without_aggregate_files, fixed = TRUE) &&
+    grepl(key_pz_dictionary, without_aggregate_files, fixed = TRUE) &&
+    grepl(key_name_table, without_aggregate_files, fixed = TRUE) &&
+    !grepl(key_pz_2022_csv, without_aggregate_files, fixed = TRUE)
+)
+
+check(
+  "and no plan is written for an incomplete folder",
+  !attr(without_aggregate_files, "plan_was_written")
+)
+
+check(
+  "a folder without one yearly parquet file is refused",
+  grepl(
+    key_pz_2023_parquet,
+    refused_plan_message(function(changed_folders) {
+      unlink(file.path(changed_folders$replacement_root, key_pz_2023_parquet))
+    }),
+    fixed = TRUE
+  )
+)
+
 check(
   "an empty replacement folder is refused",
+  grepl(
+    "not complete. 11 expected file",
+    refused_plan_message(function(changed_folders) {
+      unlink(changed_folders$replacement_root, recursive = TRUE)
+      dir.create(changed_folders$replacement_root)
+    })
+  )
+)
+
+check(
+  "a yearly file from before a kind's first year is refused as not expected",
   {
-    empty_folders <- make_folders()
-    unlink(empty_folders$replacement_root, recursive = TRUE)
-    dir.create(empty_folders$replacement_root)
-    grepl("No replacement files", error_message(make_plan(empty_folders)))
+    early_key <- "501c3-pc/marts/CORE-2022-501C3-CHARITIES-PC-HRMN-V1.csv"
+    early_message <- refused_plan_message(function(changed_folders) {
+      write_text_file(changed_folders$replacement_root, early_key, "should not be here")
+    })
+    grepl("not expected", early_message) && grepl(early_key, early_message, fixed = TRUE)
+  }
+)
+
+check(
+  "a year whose build summary says it failed is refused, and the year is named",
+  {
+    failed_message <- refused_plan_message(function(changed_folders) {
+      write_text_file(changed_folders$replacement_root, "_build_2023.json", '{"passed": false}')
+    })
+    grepl("No passing build summary", failed_message) &&
+      grepl("2023", failed_message) &&
+      !grepl("2022", failed_message)
+  }
+)
+
+check(
+  "a year with no build summary is refused",
+  grepl(
+    "No passing build summary.*2022",
+    refused_plan_message(function(changed_folders) {
+      unlink(file.path(changed_folders$replacement_root, "_build_2022.json"))
+    })
+  )
+)
+
+check(
+  "the real list of expected files has 197 keys: 188 yearly, 4 all-years, 4 dictionaries, the name table",
+  {
+    real_keys <- expected_replacement_keys(UPLOAD_FILE_KINDS, LAST_YEAR_REPLACED)
+    length(real_keys) == 197 &&
+      anyDuplicated(real_keys) == 0 &&
+      sum(upload_group_of(real_keys) == "yearly") == 188 &&
+      sum(upload_group_of(real_keys) == "all_years") == 4 &&
+      sum(upload_group_of(real_keys) == "dictionary") == 5 &&
+      "501c3-pz/marts/CORE-1989-501C3-CHARITIES-PZ-HRMN-V1.csv" %in% real_keys &&
+      !"501c3-pc/marts/CORE-2011-501C3-CHARITIES-PC-HRMN-V1.csv" %in% real_keys &&
+      !any(grepl("2024", real_keys))
+  }
+)
+
+check(
+  "the folders of the four kinds agree with the build code",
+  {
+    build_code <- new.env()
+    source(here("R", "10_harmonized_compat.R"), local = build_code)
+    identical(
+      rlang::set_names(UPLOAD_FILE_KINDS$folder, UPLOAD_FILE_KINDS$file_kind),
+      build_code$FILE_KIND_FOLDERS
+    )
   }
 )
 
@@ -303,21 +420,21 @@ check(
 
 check(
   "the live folder now holds the replacements",
-  read_text_file(folders$live_root, key_pz_2005_csv) == "corrected 2005" &&
-    read_text_file(folders$live_root, key_pz_2005_parquet) == "corrected 2005 parquet" &&
+  read_text_file(folders$live_root, key_pz_2022_csv) == "corrected 2022" &&
+    read_text_file(folders$live_root, key_pz_2022_parquet) == "corrected 2022 parquet" &&
     read_text_file(folders$live_root, key_pz_all_years) == "corrected all years" &&
     read_text_file(folders$live_root, key_name_table) == "name table"
 )
 
 check(
   "the copy-aside folder holds every original under the same key",
-  read_text_file(folders$live_root, file.path(COPY_ASIDE_FOLDER, key_pz_2005_csv)) == "damaged 2005" &&
+  read_text_file(folders$live_root, file.path(COPY_ASIDE_FOLDER, key_pz_2022_csv)) == "damaged 2022" &&
     read_text_file(folders$live_root, file.path(COPY_ASIDE_FOLDER, key_pz_dictionary)) == "old dictionary"
 )
 
 check(
   "an added file has no copy in the copy-aside folder",
-  !file.exists(file.path(folders$live_root, COPY_ASIDE_FOLDER, key_pz_2005_parquet))
+  !file.exists(file.path(folders$live_root, COPY_ASIDE_FOLDER, key_pz_2022_parquet))
 )
 
 check(
@@ -336,8 +453,8 @@ copy_aside_manifest <- jsonlite::fromJSON(file.path(folders$live_root, COPY_ASID
 check(
   "the copy-aside record lists each original with its sha256 and size",
   setequal(copy_aside_manifest$files$file, upload_plan$key[!is.na(upload_plan$original_sha256)]) &&
-    copy_aside_manifest$files$sha256[copy_aside_manifest$files$file == key_pz_2005_csv] ==
-      plan_row(key_pz_2005_csv)$original_sha256 &&
+    copy_aside_manifest$files$sha256[copy_aside_manifest$files$file == key_pz_2022_csv] ==
+      plan_row(key_pz_2022_csv)$original_sha256 &&
     copy_aside_manifest$object_count == 5 &&
     copy_aside_manifest$total_bytes == sum(upload_plan$original_bytes, na.rm = TRUE)
 )
@@ -348,8 +465,14 @@ check(
   "the notice says the replacement is complete and lists the files",
   grepl("REPLACEMENT COMPLETE", notice) &&
     !grepl("IN PROGRESS", notice) &&
-    grepl(key_pz_2005_csv, notice, fixed = TRUE) &&
+    grepl(key_pz_2022_csv, notice, fixed = TRUE) &&
     grepl("_superseded-2025-04/", notice, fixed = TRUE)
+)
+
+check(
+  "the notice says that row counts and values differ from earlier downloads",
+  grepl("Row counts and some values differ", notice) &&
+    grepl("held some returns twice", notice)
 )
 
 folder_manifest <- jsonlite::fromJSON(file.path(folders$live_root, "_manifest.json"), simplifyVector = FALSE)
@@ -361,21 +484,21 @@ check(
 
 check(
   "the folder's build record gives a replaced file its new sha256 and size",
-  folder_manifest$files[[key_pz_2005_csv]]$sha256 == plan_row(key_pz_2005_csv)$replacement_sha256 &&
-    folder_manifest$files[[key_pz_2005_csv]]$bytes == plan_row(key_pz_2005_csv)$replacement_bytes &&
-    is.null(folder_manifest$files[[key_pz_2005_csv]]$etag)
+  folder_manifest$files[[key_pz_2022_csv]]$sha256 == plan_row(key_pz_2022_csv)$replacement_sha256 &&
+    folder_manifest$files[[key_pz_2022_csv]]$bytes == plan_row(key_pz_2022_csv)$replacement_bytes &&
+    is.null(folder_manifest$files[[key_pz_2022_csv]]$etag)
 )
 
 check(
   "the folder's build record counts every file and names the correction",
-  folder_manifest$object_count == 8 &&
+  folder_manifest$object_count == 12 &&
     folder_manifest$total_bytes == 16 + sum(upload_plan$replacement_bytes) &&
     grepl("sha256 for files replaced", folder_manifest$integrity_basis) &&
     folder_manifest$correction$originals_copied_to == "_superseded-2025-04/" &&
     folder_manifest$correction$adr == "0056" &&
     folder_manifest$correction$git_sha == "abc1234" &&
     folder_manifest$correction$files_replaced == 5 &&
-    folder_manifest$correction$files_added == 2 &&
+    folder_manifest$correction$files_added == 6 &&
     folder_manifest$vintage == "frozen"
 )
 
@@ -398,7 +521,7 @@ check(
 
 check(
   "a second run never puts replacement bytes in the copy-aside folder",
-  read_text_file(folders$live_root, file.path(COPY_ASIDE_FOLDER, key_pz_2005_csv)) == "damaged 2005"
+  read_text_file(folders$live_root, file.path(COPY_ASIDE_FOLDER, key_pz_2022_csv)) == "damaged 2022"
 )
 
 check(
@@ -413,13 +536,13 @@ cat("run_harmonized_upload, retry after an interruption\n")
 folders <- make_folders()
 upload_plan <- make_plan(folders)
 copy_originals_aside(upload_plan, folders$originals_root, folders$storage, folders$scratch_root)
-folders$storage$upload(file.path(folders$replacement_root, key_pz_2005_csv), key_pz_2005_csv)
+folders$storage$upload(file.path(folders$replacement_root, key_pz_2022_csv), key_pz_2022_csv)
 retry_run <- run_upload(folders)
 retry_action <- function(key) retry_run$action[retry_run$key == key]
 
 check(
   "the retry skips the file replaced before the interruption",
-  retry_action(key_pz_2005_csv) == "already_replaced"
+  retry_action(key_pz_2022_csv) == "already_replaced"
 )
 
 check(
@@ -430,7 +553,7 @@ check(
 
 check(
   "after the retry the copy-aside folder still holds the original",
-  read_text_file(folders$live_root, file.path(COPY_ASIDE_FOLDER, key_pz_2005_csv)) == "damaged 2005"
+  read_text_file(folders$live_root, file.path(COPY_ASIDE_FOLDER, key_pz_2022_csv)) == "damaged 2022"
 )
 
 # ---- Things that must stop the run ----
@@ -446,18 +569,93 @@ check(
   "a live file that is neither original nor replacement stops the run and is named",
   grepl("neither the original nor the replacement", stop_message) &&
     grepl(key_pz_2023_csv, stop_message, fixed = TRUE) &&
-    !grepl(key_pz_2005_csv, stop_message, fixed = TRUE)
+    !grepl(key_pz_2022_csv, stop_message, fixed = TRUE)
 )
 
 check(
   "when the run stops, no file has been replaced",
-  read_text_file(folders$live_root, key_pz_2005_csv) == "damaged 2005" &&
-    !file.exists(file.path(folders$live_root, key_pz_2005_parquet))
+  read_text_file(folders$live_root, key_pz_2022_csv) == "damaged 2022" &&
+    !file.exists(file.path(folders$live_root, key_pz_2022_parquet))
 )
 
 check(
   "when the run stops, the notice says in progress",
   grepl("IN PROGRESS", read_text_file(folders$live_root, NOTICE_KEY))
+)
+
+# A replacement changed after the plan was written (review finding 1).
+folders <- make_folders()
+upload_plan <- make_plan(folders)
+write_text_file(folders$replacement_root, key_pz_2023_csv, "changed after the plan")
+changed_replacement_message <- error_message(run_upload(folders))
+
+check(
+  "a replacement changed after the plan stops the run and is named",
+  grepl("no longer matches the upload plan", changed_replacement_message) &&
+    grepl(key_pz_2023_csv, changed_replacement_message, fixed = TRUE) &&
+    !grepl(key_pz_2022_csv, changed_replacement_message, fixed = TRUE)
+)
+
+check(
+  "and nothing at all was written: no copy-aside folder, no notice, no replaced file",
+  !file.exists(file.path(folders$live_root, COPY_ASIDE_FOLDER)) &&
+    !file.exists(file.path(folders$live_root, NOTICE_KEY)) &&
+    read_text_file(folders$live_root, key_pz_2023_csv) == "damaged 2023"
+)
+
+folders <- make_folders()
+upload_plan <- make_plan(folders)
+unlink(file.path(folders$replacement_root, key_name_table))
+
+check(
+  "a replacement removed after the plan stops the run",
+  grepl(key_name_table, error_message(run_upload(folders)), fixed = TRUE) &&
+    !file.exists(file.path(folders$live_root, NOTICE_KEY))
+)
+
+check(
+  "a replacement with the planned checksum but another size stops the run",
+  {
+    plan_with_wrong_size <- upload_plan
+    plan_with_wrong_size$replacement_bytes[plan_with_wrong_size$key == key_pz_2022_csv] <- 1
+    size_folders <- make_folders()
+    grepl(
+      key_pz_2022_csv,
+      error_message(check_replacements_match_plan(plan_with_wrong_size, size_folders$replacement_root)),
+      fixed = TRUE
+    )
+  }
+)
+
+# An upload that does not land as planned: a storage that writes other bytes.
+folders <- make_folders()
+upload_plan <- make_plan(folders)
+faulty_storage <- folders$storage
+faulty_storage$upload <- function(local_path, key) {
+  is_the_faulty_key <- key == key_pz_2023_csv
+  if (is_the_faulty_key) {
+    write_text_file(folders$live_root, key, "cut short on the way")
+  }
+  if (!is_the_faulty_key) {
+    folders$storage$upload(local_path, key)
+  }
+  return(invisible(key))
+}
+faulty_upload_message <- error_message(run_harmonized_upload(
+  folders$replacement_root, folders$work_root, faulty_storage, git_sha = "abc1234"
+))
+
+check(
+  "an uploaded file that is not the planned replacement stops the run and is named",
+  grepl("does not hold the planned replacement", faulty_upload_message) &&
+    grepl(key_pz_2023_csv, faulty_upload_message, fixed = TRUE) &&
+    !grepl(key_pz_2022_csv, faulty_upload_message, fixed = TRUE)
+)
+
+check(
+  "and the notice still says in progress and the folder's build record is untouched",
+  grepl("IN PROGRESS", read_text_file(folders$live_root, NOTICE_KEY)) &&
+    is.null(jsonlite::fromJSON(file.path(folders$live_root, "_manifest.json"))$correction)
 )
 
 folders <- make_folders()
@@ -471,18 +669,18 @@ check(
       upload_plan, folders$replacement_root, folders$storage, folders$scratch_root
     ))
   ) &&
-    read_text_file(folders$live_root, key_pz_2005_csv) == "damaged 2005"
+    read_text_file(folders$live_root, key_pz_2022_csv) == "damaged 2022"
 )
 
 folders <- make_folders()
 upload_plan <- make_plan(folders)
-write_text_file(folders$originals_root, key_pz_2005_csv, "local copy was changed")
+write_text_file(folders$originals_root, key_pz_2022_csv, "local copy was changed")
 changed_copy_message <- error_message(run_upload(folders))
 
 check(
   "a local original that no longer matches the plan stops the copy-aside",
   grepl("does not match the upload plan", changed_copy_message) &&
-    grepl(key_pz_2005_csv, changed_copy_message, fixed = TRUE)
+    grepl(key_pz_2022_csv, changed_copy_message, fixed = TRUE)
 )
 
 check(
@@ -490,7 +688,7 @@ check(
   {
     missing_folders <- make_folders()
     make_plan(missing_folders)
-    unlink(file.path(missing_folders$originals_root, key_pz_2005_csv))
+    unlink(file.path(missing_folders$originals_root, key_pz_2022_csv))
     grepl("does not match the upload plan", error_message(run_upload(missing_folders)))
   }
 )
@@ -498,26 +696,26 @@ check(
 check(
   "and the copy-aside is then not marked finished and nothing is replaced",
   !file.exists(file.path(folders$live_root, COPY_ASIDE_MANIFEST_KEY)) &&
-    read_text_file(folders$live_root, key_pz_2005_csv) == "damaged 2005"
+    read_text_file(folders$live_root, key_pz_2022_csv) == "damaged 2022"
 )
 
 folders <- make_folders()
 upload_plan <- make_plan(folders)
 copy_originals_aside(upload_plan, folders$originals_root, folders$storage, folders$scratch_root)
-write_text_file(folders$live_root, file.path(COPY_ASIDE_FOLDER, key_pz_2005_csv), "copy was changed")
+write_text_file(folders$live_root, file.path(COPY_ASIDE_FOLDER, key_pz_2022_csv), "copy was changed")
 wrong_copy_message <- error_message(run_upload(folders))
 
 check(
   "a copy-aside file that differs from the original stops the run and is named",
   grepl("does not hold the planned original", wrong_copy_message) &&
-    grepl(key_pz_2005_csv, wrong_copy_message, fixed = TRUE) &&
+    grepl(key_pz_2022_csv, wrong_copy_message, fixed = TRUE) &&
     !grepl(key_pz_2023_csv, wrong_copy_message, fixed = TRUE)
 )
 
 check(
   "and nothing is replaced and the wrong copy is not overwritten",
-  read_text_file(folders$live_root, key_pz_2005_csv) == "damaged 2005" &&
-    read_text_file(folders$live_root, file.path(COPY_ASIDE_FOLDER, key_pz_2005_csv)) == "copy was changed"
+  read_text_file(folders$live_root, key_pz_2022_csv) == "damaged 2022" &&
+    read_text_file(folders$live_root, file.path(COPY_ASIDE_FOLDER, key_pz_2022_csv)) == "copy was changed"
 )
 
 folders <- make_folders()
@@ -580,6 +778,81 @@ check(
   "the notice before the first replacement says in progress",
   grepl("IN PROGRESS", build_notice_text(upload_plan, is_complete = FALSE)) &&
     !grepl("REPLACEMENT COMPLETE", build_notice_text(upload_plan, is_complete = FALSE))
+)
+
+# Small scripts stand in for the AWS CLI when it lists a folder by name.
+write_fake_aws <- function(lines) {
+  script_path <- tempfile("fake_aws_")
+  writeLines(c("#!/bin/sh", lines), script_path)
+  Sys.chmod(script_path, "755")
+  return(script_path)
+}
+
+fake_aws_found <- write_fake_aws("echo 'harmonized/core/a.csv'")
+fake_aws_longer_name <- write_fake_aws("echo 'harmonized/core/a.csv.bak'")
+fake_aws_absent <- write_fake_aws("echo 'None'")
+fake_aws_denied <- write_fake_aws(c("echo 'An error occurred (AccessDenied)' >&2", "exit 254"))
+fake_aws_no_network <- write_fake_aws("exit 255")
+live_uri <- "s3://nccsdata/harmonized/core"
+
+check(
+  "a listing that holds the name: the file exists",
+  s3_file_exists(live_uri, "a.csv", command = fake_aws_found)
+)
+
+check(
+  "a listing that succeeds without the name: the file is absent",
+  !s3_file_exists(live_uri, "a.csv", command = fake_aws_absent)
+)
+
+check(
+  "a longer name that starts the same way is not the file",
+  !s3_file_exists(live_uri, "a.csv", command = fake_aws_longer_name)
+)
+
+check(
+  "a denied listing stops, with the reason, and is not read as absent",
+  grepl("Could not find out whether the file exists", error_message(
+    s3_file_exists(live_uri, "a.csv", command = fake_aws_denied)
+  )) &&
+    grepl("AccessDenied", error_message(s3_file_exists(live_uri, "a.csv", command = fake_aws_denied)))
+)
+
+check(
+  "a command that fails with status 255 stops and is not read as absent",
+  grepl("Could not find out", error_message(
+    s3_file_exists(live_uri, "a.csv", command = fake_aws_no_network)
+  ))
+)
+
+check(
+  "the listing asks S3 for the right bucket and the file's full name",
+  {
+    arguments_path <- tempfile("fake_aws_arguments_")
+    fake_aws_recording <- write_fake_aws(sprintf("echo \"$@\" > %s", arguments_path))
+    s3_file_exists(live_uri, "a.csv", command = fake_aws_recording)
+    recorded_arguments <- readLines(arguments_path)
+    grepl("--bucket nccsdata --prefix harmonized/core/a.csv", recorded_arguments, fixed = TRUE)
+  }
+)
+
+check(
+  "the plan is read back as a tibble",
+  {
+    tibble_folders <- make_folders()
+    make_plan(tibble_folders)
+    tibble::is_tibble(read_upload_plan(tibble_folders$plan_path))
+  }
+)
+
+check(
+  "the upload works from the plan file, not from a plan left in memory",
+  {
+    file_folders <- make_folders()
+    make_plan(file_folders)
+    unlink(file_folders$plan_path)
+    grepl("Run the plan step first", error_message(run_upload(file_folders)))
+  }
 )
 
 # The programs "true" and "false" stand in for the AWS CLI: one always

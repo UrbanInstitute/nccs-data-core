@@ -70,6 +70,20 @@ UPLOAD_GROUP_PATTERNS <- c(
   dictionary = "^([^/]+/dd/DD-CORE-.+-HRMN-V1\\.csv|dd/HARMONIZED-COLUMN-MAP\\.csv)$"
 )
 
+# The four kinds of yearly file: the folder each one has in the live folder
+# and the first year it covers. The folders match FILE_KIND_FOLDERS in
+# R/10_harmonized_compat.R; a test checks that the two agree.
+UPLOAD_FILE_KINDS <- tibble::tribble(
+  ~file_kind,             ~folder,     ~first_year,
+  "501C3-CHARITIES-PC",   "501c3-pc",  2012L,
+  "501C3-CHARITIES-PZ",   "501c3-pz",  1989L,
+  "501CE-NONPROFIT-PC",   "501ce-pc",  2012L,
+  "501CE-NONPROFIT-PZ",   "501ce-pz",  1989L
+)
+
+# The table that links old column names to current ones.
+NAME_TABLE_KEY <- "dd/HARMONIZED-COLUMN-MAP.csv"
+
 ACTION_REPLACE <- "replace"
 ACTION_ALREADY_REPLACED <- "already_replaced"
 ACTION_STOP <- "stop"
@@ -106,7 +120,8 @@ folder_storage <- function(root) {
 #' Make a storage that reads and writes one S3 folder with the AWS CLI
 #'
 #' @details Each function stops with an error when the AWS CLI reports a
-#'   failure, except `exists`, which returns FALSE when the key is absent.
+#'   failure. `exists` returns FALSE only when S3 confirms that the key is
+#'   absent (see `s3_file_exists()`).
 #'
 #' @param s3_uri The S3 folder, for example `s3://nccsdata/harmonized/core`.
 #' @return A storage: a list with `exists(key)`, `download(key, local_path)`
@@ -114,9 +129,7 @@ folder_storage <- function(root) {
 s3_storage <- function(s3_uri) {
   storage <- list(
     exists = function(key) {
-      status <- run_aws(c("s3", "ls", paste0(s3_uri, "/", key)), stop_on_failure = FALSE)
-
-      return(status == 0L)
+      return(s3_file_exists(s3_uri, key))
     },
     download = function(key, local_path) {
       dir.create(dirname(local_path), recursive = TRUE, showWarnings = FALSE)
@@ -133,6 +146,58 @@ s3_storage <- function(s3_uri) {
   )
 
   return(storage)
+}
+
+#' Say whether a file exists in an S3 folder, stopping on any failure
+#'
+#' @details
+#' Lists the folder by the file's exact name. A listing that succeeds and
+#' holds the name means the file exists. A listing that succeeds and does
+#' not hold it means the file is absent. A listing that fails (expired
+#' login, no permission, no network) stops with an error: a failure is
+#' never read as "absent", because an absent file is recorded in the
+#' upload plan as having no original to keep.
+#'
+#' @param s3_uri The S3 folder, for example `s3://nccsdata/harmonized/core`.
+#' @param key The key of the file inside that folder.
+#' @param command The program to run. Always "aws" outside the tests.
+#' @return TRUE when the file exists, FALSE when S3 confirms it is absent.
+s3_file_exists <- function(s3_uri, key, command = "aws") {
+  uri_parts <- stringr::str_match(paste0(s3_uri, "/", key), "^s3://([^/]+)/(.+)$")
+
+  bucket <- uri_parts[, 2]
+
+  key_in_bucket <- uri_parts[, 3]
+
+  arguments <- c(
+    "s3api", "list-objects-v2",
+    "--bucket", bucket,
+    "--prefix", key_in_bucket,
+    "--query", "Contents[].Key",
+    "--output", "text"
+  )
+
+  listing <- suppressWarnings(
+    system2(command, args = shQuote(arguments), stdout = TRUE, stderr = TRUE)
+  )
+
+  status <- attr(listing, "status")
+
+  has_failed <- !is.null(status) && status != 0L
+
+  if (has_failed) {
+    stop(
+      "Could not find out whether the file exists on S3: ", key, ". ",
+      paste(listing, collapse = " ")
+    )
+  }
+
+  # The listing is the matching keys, separated by tabs or line breaks.
+  listed_keys <- unlist(stringr::str_split(listing, "\\s+"))
+
+  file_exists <- key_in_bucket %in% listed_keys
+
+  return(file_exists)
 }
 
 #' Run one AWS CLI command
@@ -270,6 +335,139 @@ list_replacement_files <- function(replacement_root, last_year = LAST_YEAR_REPLA
   return(replacement_files)
 }
 
+# ---- What a complete replacement folder holds ----
+
+#' Give the keys one kind of yearly file must have in the replacement folder
+#'
+#' @param file_kind The kind, for example "501C3-CHARITIES-PZ".
+#' @param folder Its folder in the live folder, for example "501c3-pz".
+#' @param first_year The first year the kind covers.
+#' @param last_year The last year to upload.
+#' @return A character vector of keys: a CSV and a parquet file for every
+#'   year, the all-years parquet file and the dictionary.
+expected_keys_of_one_kind <- function(file_kind, folder, first_year, last_year) {
+  years <- seq(first_year, last_year)
+
+  yearly_stems <- sprintf("%s/marts/CORE-%d-%s-HRMN-V1", folder, years, file_kind)
+
+  expected_keys <- c(
+    paste0(yearly_stems, ".csv"),
+    paste0(yearly_stems, ".parquet"),
+    sprintf("%s/full/CORE-FULL-%s-HRMN-V1.parquet", folder, file_kind),
+    sprintf("%s/dd/DD-CORE-%s-HRMN-V1.csv", folder, file_kind)
+  )
+
+  return(expected_keys)
+}
+
+#' Give every key a complete replacement folder must hold
+#'
+#' @param file_kinds The kinds of yearly file: a tibble with `file_kind`,
+#'   `folder` and `first_year`.
+#' @param last_year The last year to upload.
+#' @return A character vector of keys: those of every kind, and the name
+#'   table.
+expected_replacement_keys <- function(file_kinds, last_year) {
+  keys_by_kind <- purrr::pmap(
+    list(
+      file_kind = file_kinds$file_kind,
+      folder = file_kinds$folder,
+      first_year = file_kinds$first_year
+    ),
+    expected_keys_of_one_kind,
+    last_year = last_year
+  )
+
+  expected_keys <- c(unlist(keys_by_kind), NAME_TABLE_KEY)
+
+  return(expected_keys)
+}
+
+#' Stop unless the replacement folder holds exactly the expected files
+#'
+#' @details
+#' A folder with a file left out would leave a damaged file in the live
+#' folder while the notice says the replacement is complete. So the plan
+#' is refused when any expected file is absent, and when a file that
+#' matches an upload pattern is not expected.
+#'
+#' @param found_keys The keys from `list_replacement_files()`.
+#' @param file_kinds The kinds of yearly file.
+#' @param last_year The last year to upload.
+#' @return `found_keys`, invisibly.
+check_replacement_set_is_complete <- function(found_keys, file_kinds, last_year) {
+  expected_keys <- expected_replacement_keys(file_kinds, last_year)
+
+  absent_keys <- setdiff(expected_keys, found_keys)
+
+  unexpected_keys <- setdiff(found_keys, expected_keys)
+
+  if (length(absent_keys) > 0) {
+    stop(
+      "The replacement folder is not complete. ", length(absent_keys),
+      " expected file(s) are absent: ", paste(absent_keys, collapse = ", ")
+    )
+  }
+
+  if (length(unexpected_keys) > 0) {
+    stop(
+      "The replacement folder holds file(s) that are not expected: ",
+      paste(unexpected_keys, collapse = ", ")
+    )
+  }
+
+  return(invisible(found_keys))
+}
+
+#' Say whether one year's build summary exists and says the year passed
+#'
+#' @param tax_year The year.
+#' @param replacement_root The replacement folder, which holds
+#'   `_build_{year}.json` as written by `R/run_harmonized_rewrite.R`.
+#' @return TRUE when the summary exists and its `passed` is TRUE.
+has_passing_build_summary <- function(tax_year, replacement_root) {
+  summary_path <- file.path(replacement_root, sprintf("_build_%d.json", tax_year))
+
+  if (!file.exists(summary_path)) {
+    return(FALSE)
+  }
+
+  year_summary <- jsonlite::fromJSON(summary_path)
+
+  return(isTRUE(year_summary$passed))
+}
+
+#' Stop unless every year to upload has a build summary that passed
+#'
+#' @details The build writes one summary per year with the result of the
+#'   checks of ADR 0056 Decision 10. Files from a year whose checks failed,
+#'   or were never run, must not be uploaded.
+#'
+#' @param replacement_root The replacement folder.
+#' @param file_kinds The kinds of yearly file.
+#' @param last_year The last year to upload.
+#' @return The years checked, invisibly.
+check_build_evidence <- function(replacement_root, file_kinds, last_year) {
+  years <- seq(min(file_kinds$first_year), last_year)
+
+  has_passed <- purrr::map_lgl(
+    years,
+    has_passing_build_summary,
+    replacement_root = replacement_root
+  )
+
+  years_without_evidence <- years[!has_passed]
+
+  if (length(years_without_evidence) > 0) {
+    stop(
+      "No passing build summary (_build_{year}.json) for: ",
+      paste(years_without_evidence, collapse = ", ")
+    )
+  }
+
+  return(invisible(years))
+}
+
 # ---- The upload plan ----
 
 #' Describe one key for the upload plan
@@ -319,24 +517,33 @@ describe_key_for_plan <- function(key, replacement_root, originals_root, storage
 #' copy-aside would then keep the wrong files (ADR 0056 Decision 13). To
 #' start over before any upload, a person removes the plan file by hand.
 #'
-#' Also stops if there is nothing to upload.
+#' Also stops unless the replacement folder is complete (see
+#' `check_replacement_set_is_complete()`) and every year has a build
+#' summary that passed (see `check_build_evidence()`).
 #'
 #' @param replacement_root The replacement folder.
 #' @param originals_root Local folder the originals are downloaded into.
 #' @param storage The live folder's storage.
 #' @param plan_path Where to write the plan (JSON).
+#' @param file_kinds The kinds of yearly file the folder must hold.
+#' @param last_year The last year to upload.
 #' @return The plan as a tibble: the columns of `list_replacement_files()`
 #'   and of `describe_key_for_plan()`.
-write_upload_plan <- function(replacement_root, originals_root, storage, plan_path) {
+write_upload_plan <- function(replacement_root,
+                              originals_root,
+                              storage,
+                              plan_path,
+                              file_kinds = UPLOAD_FILE_KINDS,
+                              last_year = LAST_YEAR_REPLACED) {
   if (file.exists(plan_path)) {
     stop("The upload plan already exists and is never rewritten: ", plan_path)
   }
 
-  replacement_files <- list_replacement_files(replacement_root)
+  replacement_files <- list_replacement_files(replacement_root, last_year)
 
-  if (nrow(replacement_files) == 0) {
-    stop("No replacement files found in ", replacement_root)
-  }
+  check_replacement_set_is_complete(replacement_files$key, file_kinds, last_year)
+
+  check_build_evidence(replacement_root, file_kinds, last_year)
 
   key_descriptions <- purrr::map(
     replacement_files$key,
@@ -584,6 +791,64 @@ write_copy_aside_manifest <- function(originals_in_plan, storage, scratch_root) 
   return(invisible(COPY_ASIDE_MANIFEST_KEY))
 }
 
+# ---- Checking files against the upload plan ----
+
+#' Stop unless every local replacement is the file the plan recorded
+#'
+#' @details Run before anything is written to the live folder. A
+#'   replacement that was changed, cut short or removed after the plan was
+#'   written would otherwise be uploaded under the plan's checksum.
+#'
+#' @param upload_plan The upload plan.
+#' @param replacement_root The replacement folder.
+#' @return The plan's keys, invisibly.
+check_replacements_match_plan <- function(upload_plan, replacement_root) {
+  local_paths <- file.path(replacement_root, upload_plan$key)
+
+  local_sha256 <- purrr::map_chr(local_paths, sha256_of_file)
+
+  local_bytes <- as.numeric(file.size(local_paths))
+
+  has_planned_sha256 <- dplyr::coalesce(local_sha256 == upload_plan$replacement_sha256, FALSE)
+
+  has_planned_bytes <- dplyr::coalesce(local_bytes == upload_plan$replacement_bytes, FALSE)
+
+  changed_keys <- upload_plan$key[!(has_planned_sha256 & has_planned_bytes)]
+
+  if (length(changed_keys) > 0) {
+    stop(
+      "The replacement file no longer matches the upload plan. Nothing was written. Look at: ",
+      paste(changed_keys, collapse = ", ")
+    )
+  }
+
+  return(invisible(upload_plan$key))
+}
+
+#' Stop unless every key in the live folder now holds its replacement
+#'
+#' @details Run after the uploads and before the folder's build record and
+#'   the "complete" notice are written. Reads every live file back.
+#'
+#' @param upload_plan The upload plan.
+#' @param storage The live folder's storage.
+#' @param scratch_root Local folder for the short-lived downloads.
+#' @return The plan's keys, invisibly.
+check_live_files_are_replacements <- function(upload_plan, storage, scratch_root) {
+  plan_with_actions <- add_actions_to_plan(upload_plan, storage, scratch_root)
+
+  unfinished_keys <- plan_with_actions$key[plan_with_actions$action != ACTION_ALREADY_REPLACED]
+
+  if (length(unfinished_keys) > 0) {
+    stop(
+      "The live folder does not hold the planned replacement. The notice still says in progress. Look at: ",
+      paste(unfinished_keys, collapse = ", ")
+    )
+  }
+
+  return(invisible(upload_plan$key))
+}
+
 # ---- Replacing the files ----
 
 #' Upload one replacement to its key in the live folder
@@ -680,6 +945,11 @@ build_notice_text <- function(upload_plan, is_complete) {
     "values of the current NCCS CORE, under the same column names. Five columns",
     "were added at the end of each file: ein, tax_period, source_form,",
     "is_amendment and extract_year. A parquet copy sits beside each yearly CSV.",
+    "",
+    "What differs from earlier downloads. Row counts and some values differ.",
+    "The damaged files held some returns twice; the replacements do not. The",
+    "replacements use the current CORE's checked values, which include later",
+    "corrections and returns the IRS released after the earlier files were built.",
     "",
     paste0("Where the earlier files are. Unchanged copies are in ", COPY_ASIDE_FOLDER, "/"),
     "under the same paths, with a list of their sha256 checksums.",
@@ -804,9 +1074,11 @@ upload_folder_manifest <- function(upload_plan, storage, scratch_root, git_sha) 
 #' @details
 #' The order:
 #' \enumerate{
+#'   \item Check every local replacement against the upload plan.
 #'   \item Copy the originals aside, or verify an earlier copy.
 #'   \item Write the notice saying the replacement is in progress.
-#'   \item Replace the files.
+#'   \item Replace the files, then read every live file back and check
+#'     it against the upload plan.
 #'   \item Update the folder's build record.
 #'   \item Write the notice saying the replacement is complete.
 #' }
@@ -827,6 +1099,8 @@ run_harmonized_upload <- function(replacement_root, work_root, storage, git_sha)
 
   scratch_root <- file.path(work_root, "scratch")
 
+  check_replacements_match_plan(upload_plan, replacement_root)
+
   copy_aside_result <- copy_originals_aside(upload_plan, originals_root, storage, scratch_root)
 
   message("Copy-aside folder: ", copy_aside_result)
@@ -834,6 +1108,8 @@ run_harmonized_upload <- function(replacement_root, work_root, storage, git_sha)
   upload_notice(upload_plan, is_complete = FALSE, storage = storage, scratch_root = scratch_root)
 
   plan_with_actions <- replace_live_files(upload_plan, replacement_root, storage, scratch_root)
+
+  check_live_files_are_replacements(upload_plan, storage, scratch_root)
 
   upload_folder_manifest(upload_plan, storage, scratch_root, git_sha)
 

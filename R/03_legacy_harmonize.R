@@ -37,11 +37,13 @@
 #     definition of the form). is_501c3 = TRUE for all rows.
 #
 # Other notes:
-#   - tax_year is derived from the source filename ("CORE-1995-..." -> 1995).
-#     The legacy NCCS files were partitioned by tax year at write time, so the
-#     filename is authoritative. Any TAXPER / FisYr column in the source rows
-#     is renamed via crosswalk to tax_period (when present) for downstream
-#     compatibility but is NOT used to derive tax_year.
+#   - tax_year is the first four characters of the period end (raw column
+#     TAXPER, renamed tax_period). The year in the file name is used only
+#     for a row whose period end is blank or not a valid YYYYMM. Each yearly
+#     NCCS file mixes returns from several tax years.
+#   - The period end is checked against fiscal year plus accounting month
+#     (FISYR, ACCPER) on every raw file, and rebuilt from them for the one
+#     1999 file where it is damaged (R/transforms/legacy_period_end.R).
 #   - source_file_year records the year of the NCCS file each row came from.
 #     Yearly NCCS files carried returns forward, so one return can sit in
 #     several files; after the union, one row per (ein, tax_period) is kept,
@@ -63,6 +65,7 @@ source(here("R", "transforms", "ein.R"))
 source(here("R", "transforms", "subsection.R"))
 source(here("R", "transforms", "financial_amounts.R"))
 source(here("R", "transforms", "repeated_returns.R"))
+source(here("R", "transforms", "legacy_period_end.R"))
 source(here("R", "transforms", "indicators.R"))
 source(here("R", "transforms", "efile_indicator.R"))
 
@@ -254,6 +257,11 @@ harmonize_legacy_form <- function(form, xwalk, source_root, logger) {
     tax_year_fn <- attr(dt, "tax_year_from_filename")
     subclass    <- attr(dt, "subsection_class")
     log4r::info(logger, sprintf("  %d rows, %d source cols", nrow(dt), ncol(dt)))
+
+    # The period end decides which tax year a row is filed under, so it is
+    # checked on the raw columns before the crosswalk drops two of them. One
+    # 1999 file has a damaged period end and gets it rebuilt (backlog U13).
+    check_or_rebuild_legacy_period_end(dt, basename(f), logger)
 
     apply_legacy_crosswalk(dt, xwalk, logger)
     apply_transforms(dt, logger)

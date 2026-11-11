@@ -16,6 +16,8 @@ source(here("R", "transforms", "financial_amounts.R"))
 source(here("R", "transforms", "indicators.R"))
 source(here("R", "transforms", "efile_indicator.R"))
 source(here("R", "transforms", "repeated_returns.R"))
+source(here("R", "transforms", "legacy_period_end.R"))
+source(here("R", "create_logger.R"))
 
 # Counters are kept module-global so the run_all.R harness can accumulate
 # results across files. When this file is run standalone via Rscript the
@@ -147,6 +149,61 @@ cat("\n[drop_repeated_returns: one row per return, newest NCCS file wins]\n")
         attr(out, "n_dropped") == 1L)
   check("errors without source_file_year",
         tryCatch({ drop_repeated_returns(dt[, !"source_file_year"]); FALSE }, error = function(e) TRUE))
+}
+
+cat("\n[legacy period end: rebuilt for the damaged 1999 file, checked on every other file]\n")
+{
+  period_end_logger <- create_logger(tempfile(fileext = ".log"))
+  damaged_file_name <- "CORE-1999-501C3-CHARITIES-PZ.csv"
+  healthy_file_name <- "CORE-1998-501C3-CHARITIES-PZ.csv"
+
+  check("rebuilt period end pads the month",
+        identical(rebuild_period_end(c("1999", "1999"), c("6", "12")), c("199906", "199912")))
+  check("rebuilt period end is blank for an unusable year or month",
+        all(is.na(rebuild_period_end(c("1999", NA, "99", "1999"), c("13", "6", "6", NA)))))
+
+  # Period end one year behind, blank, and correct; the last row has no
+  # usable accounting month.
+  damaged_rows <- data.table(
+    ein    = c("11-1111111", "22-2222222", "33-3333333", "44-4444444"),
+    taxper = c("199806",     NA,           "199912",     "199812"),
+    fisyr  = c("1999",       "1999",       "1999",       "1999"),
+    accper = c("06",         "12",         "12",         "00")
+  )
+  check("share confirmed counts a blank period end as not equal",
+        share_of_period_ends_confirmed(damaged_rows) == 0.25)
+
+  rebuilt_rows <- copy(damaged_rows)
+  check_or_rebuild_legacy_period_end(rebuilt_rows, damaged_file_name, period_end_logger)
+  check("damaged file: period end one year behind is moved to the fiscal year",
+        rebuilt_rows[ein == "11-1111111", taxper] == "199906")
+  check("damaged file: blank period end is filled",
+        rebuilt_rows[ein == "22-2222222", taxper] == "199912")
+  check("damaged file: a correct period end is unchanged",
+        rebuilt_rows[ein == "33-3333333", taxper] == "199912")
+  check("damaged file: unusable accounting month gives a blank period end",
+        is.na(rebuilt_rows[ein == "44-4444444", taxper]))
+
+  healthy_rows <- data.table(
+    ein    = c("11-1111111", "22-2222222"),
+    taxper = c("199806",     "199812"),
+    fisyr  = c("1998",       "1998"),
+    accper = c("06",         "12")
+  )
+  unchanged_rows <- copy(healthy_rows)
+  check_or_rebuild_legacy_period_end(unchanged_rows, healthy_file_name, period_end_logger)
+  check("healthy file passes and is left unchanged",
+        identical(unchanged_rows, healthy_rows))
+
+  check("another file with the same damage stops the build",
+        tryCatch({ check_or_rebuild_legacy_period_end(copy(damaged_rows), healthy_file_name, period_end_logger); FALSE },
+                 error = function(e) TRUE))
+  check("a file without the accounting month is passed through with a warning",
+        identical(check_or_rebuild_legacy_period_end(healthy_rows[, !"accper"], healthy_file_name, period_end_logger),
+                  healthy_rows[, !"accper"]))
+  check("the damaged file without the accounting month stops the build",
+        tryCatch({ check_or_rebuild_legacy_period_end(damaged_rows[, !"accper"], damaged_file_name, period_end_logger); FALSE },
+                 error = function(e) TRUE))
 }
 
 if (!exists("TEST_RUN_ALL", envir = globalenv())) {

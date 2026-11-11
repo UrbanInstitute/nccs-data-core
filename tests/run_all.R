@@ -39,6 +39,7 @@ TEST_FILES <- c(
   "test_post_checks.R",
   "test_render.R",
   "test_harmonized_compat.R",
+  "test_harmonized_upload.R",
   "test_parquet.R"
 )
 

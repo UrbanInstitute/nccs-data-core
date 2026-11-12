@@ -1,0 +1,24 @@
+{
+  "title": "NCCS CORE Series pipeline",
+  "upload_type": "software",
+  "description": "Code that builds the NCCS CORE Series: harmonized panels of Form 990, 990-EZ and 990-PF fields from IRS Statistics of Income extracts and historical NCCS CORE files. National Center for Charitable Statistics, Urban Institute.",
+  "creators": [
+    {
+      "name": "Poongundranar, Thiyaghessan",
+      "affiliation": "Urban Institute"
+    }
+  ],
+  "license": "odc-by-1.0",
+  "keywords": [
+    "nonprofit organizations",
+    "IRS",
+    "National Center for Charitable Statistics"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://nccs.urban.org",
+      "relation": "isDocumentedBy",
+      "scheme": "url"
+    }
+  ]
+}

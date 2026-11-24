@@ -84,6 +84,11 @@ UPLOAD_FILE_KINDS <- tibble::tribble(
 # The table that links old column names to current ones.
 NAME_TABLE_KEY <- "dd/HARMONIZED-COLUMN-MAP.csv"
 
+# The file R/12_harmonized_all_years.R writes in the replacement folder. It
+# lists the all-years files, the dictionaries and the name table with their
+# sha256 and says whether their checks passed.
+ALL_YEARS_BUILD_RECORD <- "_build_all_years.json"
+
 ACTION_REPLACE <- "replace"
 ACTION_ALREADY_REPLACED <- "already_replaced"
 ACTION_STOP <- "stop"
@@ -337,6 +342,34 @@ list_replacement_files <- function(replacement_root, last_year = LAST_YEAR_REPLA
 
 # ---- What a complete replacement folder holds ----
 
+#' Give the key of the yearly files of one kind, without the file ending
+#'
+#' @param file_kind The kind, for example "501C3-CHARITIES-PZ".
+#' @param folder Its folder in the live folder, for example "501c3-pz".
+#' @param years One or more years.
+#' @return One key per year, to which ".csv" or ".parquet" is added.
+yearly_key_stem <- function(file_kind, folder, years) {
+  return(sprintf("%s/marts/CORE-%d-%s-HRMN-V1", folder, years, file_kind))
+}
+
+#' Give the key of the all-years parquet file of one kind
+#'
+#' @param file_kind The kind.
+#' @param folder Its folder in the live folder.
+#' @return One key.
+all_years_key <- function(file_kind, folder) {
+  return(sprintf("%s/full/CORE-FULL-%s-HRMN-V1.parquet", folder, file_kind))
+}
+
+#' Give the key of the dictionary of one kind
+#'
+#' @param file_kind The kind.
+#' @param folder Its folder in the live folder.
+#' @return One key.
+dictionary_key <- function(file_kind, folder) {
+  return(sprintf("%s/dd/DD-CORE-%s-HRMN-V1.csv", folder, file_kind))
+}
+
 #' Give the keys one kind of yearly file must have in the replacement folder
 #'
 #' @param file_kind The kind, for example "501C3-CHARITIES-PZ".
@@ -348,13 +381,13 @@ list_replacement_files <- function(replacement_root, last_year = LAST_YEAR_REPLA
 expected_keys_of_one_kind <- function(file_kind, folder, first_year, last_year) {
   years <- seq(first_year, last_year)
 
-  yearly_stems <- sprintf("%s/marts/CORE-%d-%s-HRMN-V1", folder, years, file_kind)
+  yearly_stems <- yearly_key_stem(file_kind, folder, years)
 
   expected_keys <- c(
     paste0(yearly_stems, ".csv"),
     paste0(yearly_stems, ".parquet"),
-    sprintf("%s/full/CORE-FULL-%s-HRMN-V1.parquet", folder, file_kind),
-    sprintf("%s/dd/DD-CORE-%s-HRMN-V1.csv", folder, file_kind)
+    all_years_key(file_kind, folder),
+    dictionary_key(file_kind, folder)
   )
 
   return(expected_keys)
@@ -468,6 +501,87 @@ check_build_evidence <- function(replacement_root, file_kinds, last_year) {
   return(invisible(years))
 }
 
+#' Give the keys whose file is not the one a build record lists
+#'
+#' @param keys The keys to check.
+#' @param recorded_files The entries of the build record: a list of lists,
+#'   each with a `key` and a `sha256`.
+#' @param replacement_root The replacement folder.
+#' @return The keys that the record does not list, or whose file now has a
+#'   different sha256. Length zero when every key is as recorded.
+keys_not_as_recorded <- function(keys, recorded_files, replacement_root) {
+  recorded_sha256 <- purrr::map_chr(recorded_files, "sha256") |>
+    rlang::set_names(purrr::map_chr(recorded_files, "key"))
+
+  sha256_now <- purrr::map_chr(file.path(replacement_root, keys), sha256_of_file)
+
+  is_as_recorded <- dplyr::coalesce(sha256_now == unname(recorded_sha256[keys]), FALSE)
+
+  return(keys[!is_as_recorded])
+}
+
+#' Stop unless the all-years files, dictionaries and name table passed their checks
+#'
+#' @details
+#' `R/12_harmonized_all_years.R` writes `_build_all_years.json` with the
+#' result of its checks, the sha256 of every file it wrote, and the sha256
+#' of every yearly parquet file it read. The plan is refused when:
+#' \itemize{
+#'   \item that file is absent, or says a check failed;
+#'   \item it does not list one of the files to upload, or a listed file
+#'     has changed since it was checked;
+#'   \item a yearly parquet file is not the one the build read. A yearly
+#'     file rebuilt afterwards would otherwise be uploaded beside an
+#'     all-years file and a dictionary made from the older one.
+#' }
+#'
+#' @param replacement_root The replacement folder.
+#' @param replacement_files The tibble from `list_replacement_files()`.
+#' @return The keys checked, invisibly.
+check_all_years_evidence <- function(replacement_root, replacement_files) {
+  record_path <- file.path(replacement_root, ALL_YEARS_BUILD_RECORD)
+
+  if (!file.exists(record_path)) {
+    stop("No build record for the all-years files and dictionaries: ", ALL_YEARS_BUILD_RECORD)
+  }
+
+  build_record <- jsonlite::fromJSON(record_path, simplifyVector = FALSE)
+
+  if (!isTRUE(build_record$passed)) {
+    stop("The build record says a check failed: ", ALL_YEARS_BUILD_RECORD)
+  }
+
+  # The files the build wrote
+  is_yearly <- replacement_files$upload_group == "yearly"
+
+  written_keys <- replacement_files$key[!is_yearly]
+
+  written_keys_changed <- keys_not_as_recorded(written_keys, build_record$files, replacement_root)
+
+  if (length(written_keys_changed) > 0) {
+    stop(
+      "File(s) are not listed in the build record, or changed after they were checked: ",
+      paste(written_keys_changed, collapse = ", ")
+    )
+  }
+
+  # The yearly parquet files the build read
+  is_parquet <- stringr::str_ends(replacement_files$key, stringr::fixed(".parquet"))
+
+  yearly_parquet_keys <- replacement_files$key[is_yearly & is_parquet]
+
+  yearly_keys_changed <- keys_not_as_recorded(yearly_parquet_keys, build_record$inputs, replacement_root)
+
+  if (length(yearly_keys_changed) > 0) {
+    stop(
+      "Yearly file(s) are not the ones the all-years files were built from. Run R/12_harmonized_all_years.R again. Look at: ",
+      paste(yearly_keys_changed, collapse = ", ")
+    )
+  }
+
+  return(invisible(c(written_keys, yearly_parquet_keys)))
+}
+
 # ---- The upload plan ----
 
 #' Describe one key for the upload plan
@@ -518,8 +632,10 @@ describe_key_for_plan <- function(key, replacement_root, originals_root, storage
 #' start over before any upload, a person removes the plan file by hand.
 #'
 #' Also stops unless the replacement folder is complete (see
-#' `check_replacement_set_is_complete()`) and every year has a build
-#' summary that passed (see `check_build_evidence()`).
+#' `check_replacement_set_is_complete()`), every year has a build summary
+#' that passed (see `check_build_evidence()`), and the all-years files,
+#' dictionaries and name table passed their checks (see
+#' `check_all_years_evidence()`).
 #'
 #' @param replacement_root The replacement folder.
 #' @param originals_root Local folder the originals are downloaded into.
@@ -544,6 +660,8 @@ write_upload_plan <- function(replacement_root,
   check_replacement_set_is_complete(replacement_files$key, file_kinds, last_year)
 
   check_build_evidence(replacement_root, file_kinds, last_year)
+
+  check_all_years_evidence(replacement_root, replacement_files)
 
   key_descriptions <- purrr::map(
     replacement_files$key,

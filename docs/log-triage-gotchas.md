@@ -41,3 +41,7 @@ A `_cd` indicator column going from ~100% complete to ~20–80% in one vintage, 
 ## YoY tripwire warnings on the first run after a snapshot reset
 
 `yoy=outside_bounds` for years before the snapshot baseline is normal on the first full run; the warning reflects the absence of a prior baseline, not a row-count anomaly. Tripwires become meaningful only on subsequent runs with the same baseline.
+
+## "Left out N NCCS file(s) whose year is outside 1989 to 2011" in the pre-2012 run
+
+This warning in the pre-2012 harmonize log is not a failure. It means the source folder (`data/raw/legacy/core/`) holds NCCS files the pre-2012 CORE is not made from, for example the 2012 to 2019 files, and the step did not read them. The download step never fetches those files, so the warning means someone copied the whole S3 folder by hand. The output is right either way. If the warning is absent and the folder is known to hold extra files, treat that as a defect: the year limit in `list_legacy_sources()` is what keeps rows from the 2012 and 2013 files out of tax years 2010 and 2011.

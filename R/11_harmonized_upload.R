@@ -84,6 +84,11 @@ UPLOAD_FILE_KINDS <- tibble::tribble(
 # The table that links old column names to current ones.
 NAME_TABLE_KEY <- "dd/HARMONIZED-COLUMN-MAP.csv"
 
+# The file R/12_harmonized_all_years.R writes in the replacement folder. It
+# lists the all-years files, the dictionaries and the name table with their
+# sha256 and says whether their checks passed.
+ALL_YEARS_BUILD_RECORD <- "_build_all_years.json"
+
 ACTION_REPLACE <- "replace"
 ACTION_ALREADY_REPLACED <- "already_replaced"
 ACTION_STOP <- "stop"
@@ -468,6 +473,53 @@ check_build_evidence <- function(replacement_root, file_kinds, last_year) {
   return(invisible(years))
 }
 
+#' Stop unless the all-years files, dictionaries and name table passed their checks
+#'
+#' @details
+#' `R/12_harmonized_all_years.R` writes `_build_all_years.json` with the
+#' result of its checks and the sha256 of every file it wrote. The plan is
+#' refused when that file is absent, when it says a check failed, when it
+#' does not list one of the files to upload, or when a listed file has
+#' changed since it was checked.
+#'
+#' @param replacement_root The replacement folder.
+#' @param replacement_files The tibble from `list_replacement_files()`.
+#' @return The keys checked, invisibly.
+check_all_years_evidence <- function(replacement_root, replacement_files) {
+  record_path <- file.path(replacement_root, ALL_YEARS_BUILD_RECORD)
+
+  if (!file.exists(record_path)) {
+    stop("No build record for the all-years files and dictionaries: ", ALL_YEARS_BUILD_RECORD)
+  }
+
+  build_record <- jsonlite::fromJSON(record_path, simplifyVector = FALSE)
+
+  if (!isTRUE(build_record$passed)) {
+    stop("The build record says a check failed: ", ALL_YEARS_BUILD_RECORD)
+  }
+
+  # Compare the files to upload with the files the record lists
+  keys_to_check <- replacement_files$key[replacement_files$upload_group != "yearly"]
+
+  recorded_sha256 <- purrr::map_chr(build_record$files, "sha256") |>
+    rlang::set_names(purrr::map_chr(build_record$files, "key"))
+
+  sha256_now <- purrr::map_chr(file.path(replacement_root, keys_to_check), sha256_of_file)
+
+  is_as_checked <- dplyr::coalesce(sha256_now == unname(recorded_sha256[keys_to_check]), FALSE)
+
+  keys_not_as_checked <- keys_to_check[!is_as_checked]
+
+  if (length(keys_not_as_checked) > 0) {
+    stop(
+      "File(s) are not listed in the build record, or changed after they were checked: ",
+      paste(keys_not_as_checked, collapse = ", ")
+    )
+  }
+
+  return(invisible(keys_to_check))
+}
+
 # ---- The upload plan ----
 
 #' Describe one key for the upload plan
@@ -518,8 +570,10 @@ describe_key_for_plan <- function(key, replacement_root, originals_root, storage
 #' start over before any upload, a person removes the plan file by hand.
 #'
 #' Also stops unless the replacement folder is complete (see
-#' `check_replacement_set_is_complete()`) and every year has a build
-#' summary that passed (see `check_build_evidence()`).
+#' `check_replacement_set_is_complete()`), every year has a build summary
+#' that passed (see `check_build_evidence()`), and the all-years files,
+#' dictionaries and name table passed their checks (see
+#' `check_all_years_evidence()`).
 #'
 #' @param replacement_root The replacement folder.
 #' @param originals_root Local folder the originals are downloaded into.
@@ -544,6 +598,8 @@ write_upload_plan <- function(replacement_root,
   check_replacement_set_is_complete(replacement_files$key, file_kinds, last_year)
 
   check_build_evidence(replacement_root, file_kinds, last_year)
+
+  check_all_years_evidence(replacement_root, replacement_files)
 
   key_descriptions <- purrr::map(
     replacement_files$key,

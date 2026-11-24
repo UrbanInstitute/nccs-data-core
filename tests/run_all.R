@@ -40,6 +40,7 @@ TEST_FILES <- c(
   "test_render.R",
   "test_harmonized_compat.R",
   "test_harmonized_upload.R",
+  "test_harmonized_all_years.R",
   "test_parquet.R"
 )
 

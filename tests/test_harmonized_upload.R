@@ -62,6 +62,22 @@ small_file_kinds <- tibble::tribble(
   "501C3-CHARITIES-PZ",   "501c3-pz",  2022L
 )
 
+# The build record R/12_harmonized_all_years.R leaves behind: the files it
+# wrote with their sha256, and whether their checks passed.
+write_all_years_build_record <- function(replacement_root, keys, passed = TRUE) {
+  describe_key <- function(key) {
+    return(list(key = key, sha256 = sha256_of_file(file.path(replacement_root, key))))
+  }
+
+  jsonlite::write_json(
+    list(passed = passed, files = purrr::map(keys, describe_key)),
+    file.path(replacement_root, ALL_YEARS_BUILD_RECORD),
+    auto_unbox = TRUE
+  )
+
+  return(invisible(keys))
+}
+
 make_folders <- function() {
   top <- tempfile("harmonized_upload_")
   live_root <- file.path(top, "live")
@@ -110,6 +126,10 @@ make_folders <- function() {
   write_text_file(replacement_root, key_pc_dictionary, "new pc dictionary")
   write_text_file(replacement_root, "_build_2022.json", '{"tax_year": 2022, "passed": true}')
   write_text_file(replacement_root, "_build_2023.json", '{"tax_year": 2023, "passed": true}')
+  write_all_years_build_record(
+    replacement_root,
+    c(key_pz_all_years, key_pz_dictionary, key_pc_all_years, key_pc_dictionary, key_name_table)
+  )
 
   folders <- list(
     live_root = live_root,
@@ -323,6 +343,52 @@ check(
     refused_plan_message(function(changed_folders) {
       unlink(file.path(changed_folders$replacement_root, "_build_2022.json"))
     })
+  )
+)
+
+check(
+  "a folder with no build record for the all-years files is refused",
+  grepl(
+    "No build record for the all-years files",
+    refused_plan_message(function(changed_folders) {
+      unlink(file.path(changed_folders$replacement_root, ALL_YEARS_BUILD_RECORD))
+    })
+  )
+)
+
+check(
+  "a build record that says a check failed is refused",
+  grepl(
+    "says a check failed",
+    refused_plan_message(function(changed_folders) {
+      write_all_years_build_record(changed_folders$replacement_root, key_pz_all_years, passed = FALSE)
+    })
+  )
+)
+
+check(
+  "an all-years file changed after it was checked is refused, and the file is named",
+  {
+    changed_message <- refused_plan_message(function(changed_folders) {
+      write_text_file(changed_folders$replacement_root, key_pz_all_years, "changed after the check")
+    })
+    grepl("changed after they were checked", changed_message) &&
+      grepl(key_pz_all_years, changed_message, fixed = TRUE) &&
+      !grepl(key_pz_dictionary, changed_message, fixed = TRUE)
+  }
+)
+
+check(
+  "a dictionary the build record does not list is refused",
+  grepl(
+    key_pc_dictionary,
+    refused_plan_message(function(changed_folders) {
+      write_all_years_build_record(
+        changed_folders$replacement_root,
+        c(key_pz_all_years, key_pz_dictionary, key_pc_all_years, key_name_table)
+      )
+    }),
+    fixed = TRUE
   )
 )
 

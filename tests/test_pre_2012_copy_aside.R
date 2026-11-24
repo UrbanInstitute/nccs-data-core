@@ -11,6 +11,7 @@ suppressPackageStartupMessages({
   library(here)
 })
 
+source(here("R", "08_upload.R"))
 source(here("R", "13_pre_2012_copy_aside.R"))
 
 if (!exists("PASS")) PASS <- 0L
@@ -245,6 +246,63 @@ check(
     grepl("does not match the upload plan", changed_message) &&
       !file.exists(file.path(changed_folders$live_root, copy_key("_manifest.json")))
   }
+)
+
+# ---- The upload refuses to run before the copy ----
+
+check(
+  "the check passes for a live folder whose copy-aside is finished",
+  isTRUE(stop_unless_copied_aside(folders$storage))
+)
+
+check(
+  "the check stops for a live folder with no finished copy-aside, and says what to run",
+  {
+    not_copied_message <- error_message(stop_unless_copied_aside(make_folders()$storage))
+    grepl("have not been copied aside", not_copied_message) &&
+      grepl("R/13_pre_2012_copy_aside.R", not_copied_message, fixed = TRUE)
+  }
+)
+
+check(
+  "a plan alone is not a finished copy-aside",
+  {
+    planned_folders <- make_folders()
+    make_plan(planned_folders)
+    grepl("have not been copied aside", error_message(stop_unless_copied_aside(planned_folders$storage)))
+  }
+)
+
+check(
+  "the pre-2012 CORE upload stops before sending anything when the copy-aside is not finished",
+  grepl(
+    "have not been copied aside",
+    error_message(run_upload_legacy(enable_upload = TRUE, live_storage = make_folders()$storage))
+  )
+)
+
+check(
+  "the merged panel upload stops before sending anything when the copy-aside is not finished",
+  grepl(
+    "have not been copied aside",
+    error_message(run_upload_merged(enable_upload = TRUE, live_storage = make_folders()$storage))
+  )
+)
+
+check(
+  "a trial run of the upload, which sends nothing, does not need the copy-aside",
+  !grepl(
+    "have not been copied aside",
+    paste(error_message(stop_unless_copied_aside(make_folders()$storage, dry_run = TRUE)))
+  )
+)
+
+check(
+  "the two live folders are the folders the pipeline uploads to",
+  identical(
+    paste0(unname(PRE_2012_LIVE_S3_URIS), "/"),
+    c(s3_uri(S3$processed_legacy_prefix), s3_uri(S3$processed_merged_prefix))
+  )
 )
 
 # ---- Listing a folder ----

@@ -27,8 +27,9 @@
 #
 # What this file does not do: it does not replace, change or delete any
 # file in a year folder. The corrected files are uploaded afterwards by
-# the pipeline's own upload step, and only after the `copy` step here has
-# finished. Every write to S3 needs the maintainer's go-ahead first.
+# the pipeline's own upload step (R/08_upload.R), which refuses to run
+# until the `copy` step here has finished. Every write to S3 needs the
+# maintainer's go-ahead first.
 #
 # Usage (from the repo root, on the EC2 instance that holds the build):
 #   Rscript R/13_pre_2012_copy_aside.R plan <live_folder_name> <work_root>
@@ -182,6 +183,39 @@ run_pre_2012_copy_aside <- function(work_root, storage, copy_aside_description) 
   )
 
   return(copy_aside_result)
+}
+
+# ---- The check the upload runs first ----
+
+#' Stop unless the originals of a live folder have been copied aside
+#'
+#' @details
+#' Called by `run_upload_legacy()` and `run_upload_merged()` in
+#' `R/08_upload.R` before they send anything, so the corrected files can
+#' never replace the originals before the originals are kept (ADR 0057
+#' Decision 5). The small file `_superseded-2026-11/_manifest.json` is
+#' written last by the `copy` step, after every copy has been read back,
+#' so its presence means the copy-aside is finished.
+#'
+#' @param storage The live folder's storage.
+#' @param dry_run TRUE for a trial run of the upload, which sends nothing
+#'   and so needs no copy-aside.
+#' @return TRUE, invisibly. Stops when the copy-aside is not finished.
+stop_unless_copied_aside <- function(storage, dry_run = FALSE) {
+  if (dry_run) {
+    return(invisible(TRUE))
+  }
+
+  manifest_key <- file.path(PRE_2012_COPY_ASIDE_FOLDER, "_manifest.json")
+
+  if (!storage$exists(manifest_key)) {
+    stop(
+      "The published files have not been copied aside yet (ADR 0057 Decision 5). ",
+      "Nothing was uploaded. Run the plan and copy steps of R/13_pre_2012_copy_aside.R first."
+    )
+  }
+
+  return(invisible(TRUE))
 }
 
 # ---- Command line ----

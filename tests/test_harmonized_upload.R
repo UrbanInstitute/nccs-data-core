@@ -64,13 +64,16 @@ small_file_kinds <- tibble::tribble(
 
 # The build record R/12_harmonized_all_years.R leaves behind: the files it
 # wrote with their sha256, and whether their checks passed.
-write_all_years_build_record <- function(replacement_root, keys, passed = TRUE) {
+write_all_years_build_record <- function(replacement_root,
+                                         keys,
+                                         passed = TRUE,
+                                         input_keys = c(key_pz_2022_parquet, key_pz_2023_parquet, key_pc_2023_parquet)) {
   describe_key <- function(key) {
     return(list(key = key, sha256 = sha256_of_file(file.path(replacement_root, key))))
   }
 
   jsonlite::write_json(
-    list(passed = passed, files = purrr::map(keys, describe_key)),
+    list(passed = passed, files = purrr::map(keys, describe_key), inputs = purrr::map(input_keys, describe_key)),
     file.path(replacement_root, ALL_YEARS_BUILD_RECORD),
     auto_unbox = TRUE
   )
@@ -376,6 +379,33 @@ check(
       grepl(key_pz_all_years, changed_message, fixed = TRUE) &&
       !grepl(key_pz_dictionary, changed_message, fixed = TRUE)
   }
+)
+
+check(
+  "a yearly parquet file rebuilt after the all-years build is refused, and the file is named",
+  {
+    rebuilt_message <- refused_plan_message(function(changed_folders) {
+      write_text_file(changed_folders$replacement_root, key_pz_2023_parquet, "rebuilt after the all-years build")
+    })
+    grepl("Run R/12_harmonized_all_years.R again", rebuilt_message, fixed = TRUE) &&
+      grepl(key_pz_2023_parquet, rebuilt_message, fixed = TRUE) &&
+      !grepl(key_pz_2022_parquet, rebuilt_message, fixed = TRUE)
+  }
+)
+
+check(
+  "a yearly parquet file the all-years build did not read is refused",
+  grepl(
+    key_pc_2023_parquet,
+    refused_plan_message(function(changed_folders) {
+      write_all_years_build_record(
+        changed_folders$replacement_root,
+        c(key_pz_all_years, key_pz_dictionary, key_pc_all_years, key_pc_dictionary, key_name_table),
+        input_keys = c(key_pz_2022_parquet, key_pz_2023_parquet)
+      )
+    }),
+    fixed = TRUE
+  )
 )
 
 check(

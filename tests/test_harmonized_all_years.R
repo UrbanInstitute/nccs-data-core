@@ -238,6 +238,16 @@ check(
 )
 
 check(
+  "the build record lists every yearly file the build read, with its sha256",
+  {
+    input_keys <- purrr::map_chr(build_record$inputs, "key")
+    input_sha256 <- purrr::map_chr(build_record$inputs, "sha256")
+    identical(input_keys, paste0(yearly_key_stem(small_kind, "501c3-pz", 2021:2023), ".parquet")) &&
+      identical(input_sha256, purrr::map_chr(file.path(built_root, input_keys), sha256_of_file))
+  }
+)
+
+check(
   "the build record on disk says the build passed and gives the row count",
   {
     record_on_disk <- jsonlite::fromJSON(file.path(built_root, ALL_YEARS_BUILD_RECORD))
@@ -250,7 +260,7 @@ check(
   {
     built_files <- list_replacement_files(built_root)
     checked_keys <- check_all_years_evidence(built_root, built_files)
-    length(checked_keys) == 3
+    length(checked_keys) == 6
   }
 )
 

@@ -501,14 +501,39 @@ check_build_evidence <- function(replacement_root, file_kinds, last_year) {
   return(invisible(years))
 }
 
+#' Give the keys whose file is not the one a build record lists
+#'
+#' @param keys The keys to check.
+#' @param recorded_files The entries of the build record: a list of lists,
+#'   each with a `key` and a `sha256`.
+#' @param replacement_root The replacement folder.
+#' @return The keys that the record does not list, or whose file now has a
+#'   different sha256. Length zero when every key is as recorded.
+keys_not_as_recorded <- function(keys, recorded_files, replacement_root) {
+  recorded_sha256 <- purrr::map_chr(recorded_files, "sha256") |>
+    rlang::set_names(purrr::map_chr(recorded_files, "key"))
+
+  sha256_now <- purrr::map_chr(file.path(replacement_root, keys), sha256_of_file)
+
+  is_as_recorded <- dplyr::coalesce(sha256_now == unname(recorded_sha256[keys]), FALSE)
+
+  return(keys[!is_as_recorded])
+}
+
 #' Stop unless the all-years files, dictionaries and name table passed their checks
 #'
 #' @details
 #' `R/12_harmonized_all_years.R` writes `_build_all_years.json` with the
-#' result of its checks and the sha256 of every file it wrote. The plan is
-#' refused when that file is absent, when it says a check failed, when it
-#' does not list one of the files to upload, or when a listed file has
-#' changed since it was checked.
+#' result of its checks, the sha256 of every file it wrote, and the sha256
+#' of every yearly parquet file it read. The plan is refused when:
+#' \itemize{
+#'   \item that file is absent, or says a check failed;
+#'   \item it does not list one of the files to upload, or a listed file
+#'     has changed since it was checked;
+#'   \item a yearly parquet file is not the one the build read. A yearly
+#'     file rebuilt afterwards would otherwise be uploaded beside an
+#'     all-years file and a dictionary made from the older one.
+#' }
 #'
 #' @param replacement_root The replacement folder.
 #' @param replacement_files The tibble from `list_replacement_files()`.
@@ -526,26 +551,35 @@ check_all_years_evidence <- function(replacement_root, replacement_files) {
     stop("The build record says a check failed: ", ALL_YEARS_BUILD_RECORD)
   }
 
-  # Compare the files to upload with the files the record lists
-  keys_to_check <- replacement_files$key[replacement_files$upload_group != "yearly"]
+  # The files the build wrote
+  is_yearly <- replacement_files$upload_group == "yearly"
 
-  recorded_sha256 <- purrr::map_chr(build_record$files, "sha256") |>
-    rlang::set_names(purrr::map_chr(build_record$files, "key"))
+  written_keys <- replacement_files$key[!is_yearly]
 
-  sha256_now <- purrr::map_chr(file.path(replacement_root, keys_to_check), sha256_of_file)
+  written_keys_changed <- keys_not_as_recorded(written_keys, build_record$files, replacement_root)
 
-  is_as_checked <- dplyr::coalesce(sha256_now == unname(recorded_sha256[keys_to_check]), FALSE)
-
-  keys_not_as_checked <- keys_to_check[!is_as_checked]
-
-  if (length(keys_not_as_checked) > 0) {
+  if (length(written_keys_changed) > 0) {
     stop(
       "File(s) are not listed in the build record, or changed after they were checked: ",
-      paste(keys_not_as_checked, collapse = ", ")
+      paste(written_keys_changed, collapse = ", ")
     )
   }
 
-  return(invisible(keys_to_check))
+  # The yearly parquet files the build read
+  is_parquet <- stringr::str_ends(replacement_files$key, stringr::fixed(".parquet"))
+
+  yearly_parquet_keys <- replacement_files$key[is_yearly & is_parquet]
+
+  yearly_keys_changed <- keys_not_as_recorded(yearly_parquet_keys, build_record$inputs, replacement_root)
+
+  if (length(yearly_keys_changed) > 0) {
+    stop(
+      "Yearly file(s) are not the ones the all-years files were built from. Run R/12_harmonized_all_years.R again. Look at: ",
+      paste(yearly_keys_changed, collapse = ", ")
+    )
+  }
+
+  return(invisible(c(written_keys, yearly_parquet_keys)))
 }
 
 # ---- The upload plan ----

@@ -37,9 +37,10 @@
 #   name table          The table that links old column names to current
 #                       ones, published as dd/HARMONIZED-COLUMN-MAP.csv.
 #   build record        _build_all_years.json in the replacement folder. It
-#                       lists every file this script wrote with its sha256
-#                       and says whether every check passed. The upload plan
-#                       is refused without it.
+#                       lists every file this script wrote and every yearly
+#                       file it read, each with its sha256, and says whether
+#                       every check passed. The upload plan is refused
+#                       without it, and when any of those files has changed.
 #
 # What this file does not do: it does not change any yearly file, it does
 # not read or write S3, and it does not upload anything.
@@ -119,7 +120,7 @@ NOTE_EMPTY_COLUMN <- "Blank in every row: the current CORE has no source for thi
 #' @param replacement_root The replacement folder.
 #' @param first_year The first year the file kind covers.
 #' @param last_year The last year to include.
-#' @return A tibble with one row per year: `tax_year` and `path`.
+#' @return A tibble with one row per year: `tax_year`, `key` and `path`.
 list_yearly_files <- function(file_kind, folder, replacement_root, first_year, last_year) {
   years <- seq(first_year, last_year)
 
@@ -133,7 +134,7 @@ list_yearly_files <- function(file_kind, folder, replacement_root, first_year, l
     stop("Yearly file(s) are absent: ", paste(absent_paths, collapse = ", "))
   }
 
-  yearly_files <- tibble::tibble(tax_year = years, path = paths)
+  yearly_files <- tibble::tibble(tax_year = years, key = yearly_keys, path = paths)
 
   return(yearly_files)
 }
@@ -768,12 +769,12 @@ write_name_table <- function(replacement_root, source_path = NAME_TABLE_SOURCE_P
 
 # ---- One file kind, then all of them ----
 
-#' Describe one written file for the build record
+#' Describe one file for the build record
 #'
 #' @param key The file's key in the replacement folder.
 #' @param replacement_root The replacement folder.
 #' @return A list with the file's `key`, `bytes` and `sha256`.
-describe_written_file <- function(key, replacement_root) {
+describe_file_for_record <- function(key, replacement_root) {
   path <- file.path(replacement_root, key)
 
   return(list(key = key, bytes = as.numeric(file.size(path)), sha256 = sha256_of_file(path)))
@@ -789,7 +790,8 @@ describe_written_file <- function(key, replacement_root) {
 #' @param frozen_dictionaries The frozen dictionaries of all file kinds.
 #' @param connection A DuckDB connection.
 #' @return A list for the build record: `file_kind`, `row_count`, the two
-#'   `files` written and every `failures` message.
+#'   `files` written, the yearly files read (`inputs`) and every `failures`
+#'   message.
 build_all_years_of_kind <- function(file_kind,
                                     folder,
                                     first_year,
@@ -839,9 +841,10 @@ build_all_years_of_kind <- function(file_kind,
     row_count = sum(rows_by_year$n_rows),
     files = purrr::map(
       c(all_years_key(file_kind, folder), dictionary_key(file_kind, folder)),
-      describe_written_file,
+      describe_file_for_record,
       replacement_root = replacement_root
     ),
+    inputs = purrr::map(yearly_files$key, describe_file_for_record, replacement_root = replacement_root),
     failures = paste(file_kind, failures, recycle0 = TRUE)
   )
 
@@ -892,7 +895,7 @@ build_all_years_files <- function(replacement_root,
 
   written_files <- c(
     purrr::list_flatten(purrr::map(kind_summaries, "files")),
-    list(describe_written_file(NAME_TABLE_KEY, replacement_root))
+    list(describe_file_for_record(NAME_TABLE_KEY, replacement_root))
   )
 
   build_record <- list(
@@ -900,6 +903,7 @@ build_all_years_files <- function(replacement_root,
     last_year = last_year,
     row_counts = purrr::map(kind_summaries, "row_count") |> rlang::set_names(file_kinds$file_kind),
     files = written_files,
+    inputs = purrr::list_flatten(purrr::map(kind_summaries, "inputs")),
     failures = as.list(failures),
     passed = length(failures) == 0
   )

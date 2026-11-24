@@ -103,11 +103,13 @@ ACTION_STOP <- "stop"
 #' @details Used by the tests in place of S3, and usable for a trial run.
 #'
 #' @param root The local folder.
-#' @return A storage: a list with `exists(key)`, `download(key, local_path)`,
+#' @return A storage: a list with `uri` (the folder the storage reads and
+#'   writes, as text), `exists(key)`, `download(key, local_path)`,
 #'   `upload(local_path, key)` and `list_keys(folder)`, which gives every
 #'   key under one folder of the storage.
 folder_storage <- function(root) {
   storage <- list(
+    uri = root,
     list_keys = function(folder) {
       keys_in_folder <- list.files(file.path(root, folder), recursive = TRUE)
 
@@ -140,11 +142,13 @@ folder_storage <- function(root) {
 #'   absent (see `s3_file_exists()`).
 #'
 #' @param s3_uri The S3 folder, for example `s3://nccsdata/harmonized/core`.
-#' @return A storage: a list with `exists(key)`, `download(key, local_path)`,
+#' @return A storage: a list with `uri` (the folder the storage reads and
+#'   writes, as text), `exists(key)`, `download(key, local_path)`,
 #'   `upload(local_path, key)` and `list_keys(folder)`, which gives every
 #'   key under one folder of the storage.
 s3_storage <- function(s3_uri) {
   storage <- list(
+    uri = s3_uri,
     list_keys = function(folder) {
       return(list_s3_keys(s3_uri, folder))
     },
@@ -970,6 +974,10 @@ copy_originals_aside <- function(upload_plan,
 
 #' Write the small file that records what the copy-aside folder holds
 #'
+#' @details The file names the live folder the originals came from
+#'   (`live_folder`), so a list of copies can never be taken for the list
+#'   of another folder.
+#'
 #' @param originals_in_plan The rows of the upload plan that have an
 #'   original.
 #' @param storage The live folder's storage.
@@ -987,6 +995,7 @@ write_copy_aside_manifest <- function(originals_in_plan,
 
   copy_aside_manifest <- list(
     what = copy_aside_description,
+    live_folder = storage$uri,
     written_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
     integrity_basis = "sha256",
     object_count = nrow(copy_aside_files),

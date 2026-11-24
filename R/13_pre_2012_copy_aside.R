@@ -17,9 +17,14 @@
 #   copy-aside folder  _superseded-2026-11/ inside the live folder. Every
 #                      original is copied there under the same key and
 #                      kept for good.
-#   copy-aside plan    A JSON file listing every original with its sha256
-#                      and size. It is written once, before anything is
-#                      copied, and never rewritten.
+#   copy-aside plan    A JSON file naming one live folder and listing every
+#                      original in it with its sha256 and size. It is
+#                      written once, before anything is copied, and never
+#                      rewritten. It can only be used on the live folder it
+#                      names.
+#   list of copies     _manifest.json in the copy-aside folder. It names the
+#                      live folder and lists every copy with its sha256. The
+#                      copy step writes it last.
 #
 # "Key" and "storage" are defined at the top of R/11_harmonized_upload.R.
 # The copying itself is the same code that copies the harmonized CORE
@@ -117,11 +122,15 @@ describe_original <- function(key, originals_root, storage) {
 #' To start over before anything is copied, a person removes the plan file
 #' by hand.
 #'
+#' The plan records which live folder it was written from (`live_folder`),
+#' so `run_pre_2012_copy_aside()` can refuse to copy it anywhere else.
+#'
 #' @param storage The live folder's storage.
 #' @param originals_root Local folder the originals are downloaded into.
 #' @param plan_path Where to write the plan (JSON).
 #' @param years The year folders to copy aside.
-#' @return The plan as a tibble: `key`, `original_sha256`, `original_bytes`.
+#' @return The originals in the plan as a tibble: `key`, `original_sha256`,
+#'   `original_bytes`.
 write_copy_aside_plan <- function(storage, originals_root, plan_path, years = PRE_2012_YEARS) {
   if (file.exists(plan_path)) {
     stop("The copy-aside plan already exists and is never rewritten: ", plan_path)
@@ -129,25 +138,34 @@ write_copy_aside_plan <- function(storage, originals_root, plan_path, years = PR
 
   original_keys <- list_original_keys(storage, years)
 
-  copy_aside_plan <- original_keys |>
+  originals <- original_keys |>
     purrr::map(describe_original, originals_root = originals_root, storage = storage) |>
     purrr::list_rbind()
 
-  jsonlite::write_json(copy_aside_plan, plan_path, pretty = TRUE, digits = NA)
+  copy_aside_plan <- list(live_folder = storage$uri, originals = originals)
 
-  return(copy_aside_plan)
+  jsonlite::write_json(copy_aside_plan, plan_path, auto_unbox = TRUE, pretty = TRUE, digits = NA)
+
+  return(originals)
 }
 
 #' Read the copy-aside plan
 #'
 #' @param plan_path The plan file written by `write_copy_aside_plan()`.
-#' @return The plan as a tibble.
+#' @return A list with `live_folder` (the live folder the plan was written
+#'   from) and `originals` (a tibble: `key`, `original_sha256`,
+#'   `original_bytes`).
 read_copy_aside_plan <- function(plan_path) {
   if (!file.exists(plan_path)) {
     stop("No copy-aside plan at ", plan_path, ". Run the plan step first.")
   }
 
-  copy_aside_plan <- tibble::as_tibble(jsonlite::fromJSON(plan_path))
+  plan_on_disk <- jsonlite::fromJSON(plan_path)
+
+  copy_aside_plan <- list(
+    live_folder = plan_on_disk$live_folder,
+    originals = tibble::as_tibble(plan_on_disk$originals)
+  )
 
   return(copy_aside_plan)
 }
@@ -163,6 +181,11 @@ read_copy_aside_plan <- function(plan_path) {
 #'   nothing: it reads the copies back and stops if any differs from the
 #'   plan.
 #'
+#'   Stops before writing anything when the plan was written from a
+#'   different live folder. Copying one folder's originals into another
+#'   folder's copy-aside folder would keep the wrong files and look
+#'   finished.
+#'
 #' @param work_root Local folder holding the copy-aside plan
 #'   (`copy_aside_plan.json`), the downloaded originals (`originals/`) and
 #'   short-lived files (`scratch/`).
@@ -173,8 +196,15 @@ read_copy_aside_plan <- function(plan_path) {
 run_pre_2012_copy_aside <- function(work_root, storage, copy_aside_description) {
   copy_aside_plan <- read_copy_aside_plan(file.path(work_root, "copy_aside_plan.json"))
 
+  if (!identical(copy_aside_plan$live_folder, storage$uri)) {
+    stop(
+      "The copy-aside plan was written from a different live folder. Nothing was copied. ",
+      "The plan is for ", copy_aside_plan$live_folder, " and this run is for ", storage$uri, "."
+    )
+  }
+
   copy_aside_result <- copy_originals_aside(
-    copy_aside_plan,
+    copy_aside_plan$originals,
     originals_root = file.path(work_root, "originals"),
     storage = storage,
     scratch_root = file.path(work_root, "scratch"),
@@ -187,21 +217,72 @@ run_pre_2012_copy_aside <- function(work_root, storage, copy_aside_description) 
 
 # ---- The check the upload runs first ----
 
+#' Read the list of copies in a live folder's copy-aside folder
+#'
+#' @details Stops when the file cannot be read as JSON, when it lists no
+#'   file, or when it was made from a different live folder. Each of these
+#'   means the copy-aside folder cannot be trusted to hold this folder's
+#'   originals.
+#'
+#' @param storage The live folder's storage.
+#' @param scratch_root Local folder for the short-lived download.
+#' @return The copies as a tibble with `key` and `original_sha256`, the
+#'   columns `find_wrong_copies()` reads.
+read_list_of_copies <- function(storage, scratch_root) {
+  manifest_key <- file.path(PRE_2012_COPY_ASIDE_FOLDER, "_manifest.json")
+
+  local_path <- file.path(scratch_root, manifest_key)
+
+  storage$download(manifest_key, local_path)
+
+  manifest <- tryCatch(jsonlite::fromJSON(local_path), error = function(read_error) NULL)
+
+  if (is.null(manifest)) {
+    stop("The list of copies cannot be read: ", manifest_key, ". Nothing was uploaded.")
+  }
+
+  if (NROW(manifest$files) == 0) {
+    stop("The list of copies lists no file: ", manifest_key, ". Nothing was uploaded.")
+  }
+
+  if (!identical(manifest$live_folder, storage$uri)) {
+    stop(
+      "The list of copies was made from a different live folder: ", manifest_key,
+      ". Nothing was uploaded."
+    )
+  }
+
+  listed_copies <- tibble::tibble(
+    key = manifest$files$file,
+    original_sha256 = manifest$files$sha256
+  )
+
+  return(listed_copies)
+}
+
 #' Stop unless the originals of a live folder have been copied aside
 #'
 #' @details
 #' Called by `run_upload_legacy()` and `run_upload_merged()` in
 #' `R/08_upload.R` before they send anything, so the corrected files can
 #' never replace the originals before the originals are kept (ADR 0057
-#' Decision 5). The small file `_superseded-2026-11/_manifest.json` is
-#' written last by the `copy` step, after every copy has been read back,
-#' so its presence means the copy-aside is finished.
+#' Decision 5).
+#'
+#' The check does not trust the list of copies to be there, or to be
+#' right. It reads the list, then downloads every copy and compares its
+#' sha256 with the list. It stops when the list is absent, cannot be read,
+#' is empty or belongs to another live folder, and when any copy is absent
+#' or differs.
 #'
 #' @param storage The live folder's storage.
 #' @param dry_run TRUE for a trial run of the upload, which sends nothing
 #'   and so needs no copy-aside.
-#' @return TRUE, invisibly. Stops when the copy-aside is not finished.
-stop_unless_copied_aside <- function(storage, dry_run = FALSE) {
+#' @param scratch_root Local folder for the short-lived downloads.
+#' @return TRUE, invisibly. Stops when the copy-aside is not finished or
+#'   not intact.
+stop_unless_copied_aside <- function(storage,
+                                     dry_run = FALSE,
+                                     scratch_root = tempfile("copy_aside_check_")) {
   if (dry_run) {
     return(invisible(TRUE))
   }
@@ -212,6 +293,17 @@ stop_unless_copied_aside <- function(storage, dry_run = FALSE) {
     stop(
       "The published files have not been copied aside yet (ADR 0057 Decision 5). ",
       "Nothing was uploaded. Run the plan and copy steps of R/13_pre_2012_copy_aside.R first."
+    )
+  }
+
+  listed_copies <- read_list_of_copies(storage, scratch_root)
+
+  wrong_keys <- find_wrong_copies(listed_copies, storage, scratch_root, PRE_2012_COPY_ASIDE_FOLDER)
+
+  if (length(wrong_keys) > 0) {
+    stop(
+      "The copy-aside folder does not hold the listed original for: ",
+      paste(wrong_keys, collapse = ", "), ". Nothing was uploaded."
     )
   }
 

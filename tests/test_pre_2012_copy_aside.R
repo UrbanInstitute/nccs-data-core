@@ -133,7 +133,7 @@ check(
 
 check(
   "the plan read back from disk is the plan that was written",
-  isTRUE(all.equal(as.data.frame(read_copy_aside_plan(folders$plan_path)), as.data.frame(small_plan)))
+  isTRUE(all.equal(as.data.frame(read_copy_aside_plan(folders$plan_path)$originals), as.data.frame(small_plan)))
 )
 
 check(
@@ -250,9 +250,17 @@ check(
 
 # ---- The upload refuses to run before the copy ----
 
+#' Make a live folder whose copy-aside is finished
+make_copied_folders <- function() {
+  copied_folders <- make_folders()
+  make_plan(copied_folders)
+  run_pre_2012_copy_aside(copied_folders$work_root, copied_folders$storage, small_description)
+  return(copied_folders)
+}
+
 check(
   "the check passes for a live folder whose copy-aside is finished",
-  isTRUE(stop_unless_copied_aside(folders$storage))
+  isTRUE(stop_unless_copied_aside(make_copied_folders()$storage))
 )
 
 check(
@@ -303,6 +311,112 @@ check(
     paste0(unname(PRE_2012_LIVE_S3_URIS), "/"),
     c(s3_uri(S3$processed_legacy_prefix), s3_uri(S3$processed_merged_prefix))
   )
+)
+
+# ---- The upload check reads the copies, not only the list of them ----
+
+check(
+  "the upload check stops when a copy has been removed, and names it",
+  {
+    removed_folders <- make_copied_folders()
+    unlink(file.path(removed_folders$live_root, copy_key(key_2011_pf)))
+    removed_message <- error_message(stop_unless_copied_aside(removed_folders$storage))
+    grepl("does not hold the listed original", removed_message) &&
+      grepl(key_2011_pf, removed_message, fixed = TRUE)
+  }
+)
+
+check(
+  "the upload check stops when a copy has been changed",
+  {
+    changed_folders <- make_copied_folders()
+    write_text_file(changed_folders$live_root, copy_key(key_2010_csv), "not the original")
+    grepl(key_2010_csv, error_message(stop_unless_copied_aside(changed_folders$storage)), fixed = TRUE)
+  }
+)
+
+check(
+  "the upload check stops when the list of copies cannot be read",
+  {
+    broken_folders <- make_copied_folders()
+    write_text_file(broken_folders$live_root, copy_key("_manifest.json"), "this is not JSON")
+    grepl("cannot be read", error_message(stop_unless_copied_aside(broken_folders$storage)))
+  }
+)
+
+check(
+  "the upload check stops when the list of copies is empty",
+  {
+    empty_list_folders <- make_copied_folders()
+    write_text_file(empty_list_folders$live_root, copy_key("_manifest.json"), '{"files": []}')
+    grepl("lists no file", error_message(stop_unless_copied_aside(empty_list_folders$storage)))
+  }
+)
+
+check(
+  "the upload check stops when the list of copies has no list of files at all",
+  {
+    no_list_folders <- make_copied_folders()
+    write_text_file(no_list_folders$live_root, copy_key("_manifest.json"), '{"what": "nothing"}')
+    grepl("lists no file", error_message(stop_unless_copied_aside(no_list_folders$storage)))
+  }
+)
+
+check(
+  "the upload stops, before sending anything, when a copy has been removed",
+  {
+    removed_folders <- make_copied_folders()
+    unlink(file.path(removed_folders$live_root, copy_key(key_2010_csv)))
+    grepl(
+      "does not hold the listed original",
+      error_message(run_upload_legacy(enable_upload = TRUE, live_storage = removed_folders$storage))
+    )
+  }
+)
+
+# ---- A plan belongs to one live folder ----
+
+check(
+  "the plan records the live folder it was written from",
+  jsonlite::fromJSON(folders$plan_path)$live_folder == folders$storage$uri
+)
+
+check(
+  "a plan written from one live folder cannot be copied into another, and nothing is written there",
+  {
+    legacy_folders <- make_folders()
+    merged_folders <- make_folders()
+    make_plan(legacy_folders)
+    mismatch_message <- error_message(
+      run_pre_2012_copy_aside(legacy_folders$work_root, merged_folders$storage, small_description)
+    )
+    grepl("was written from a different live folder", mismatch_message) &&
+      grepl(legacy_folders$storage$uri, mismatch_message, fixed = TRUE) &&
+      !file.exists(file.path(merged_folders$live_root, PRE_2012_COPY_ASIDE_FOLDER))
+  }
+)
+
+check(
+  "the list of copies records the live folder, and the upload check stops for a list made from another folder",
+  {
+    copied_folders <- make_copied_folders()
+    other_folders <- make_folders()
+    copied_manifest_path <- file.path(copied_folders$live_root, copy_key("_manifest.json"))
+    recorded_folder <- jsonlite::fromJSON(copied_manifest_path)$live_folder
+    file.copy(
+      file.path(copied_folders$live_root, PRE_2012_COPY_ASIDE_FOLDER),
+      other_folders$live_root,
+      recursive = TRUE
+    )
+    recorded_folder == copied_folders$storage$uri &&
+      grepl("was made from a different live folder", error_message(stop_unless_copied_aside(other_folders$storage)))
+  }
+)
+
+check(
+  "an S3 storage and a local storage each say which folder they are",
+  s3_storage("s3://nccsdata/processed_legacy/core")$uri == "s3://nccsdata/processed_legacy/core" &&
+    folder_storage("/some/folder")$uri == "/some/folder"
 )
 
 # ---- Listing a folder ----

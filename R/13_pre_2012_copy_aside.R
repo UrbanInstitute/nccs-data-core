@@ -1,0 +1,349 @@
+# R/13_pre_2012_copy_aside.R
+#
+# Copies the published pre-2012 CORE files aside, once, before the
+# corrected files replace them (ADR 0057 Decision 5).
+#
+# Terms used in this file
+#
+#   live folder        One of the two S3 folders users download from that
+#                      this correction changes: processed_legacy/core/ (the
+#                      pre-2012 CORE) and processed_merged/core/ (the merged
+#                      panel). Each is handled on its own.
+#   year folder        A folder of one tax year inside a live folder, for
+#                      example 2005/. Only the year folders 1987 to 2011
+#                      change.
+#   original           A file that sits in a year folder of a live folder
+#                      before the corrected files are uploaded.
+#   copy-aside folder  _superseded-2026-11/ inside the live folder. Every
+#                      original is copied there under the same key and
+#                      kept for good.
+#   copy-aside plan    A JSON file naming one live folder and listing every
+#                      original in it with its sha256 and size. It is
+#                      written once, before anything is copied, and never
+#                      rewritten. It can only be used on the live folder it
+#                      names.
+#   list of copies     _manifest.json in the copy-aside folder. It names the
+#                      live folder and lists every copy with its sha256. The
+#                      copy step writes it last.
+#
+# "Key" and "storage" are defined at the top of R/11_harmonized_upload.R.
+# The copying itself is the same code that copies the harmonized CORE
+# originals aside (`copy_originals_aside()` in that file).
+#
+# What this file does not do: it does not replace, change or delete any
+# file in a year folder. The corrected files are uploaded afterwards by
+# the pipeline's own upload step (R/08_upload.R), which refuses to run
+# until the `copy` step here has finished. Every write to S3 needs the
+# maintainer's go-ahead first.
+#
+# Usage (from the repo root, on the EC2 instance that holds the build):
+#   Rscript R/13_pre_2012_copy_aside.R plan <live_folder_name> <work_root>
+#   Rscript R/13_pre_2012_copy_aside.R copy <live_folder_name> <work_root>
+#
+#   live_folder_name  processed_legacy or processed_merged
+#   plan  downloads every original and writes the copy-aside plan. Changes
+#         nothing on S3.
+#   copy  copies the originals into the copy-aside folder and reads every
+#         copy back. Run again, it only reads the copies back.
+
+source(file.path("R", "11_harmonized_upload.R"))
+
+# ---- Constants ----
+
+PRE_2012_LIVE_S3_URIS <- c(
+  processed_legacy = "s3://nccsdata/processed_legacy/core",
+  processed_merged = "s3://nccsdata/processed_merged/core"
+)
+
+PRE_2012_COPY_ASIDE_FOLDER <- "_superseded-2026-11"
+
+# The year folders the pre-2012 CORE holds. The same years of the merged
+# panel are built from them.
+PRE_2012_YEARS <- 1987:2011
+
+PRE_2012_COPY_ASIDE_DESCRIPTIONS <- c(
+  processed_legacy = "The pre-2012 CORE files as published until the ADR 0057 correction, which keeps one row per return.",
+  processed_merged = "The merged panel files for tax years 1987 to 2011 as published until the ADR 0057 correction, which keeps one row per return."
+)
+
+# ---- The copy-aside plan ----
+
+#' List every original in the year folders of a live folder
+#'
+#' @details Stops when a year folder holds no file. An empty listing for a
+#'   year the folder is known to hold means the listing went wrong, and a
+#'   plan written from it would leave that year's files out.
+#'
+#' @param storage The live folder's storage.
+#' @param years The year folders to copy aside.
+#' @return A character vector of keys.
+list_original_keys <- function(storage, years) {
+  year_folders <- as.character(years)
+
+  keys_by_year <- purrr::map(year_folders, storage$list_keys)
+
+  empty_years <- year_folders[lengths(keys_by_year) == 0]
+
+  if (length(empty_years) > 0) {
+    stop("No file found in year folder(s): ", paste(empty_years, collapse = ", "))
+  }
+
+  return(unlist(keys_by_year))
+}
+
+#' Download one original and describe it for the copy-aside plan
+#'
+#' @details The local copy is kept: the `copy` step uploads from it.
+#'
+#' @param key The key of the original.
+#' @param originals_root Local folder the originals are downloaded into.
+#' @param storage The live folder's storage.
+#' @return A one-row tibble: `key`, `original_sha256` and `original_bytes`.
+describe_original <- function(key, originals_root, storage) {
+  original_path <- file.path(originals_root, key)
+
+  storage$download(key, original_path)
+
+  original_description <- tibble::tibble(
+    key = key,
+    original_sha256 = sha256_of_file(original_path),
+    original_bytes = as.numeric(file.size(original_path))
+  )
+
+  return(original_description)
+}
+
+#' Write the copy-aside plan, once
+#'
+#' @details
+#' Stops if the plan file already exists. A plan written after the
+#' corrected files were uploaded would record corrected files as
+#' "originals", and the copy-aside folder would then keep the wrong files.
+#' To start over before anything is copied, a person removes the plan file
+#' by hand.
+#'
+#' The plan records which live folder it was written from (`live_folder`),
+#' so `run_pre_2012_copy_aside()` can refuse to copy it anywhere else.
+#'
+#' @param storage The live folder's storage.
+#' @param originals_root Local folder the originals are downloaded into.
+#' @param plan_path Where to write the plan (JSON).
+#' @param years The year folders to copy aside.
+#' @return The originals in the plan as a tibble: `key`, `original_sha256`,
+#'   `original_bytes`.
+write_copy_aside_plan <- function(storage, originals_root, plan_path, years = PRE_2012_YEARS) {
+  if (file.exists(plan_path)) {
+    stop("The copy-aside plan already exists and is never rewritten: ", plan_path)
+  }
+
+  original_keys <- list_original_keys(storage, years)
+
+  originals <- original_keys |>
+    purrr::map(describe_original, originals_root = originals_root, storage = storage) |>
+    purrr::list_rbind()
+
+  copy_aside_plan <- list(live_folder = storage$uri, originals = originals)
+
+  jsonlite::write_json(copy_aside_plan, plan_path, auto_unbox = TRUE, pretty = TRUE, digits = NA)
+
+  return(originals)
+}
+
+#' Read the copy-aside plan
+#'
+#' @param plan_path The plan file written by `write_copy_aside_plan()`.
+#' @return A list with `live_folder` (the live folder the plan was written
+#'   from) and `originals` (a tibble: `key`, `original_sha256`,
+#'   `original_bytes`).
+read_copy_aside_plan <- function(plan_path) {
+  if (!file.exists(plan_path)) {
+    stop("No copy-aside plan at ", plan_path, ". Run the plan step first.")
+  }
+
+  plan_on_disk <- jsonlite::fromJSON(plan_path)
+
+  copy_aside_plan <- list(
+    live_folder = plan_on_disk$live_folder,
+    originals = tibble::as_tibble(plan_on_disk$originals)
+  )
+
+  return(copy_aside_plan)
+}
+
+# ---- Copying ----
+
+#' Copy the originals of one live folder aside, or verify an earlier copy
+#'
+#' @details Uses `copy_originals_aside()`, with this correction's
+#'   copy-aside folder. On a first run it uploads each original from its
+#'   local copy, reads every copy back, and writes the small file
+#'   `_superseded-2026-11/_manifest.json` last. Run again, it writes
+#'   nothing: it reads the copies back and stops if any differs from the
+#'   plan.
+#'
+#'   Stops before writing anything when the plan was written from a
+#'   different live folder. Copying one folder's originals into another
+#'   folder's copy-aside folder would keep the wrong files and look
+#'   finished.
+#'
+#' @param work_root Local folder holding the copy-aside plan
+#'   (`copy_aside_plan.json`), the downloaded originals (`originals/`) and
+#'   short-lived files (`scratch/`).
+#' @param storage The live folder's storage.
+#' @param copy_aside_description What the small file says the folder holds.
+#' @return "copied" when this call made the copies, "verified" when they
+#'   were already there.
+run_pre_2012_copy_aside <- function(work_root, storage, copy_aside_description) {
+  copy_aside_plan <- read_copy_aside_plan(file.path(work_root, "copy_aside_plan.json"))
+
+  if (!identical(copy_aside_plan$live_folder, storage$uri)) {
+    stop(
+      "The copy-aside plan was written from a different live folder. Nothing was copied. ",
+      "The plan is for ", copy_aside_plan$live_folder, " and this run is for ", storage$uri, "."
+    )
+  }
+
+  copy_aside_result <- copy_originals_aside(
+    copy_aside_plan$originals,
+    originals_root = file.path(work_root, "originals"),
+    storage = storage,
+    scratch_root = file.path(work_root, "scratch"),
+    copy_aside_folder = PRE_2012_COPY_ASIDE_FOLDER,
+    copy_aside_description = copy_aside_description
+  )
+
+  return(copy_aside_result)
+}
+
+# ---- The check the upload runs first ----
+
+#' Read the list of copies in a live folder's copy-aside folder
+#'
+#' @details Stops when the file cannot be read as JSON, when it lists no
+#'   file, or when it was made from a different live folder. Each of these
+#'   means the copy-aside folder cannot be trusted to hold this folder's
+#'   originals.
+#'
+#' @param storage The live folder's storage.
+#' @param scratch_root Local folder for the short-lived download.
+#' @return The copies as a tibble with `key` and `original_sha256`, the
+#'   columns `find_wrong_copies()` reads.
+read_list_of_copies <- function(storage, scratch_root) {
+  manifest_key <- file.path(PRE_2012_COPY_ASIDE_FOLDER, "_manifest.json")
+
+  local_path <- file.path(scratch_root, manifest_key)
+
+  storage$download(manifest_key, local_path)
+
+  manifest <- tryCatch(jsonlite::fromJSON(local_path), error = function(read_error) NULL)
+
+  if (is.null(manifest)) {
+    stop("The list of copies cannot be read: ", manifest_key, ". Nothing was uploaded.")
+  }
+
+  if (NROW(manifest$files) == 0) {
+    stop("The list of copies lists no file: ", manifest_key, ". Nothing was uploaded.")
+  }
+
+  if (!identical(manifest$live_folder, storage$uri)) {
+    stop(
+      "The list of copies was made from a different live folder: ", manifest_key,
+      ". Nothing was uploaded."
+    )
+  }
+
+  listed_copies <- tibble::tibble(
+    key = manifest$files$file,
+    original_sha256 = manifest$files$sha256
+  )
+
+  return(listed_copies)
+}
+
+#' Stop unless the originals of a live folder have been copied aside
+#'
+#' @details
+#' Called by `run_upload_legacy()` and `run_upload_merged()` in
+#' `R/08_upload.R` before they send anything, so the corrected files can
+#' never replace the originals before the originals are kept (ADR 0057
+#' Decision 5).
+#'
+#' The check does not trust the list of copies to be there, or to be
+#' right. It reads the list, then downloads every copy and compares its
+#' sha256 with the list. It stops when the list is absent, cannot be read,
+#' is empty or belongs to another live folder, and when any copy is absent
+#' or differs.
+#'
+#' @param storage The live folder's storage.
+#' @param dry_run TRUE for a trial run of the upload, which sends nothing
+#'   and so needs no copy-aside.
+#' @param scratch_root Local folder for the short-lived downloads.
+#' @return TRUE, invisibly. Stops when the copy-aside is not finished or
+#'   not intact.
+stop_unless_copied_aside <- function(storage,
+                                     dry_run = FALSE,
+                                     scratch_root = tempfile("copy_aside_check_")) {
+  if (dry_run) {
+    return(invisible(TRUE))
+  }
+
+  manifest_key <- file.path(PRE_2012_COPY_ASIDE_FOLDER, "_manifest.json")
+
+  if (!storage$exists(manifest_key)) {
+    stop(
+      "The published files have not been copied aside yet (ADR 0057 Decision 5). ",
+      "Nothing was uploaded. Run the plan and copy steps of R/13_pre_2012_copy_aside.R first."
+    )
+  }
+
+  listed_copies <- read_list_of_copies(storage, scratch_root)
+
+  wrong_keys <- find_wrong_copies(listed_copies, storage, scratch_root, PRE_2012_COPY_ASIDE_FOLDER)
+
+  if (length(wrong_keys) > 0) {
+    stop(
+      "The copy-aside folder does not hold the listed original for: ",
+      paste(wrong_keys, collapse = ", "), ". Nothing was uploaded."
+    )
+  }
+
+  return(invisible(TRUE))
+}
+
+# ---- Command line ----
+
+if (sys.nframe() == 0) {
+  arguments <- commandArgs(trailingOnly = TRUE)
+
+  step <- arguments[[1]]
+  live_folder_name <- arguments[[2]]
+  work_root <- arguments[[3]]
+
+  if (!live_folder_name %in% names(PRE_2012_LIVE_S3_URIS)) {
+    stop("The live folder must be one of: ", paste(names(PRE_2012_LIVE_S3_URIS), collapse = ", "))
+  }
+
+  live_storage <- s3_storage(PRE_2012_LIVE_S3_URIS[[live_folder_name]])
+
+  dir.create(work_root, recursive = TRUE, showWarnings = FALSE)
+
+  if (step == "plan") {
+    copy_aside_plan <- write_copy_aside_plan(
+      live_storage,
+      file.path(work_root, "originals"),
+      file.path(work_root, "copy_aside_plan.json")
+    )
+
+    message(nrow(copy_aside_plan), " originals, ", sum(copy_aside_plan$original_bytes), " bytes")
+  }
+
+  if (step == "copy") {
+    copy_aside_result <- run_pre_2012_copy_aside(
+      work_root,
+      live_storage,
+      PRE_2012_COPY_ASIDE_DESCRIPTIONS[[live_folder_name]]
+    )
+
+    message("Copy-aside folder: ", copy_aside_result)
+  }
+}

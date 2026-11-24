@@ -54,6 +54,9 @@ COPY_ASIDE_FOLDER <- "_superseded-2025-04"
 
 COPY_ASIDE_MANIFEST_KEY <- file.path(COPY_ASIDE_FOLDER, "_manifest.json")
 
+# What the small file in the copy-aside folder says the folder holds.
+COPY_ASIDE_DESCRIPTION <- "Originals of the harmonized CORE files replaced under ADR 0056, as published from April 2025 until the replacement."
+
 FOLDER_MANIFEST_KEY <- "_manifest.json"
 
 NOTICE_KEY <- "README.txt"
@@ -100,10 +103,20 @@ ACTION_STOP <- "stop"
 #' @details Used by the tests in place of S3, and usable for a trial run.
 #'
 #' @param root The local folder.
-#' @return A storage: a list with `exists(key)`, `download(key, local_path)`
-#'   and `upload(local_path, key)`.
+#' @return A storage: a list with `uri` (the folder the storage reads and
+#'   writes, as text), `exists(key)`, `download(key, local_path)`,
+#'   `upload(local_path, key)` and `list_keys(folder)`, which gives every
+#'   key under one folder of the storage.
 folder_storage <- function(root) {
   storage <- list(
+    uri = root,
+    list_keys = function(folder) {
+      keys_in_folder <- list.files(file.path(root, folder), recursive = TRUE)
+
+      # paste0 with recycle0 gives no keys for an empty folder; file.path
+      # would give the folder name itself.
+      return(paste0(folder, "/", keys_in_folder, recycle0 = TRUE))
+    },
     exists = function(key) {
       return(file.exists(file.path(root, key)))
     },
@@ -129,10 +142,16 @@ folder_storage <- function(root) {
 #'   absent (see `s3_file_exists()`).
 #'
 #' @param s3_uri The S3 folder, for example `s3://nccsdata/harmonized/core`.
-#' @return A storage: a list with `exists(key)`, `download(key, local_path)`
-#'   and `upload(local_path, key)`.
+#' @return A storage: a list with `uri` (the folder the storage reads and
+#'   writes, as text), `exists(key)`, `download(key, local_path)`,
+#'   `upload(local_path, key)` and `list_keys(folder)`, which gives every
+#'   key under one folder of the storage.
 s3_storage <- function(s3_uri) {
   storage <- list(
+    uri = s3_uri,
+    list_keys = function(folder) {
+      return(list_s3_keys(s3_uri, folder))
+    },
     exists = function(key) {
       return(s3_file_exists(s3_uri, key))
     },
@@ -151,6 +170,59 @@ s3_storage <- function(s3_uri) {
   )
 
   return(storage)
+}
+
+#' List the keys under one folder of an S3 folder, stopping on any failure
+#'
+#' @details A listing that fails (expired login, no permission, no network)
+#'   stops with an error. A failure is never read as "the folder is empty",
+#'   because the copy-aside plan would then leave files out.
+#'
+#' @param s3_uri The S3 folder, for example
+#'   `s3://nccsdata/processed_legacy/core`.
+#' @param folder A folder inside it, for example "2005".
+#' @param command The program to run. Always "aws" outside the tests.
+#' @return A character vector of keys relative to `s3_uri`, for example
+#'   "2005/990pf/core_2005_990pf.csv". Length zero when the folder is empty.
+list_s3_keys <- function(s3_uri, folder, command = "aws") {
+  uri_parts <- stringr::str_match(paste0(s3_uri, "/", folder, "/"), "^s3://([^/]+)/(.+)$")
+
+  bucket <- uri_parts[, 2]
+
+  folder_in_bucket <- uri_parts[, 3]
+
+  arguments <- c(
+    "s3api", "list-objects-v2",
+    "--bucket", bucket,
+    "--prefix", folder_in_bucket,
+    "--query", "Contents[].Key",
+    "--output", "text"
+  )
+
+  listing <- suppressWarnings(
+    system2(command, args = shQuote(arguments), stdout = TRUE, stderr = TRUE)
+  )
+
+  status <- attr(listing, "status")
+
+  has_failed <- !is.null(status) && status != 0L
+
+  if (has_failed) {
+    stop("Could not list the S3 folder: ", folder, ". ", paste(listing, collapse = " "))
+  }
+
+  # The listing is the keys in the bucket, separated by tabs or line
+  # breaks. An empty folder is listed as the word "None".
+  keys_in_bucket <- unlist(stringr::str_split(listing, "\\s+"))
+
+  keys_in_bucket <- keys_in_bucket[stringr::str_starts(keys_in_bucket, stringr::fixed(folder_in_bucket))]
+
+  # Remove the part of the key that belongs to `s3_uri`.
+  prefix_length <- nchar(folder_in_bucket) - nchar(folder) - 1L
+
+  keys <- substring(keys_in_bucket, prefix_length + 1L)
+
+  return(keys)
 }
 
 #' Say whether a file exists in an S3 folder, stopping on any failure
@@ -768,9 +840,10 @@ add_actions_to_plan <- function(upload_plan, storage, scratch_root) {
 #' Give the key of an original's copy in the copy-aside folder
 #'
 #' @param key One or more keys in the live folder.
+#' @param copy_aside_folder The copy-aside folder.
 #' @return The matching keys inside the copy-aside folder.
-copy_aside_key <- function(key) {
-  return(file.path(COPY_ASIDE_FOLDER, key))
+copy_aside_key <- function(key, copy_aside_folder = COPY_ASIDE_FOLDER) {
+  return(file.path(copy_aside_folder, key))
 }
 
 #' Check that every copy in the copy-aside folder is the planned original
@@ -779,11 +852,15 @@ copy_aside_key <- function(key) {
 #'   original.
 #' @param storage The live folder's storage.
 #' @param scratch_root Local folder for the short-lived downloads.
+#' @param copy_aside_folder The copy-aside folder.
 #' @return The keys whose copy is absent or differs from the original, as
 #'   a character vector. Length zero when every copy is right.
-find_wrong_copies <- function(originals_in_plan, storage, scratch_root) {
+find_wrong_copies <- function(originals_in_plan,
+                              storage,
+                              scratch_root,
+                              copy_aside_folder = COPY_ASIDE_FOLDER) {
   copy_sha256 <- purrr::map_chr(
-    copy_aside_key(originals_in_plan$key),
+    copy_aside_key(originals_in_plan$key, copy_aside_folder),
     sha256_of_stored_file,
     storage = storage,
     scratch_root = scratch_root
@@ -806,8 +883,13 @@ find_wrong_copies <- function(originals_in_plan, storage, scratch_root) {
 #' @param planned_sha256 The original's sha256 from the upload plan.
 #' @param originals_root Local folder holding the downloaded originals.
 #' @param storage The live folder's storage.
+#' @param copy_aside_folder The copy-aside folder.
 #' @return `key`, invisibly.
-copy_one_original_aside <- function(key, planned_sha256, originals_root, storage) {
+copy_one_original_aside <- function(key,
+                                    planned_sha256,
+                                    originals_root,
+                                    storage,
+                                    copy_aside_folder = COPY_ASIDE_FOLDER) {
   local_path <- file.path(originals_root, key)
 
   local_sha256 <- sha256_of_file(local_path)
@@ -818,7 +900,7 @@ copy_one_original_aside <- function(key, planned_sha256, originals_root, storage
     stop("The local copy of the original does not match the upload plan: ", key)
   }
 
-  storage$upload(local_path, copy_aside_key(key))
+  storage$upload(local_path, copy_aside_key(key, copy_aside_folder))
 
   return(invisible(key))
 }
@@ -826,7 +908,7 @@ copy_one_original_aside <- function(key, planned_sha256, originals_root, storage
 #' Copy every original aside, once, and verify the copies
 #'
 #' @details
-#' The small file `_superseded-2025-04/_manifest.json` marks a finished
+#' The small file `_manifest.json` in the copy-aside folder marks a finished
 #' copy-aside: it is written last, after every copy has been read back and
 #' matched to the upload plan.
 #'
@@ -843,12 +925,23 @@ copy_one_original_aside <- function(key, planned_sha256, originals_root, storage
 #' @param originals_root Local folder holding the downloaded originals.
 #' @param storage The live folder's storage.
 #' @param scratch_root Local folder for short-lived files.
+#' @param copy_aside_folder The copy-aside folder. The default is the one
+#'   for the harmonized CORE files; `R/13_pre_2012_copy_aside.R` passes
+#'   its own.
+#' @param copy_aside_description What the small file says the folder holds.
 #' @return "copied" when this call made the copies, "verified" when they
 #'   were already there. Stops when a copy is absent or wrong.
-copy_originals_aside <- function(upload_plan, originals_root, storage, scratch_root) {
+copy_originals_aside <- function(upload_plan,
+                                 originals_root,
+                                 storage,
+                                 scratch_root,
+                                 copy_aside_folder = COPY_ASIDE_FOLDER,
+                                 copy_aside_description = COPY_ASIDE_DESCRIPTION) {
   originals_in_plan <- dplyr::filter(upload_plan, !is.na(original_sha256))
 
-  is_copy_aside_finished <- storage$exists(COPY_ASIDE_MANIFEST_KEY)
+  manifest_key <- file.path(copy_aside_folder, "_manifest.json")
+
+  is_copy_aside_finished <- storage$exists(manifest_key)
 
   if (!is_copy_aside_finished) {
     purrr::walk2(
@@ -856,11 +949,12 @@ copy_originals_aside <- function(upload_plan, originals_root, storage, scratch_r
       originals_in_plan$original_sha256,
       copy_one_original_aside,
       originals_root = originals_root,
-      storage = storage
+      storage = storage,
+      copy_aside_folder = copy_aside_folder
     )
   }
 
-  wrong_keys <- find_wrong_copies(originals_in_plan, storage, scratch_root)
+  wrong_keys <- find_wrong_copies(originals_in_plan, storage, scratch_root, copy_aside_folder)
 
   if (length(wrong_keys) > 0) {
     stop(
@@ -873,24 +967,35 @@ copy_originals_aside <- function(upload_plan, originals_root, storage, scratch_r
     return("verified")
   }
 
-  write_copy_aside_manifest(originals_in_plan, storage, scratch_root)
+  write_copy_aside_manifest(originals_in_plan, storage, scratch_root, manifest_key, copy_aside_description)
 
   return("copied")
 }
 
 #' Write the small file that records what the copy-aside folder holds
 #'
+#' @details The file names the live folder the originals came from
+#'   (`live_folder`), so a list of copies can never be taken for the list
+#'   of another folder.
+#'
 #' @param originals_in_plan The rows of the upload plan that have an
 #'   original.
 #' @param storage The live folder's storage.
 #' @param scratch_root Local folder the file is written into before upload.
+#' @param manifest_key The key to write the file at.
+#' @param copy_aside_description What the file says the folder holds.
 #' @return The key of the file, invisibly.
-write_copy_aside_manifest <- function(originals_in_plan, storage, scratch_root) {
+write_copy_aside_manifest <- function(originals_in_plan,
+                                      storage,
+                                      scratch_root,
+                                      manifest_key = COPY_ASIDE_MANIFEST_KEY,
+                                      copy_aside_description = COPY_ASIDE_DESCRIPTION) {
   copy_aside_files <- originals_in_plan |>
     dplyr::transmute(file = key, bytes = original_bytes, sha256 = original_sha256)
 
   copy_aside_manifest <- list(
-    what = "Originals of the harmonized CORE files replaced under ADR 0056, as published from April 2025 until the replacement.",
+    what = copy_aside_description,
+    live_folder = storage$uri,
     written_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
     integrity_basis = "sha256",
     object_count = nrow(copy_aside_files),
@@ -904,9 +1009,9 @@ write_copy_aside_manifest <- function(originals_in_plan, storage, scratch_root) 
 
   jsonlite::write_json(copy_aside_manifest, local_path, auto_unbox = TRUE, pretty = TRUE, digits = NA)
 
-  storage$upload(local_path, COPY_ASIDE_MANIFEST_KEY)
+  storage$upload(local_path, manifest_key)
 
-  return(invisible(COPY_ASIDE_MANIFEST_KEY))
+  return(invisible(manifest_key))
 }
 
 # ---- Checking files against the upload plan ----

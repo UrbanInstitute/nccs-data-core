@@ -18,6 +18,7 @@ source(here("R", "config.R"))
 source(here("R", "data.R"))
 source(here("R", "create_logger.R"))
 source(here("R", "aws_s3_sync.R"))
+source(here("R", "13_pre_2012_copy_aside.R"))
 
 # ---- Step 1: promote harmonized data CSVs into processed/ ----
 
@@ -262,9 +263,14 @@ run_upload <- function(dry_run       = FALSE,
 #' for parity and rehydration — not as the primary distribution path.
 #'
 #' Mirror of run_upload_merged().
+#'
+#' Stops before sending anything unless the published files have been copied
+#' aside (ADR 0057 Decision 5; see `stop_unless_copied_aside()`).
+#' `live_storage` is the folder that check reads; the tests pass a local one.
 run_upload_legacy <- function(dry_run       = FALSE,
                               run_timestamp = format(Sys.time(), "%Y%m%dT%H%M%SZ", tz = "UTC"),
-                              enable_upload = CONFIG$ENABLE_S3_UPLOAD) {
+                              enable_upload = CONFIG$ENABLE_S3_UPLOAD,
+                              live_storage  = s3_storage(PRE_2012_LIVE_S3_URIS[["processed_legacy"]])) {
 
   dir.create(PATHS$logs_legacy, recursive = TRUE, showWarnings = FALSE)
   logger <- create_logger(file.path(PATHS$logs_legacy, "08_upload_log.txt"))
@@ -281,6 +287,8 @@ run_upload_legacy <- function(dry_run       = FALSE,
     log4r::info(logger, "skip: ENABLE_UPLOAD_PROCESSED=FALSE (applies to legacy tier as well)")
     return(invisible(NULL))
   }
+
+  stop_unless_copied_aside(live_storage, dry_run = dry_run)
 
   rc <- sync_processed_tier(
     processed_root = PATHS$processed_legacy,
@@ -309,9 +317,14 @@ run_upload_legacy <- function(dry_run       = FALSE,
 #'
 #' Mirror of run_upload() but scoped to the merged tier only; nothing here
 #' touches data/raw/, data/intermediate/, or data/processed/.
+#'
+#' Stops before sending anything unless the published files have been copied
+#' aside (ADR 0057 Decision 5; see `stop_unless_copied_aside()`).
+#' `live_storage` is the folder that check reads; the tests pass a local one.
 run_upload_merged <- function(dry_run       = FALSE,
                               run_timestamp = format(Sys.time(), "%Y%m%dT%H%M%SZ", tz = "UTC"),
-                              enable_upload = CONFIG$ENABLE_S3_UPLOAD) {
+                              enable_upload = CONFIG$ENABLE_S3_UPLOAD,
+                              live_storage  = s3_storage(PRE_2012_LIVE_S3_URIS[["processed_merged"]])) {
 
   dir.create(PATHS$logs_merged, recursive = TRUE, showWarnings = FALSE)
   logger <- create_logger(file.path(PATHS$logs_merged, "08_upload_log.txt"))
@@ -328,6 +341,8 @@ run_upload_merged <- function(dry_run       = FALSE,
     log4r::info(logger, "skip: ENABLE_UPLOAD_PROCESSED=FALSE (applies to merged tier as well)")
     return(invisible(NULL))
   }
+
+  stop_unless_copied_aside(live_storage, dry_run = dry_run)
 
   rc <- sync_processed_tier(
     processed_root = PATHS$processed_merged,

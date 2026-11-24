@@ -41,6 +41,7 @@ TEST_FILES <- c(
   "test_harmonized_compat.R",
   "test_harmonized_upload.R",
   "test_harmonized_all_years.R",
+  "test_pre_2012_copy_aside.R",
   "test_parquet.R"
 )
 

@@ -1,5 +1,7 @@
 # nccs-data-core
 
+Maintained by Thiyaghessan Poongundranar, National Center for Charitable Statistics, Urban Institute, since July 2024.
+
 `nccs-data-core` produces NCCS's CORE Series: harmonized panels of Form 990, 990-EZ, and 990-PF fields, built from the IRS Statistics of Income (SOI) annual extracts (2012-present).
 
 ## Outputs

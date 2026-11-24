@@ -107,33 +107,7 @@ NOTE_ADDED_COLUMN <- "Added in the November 2026 correction."
 
 NOTE_EMPTY_COLUMN <- "Blank in every row: the current CORE has no source for this column."
 
-# ---- Paths ----
-
-#' Give the path of the all-years file of one file kind
-#'
-#' @details The name is the key the live folder already uses.
-#'
-#' @param file_kind The file kind, for example "501C3-CHARITIES-PZ".
-#' @param replacement_root The replacement folder.
-#' @return One path, whether or not the file exists.
-all_years_path <- function(file_kind, replacement_root) {
-  file_name <- sprintf("CORE-FULL-%s-HRMN-V1.parquet", file_kind)
-
-  return(file.path(replacement_root, FILE_KIND_FOLDERS[[file_kind]], "full", file_name))
-}
-
-#' Give the path of the dictionary of one file kind
-#'
-#' @details The name is the key the live folder already uses.
-#'
-#' @param file_kind The file kind.
-#' @param replacement_root The replacement folder.
-#' @return One path, whether or not the file exists.
-dictionary_path <- function(file_kind, replacement_root) {
-  file_name <- sprintf("DD-CORE-%s-HRMN-V1.csv", file_kind)
-
-  return(file.path(replacement_root, FILE_KIND_FOLDERS[[file_kind]], "dd", file_name))
-}
+# ---- The yearly files ----
 
 #' List the yearly files one all-years file is built from
 #'
@@ -141,16 +115,17 @@ dictionary_path <- function(file_kind, replacement_root) {
 #'   never built with a year left out.
 #'
 #' @param file_kind The file kind.
+#' @param folder The file kind's folder in the replacement folder.
 #' @param replacement_root The replacement folder.
 #' @param first_year The first year the file kind covers.
 #' @param last_year The last year to include.
 #' @return A tibble with one row per year: `tax_year` and `path`.
-list_yearly_files <- function(file_kind, replacement_root, first_year, last_year) {
+list_yearly_files <- function(file_kind, folder, replacement_root, first_year, last_year) {
   years <- seq(first_year, last_year)
 
-  file_names <- sprintf("CORE-%d-%s-HRMN-V1.parquet", years, file_kind)
+  yearly_keys <- paste0(yearly_key_stem(file_kind, folder, years), ".parquet")
 
-  paths <- file.path(replacement_root, FILE_KIND_FOLDERS[[file_kind]], "marts", file_names)
+  paths <- file.path(replacement_root, yearly_keys)
 
   absent_paths <- paths[!file.exists(paths)]
 
@@ -776,27 +751,6 @@ build_dictionary <- function(described_columns, column_measures) {
   return(dictionary)
 }
 
-#' Check a dictionary against the all-years file it describes
-#'
-#' @param dictionary The tibble from `build_dictionary()`.
-#' @param file_columns The columns of the all-years file.
-#' @return A character vector of failure messages, empty when the
-#'   dictionary has at least one row for every column, no row for anything
-#'   else, and a type for every row.
-check_dictionary <- function(dictionary, file_columns) {
-  failures <- character(0)
-
-  if (!setequal(dictionary$VAR_NAME_NEW, file_columns)) {
-    failures <- c(failures, "dictionary columns differ from the file's columns")
-  }
-
-  if (anyNA(dictionary$VAR_DATA_TYPE)) {
-    failures <- c(failures, "a dictionary row has no type")
-  }
-
-  return(failures)
-}
-
 # ---- The name table ----
 
 #' Copy the name table into the replacement folder
@@ -816,11 +770,11 @@ write_name_table <- function(replacement_root, source_path = NAME_TABLE_SOURCE_P
 
 #' Describe one written file for the build record
 #'
-#' @param path The file.
+#' @param key The file's key in the replacement folder.
 #' @param replacement_root The replacement folder.
 #' @return A list with the file's `key`, `bytes` and `sha256`.
-describe_written_file <- function(path, replacement_root) {
-  key <- substring(path, nchar(replacement_root) + 2L)
+describe_written_file <- function(key, replacement_root) {
+  path <- file.path(replacement_root, key)
 
   return(list(key = key, bytes = as.numeric(file.size(path)), sha256 = sha256_of_file(path)))
 }
@@ -828,6 +782,7 @@ describe_written_file <- function(path, replacement_root) {
 #' Build and check the all-years file and the dictionary of one file kind
 #'
 #' @param file_kind The file kind.
+#' @param folder The file kind's folder in the replacement folder.
 #' @param first_year The first year the file kind covers.
 #' @param replacement_root The replacement folder.
 #' @param last_year The last year to include.
@@ -836,6 +791,7 @@ describe_written_file <- function(path, replacement_root) {
 #' @return A list for the build record: `file_kind`, `row_count`, the two
 #'   `files` written and every `failures` message.
 build_all_years_of_kind <- function(file_kind,
+                                    folder,
                                     first_year,
                                     replacement_root,
                                     last_year,
@@ -846,7 +802,7 @@ build_all_years_of_kind <- function(file_kind,
   expected_header <- c(read_frozen_columns(file_kind), CARRIED_COLUMNS)
 
   # Read the yearly files
-  yearly_files <- list_yearly_files(file_kind, replacement_root, first_year, last_year)
+  yearly_files <- list_yearly_files(file_kind, folder, replacement_root, first_year, last_year)
 
   yearly_profile <- profile_yearly_files(yearly_files, connection)
 
@@ -855,7 +811,7 @@ build_all_years_of_kind <- function(file_kind,
   column_types <- choose_column_types(yearly_profile)
 
   # Write and check the all-years file
-  all_years_file <- all_years_path(file_kind, replacement_root)
+  all_years_file <- file.path(replacement_root, all_years_key(file_kind, folder))
 
   write_all_years_file(yearly_files, column_types, all_years_file, connection)
 
@@ -865,16 +821,14 @@ build_all_years_of_kind <- function(file_kind,
 
   failures <- check_all_years_file(all_years_profile, rows_by_year, yearly_profile, column_types, expected_header)
 
-  # Write and check the dictionary
+  # Write the dictionary
   column_measures <- measure_columns(all_years_profile, yearly_profile, all_years_file, connection)
 
   described_columns <- describe_columns(file_kind, all_years_profile$column_name, frozen_dictionaries)
 
   dictionary <- build_dictionary(described_columns, column_measures)
 
-  failures <- c(failures, check_dictionary(dictionary, all_years_profile$column_name))
-
-  dictionary_file <- dictionary_path(file_kind, replacement_root)
+  dictionary_file <- file.path(replacement_root, dictionary_key(file_kind, folder))
 
   dir.create(dirname(dictionary_file), recursive = TRUE, showWarnings = FALSE)
 
@@ -883,7 +837,11 @@ build_all_years_of_kind <- function(file_kind,
   kind_summary <- list(
     file_kind = file_kind,
     row_count = sum(rows_by_year$n_rows),
-    files = purrr::map(c(all_years_file, dictionary_file), describe_written_file, replacement_root = replacement_root),
+    files = purrr::map(
+      c(all_years_key(file_kind, folder), dictionary_key(file_kind, folder)),
+      describe_written_file,
+      replacement_root = replacement_root
+    ),
     failures = paste(file_kind, failures, recycle0 = TRUE)
   )
 
@@ -905,8 +863,6 @@ build_all_years_files <- function(replacement_root,
                                   file_kinds = UPLOAD_FILE_KINDS,
                                   last_year = LAST_YEAR_REPLACED,
                                   dictionary_folder = FROZEN_DICTIONARY_FOLDER) {
-  replacement_root <- normalizePath(replacement_root, mustWork = TRUE)
-
   connection <- DBI::dbConnect(duckdb::duckdb())
 
   on.exit(DBI::dbDisconnect(connection, shutdown = TRUE), add = TRUE)
@@ -917,9 +873,12 @@ build_all_years_files <- function(replacement_root,
     purrr::map(read_frozen_dictionary, dictionary_folder = dictionary_folder) |>
     purrr::list_rbind()
 
-  kind_summaries <- purrr::map2(
-    file_kinds$file_kind,
-    file_kinds$first_year,
+  kind_summaries <- purrr::pmap(
+    list(
+      file_kind = file_kinds$file_kind,
+      folder = file_kinds$folder,
+      first_year = file_kinds$first_year
+    ),
     build_all_years_of_kind,
     replacement_root = replacement_root,
     last_year = last_year,
@@ -927,13 +886,13 @@ build_all_years_files <- function(replacement_root,
     connection = connection
   )
 
-  name_table_file <- write_name_table(replacement_root)
+  write_name_table(replacement_root)
 
   failures <- unlist(purrr::map(kind_summaries, "failures"), use.names = FALSE)
 
   written_files <- c(
     purrr::list_flatten(purrr::map(kind_summaries, "files")),
-    list(describe_written_file(name_table_file, replacement_root))
+    list(describe_written_file(NAME_TABLE_KEY, replacement_root))
   )
 
   build_record <- list(

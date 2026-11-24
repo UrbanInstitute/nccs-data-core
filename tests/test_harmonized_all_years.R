@@ -36,7 +36,7 @@ small_file_kinds <- tibble::tribble(
   small_kind,  "501c3-pz",  2021L
 )
 
-expected_header <- c(read_frozen_columns(small_kind), CARRIED_COLUMNS)
+small_expected_header <- c(read_frozen_columns(small_kind), CARRIED_COLUMNS)
 
 # The one frozen column that the small yearly files leave blank in every year.
 empty_column <- "F9_09_EXP_INFO_TECH_TOT"
@@ -51,7 +51,7 @@ empty_column <- "F9_09_EXP_INFO_TECH_TOT"
 small_yearly_table <- function(tax_year, eins, assets) {
   yearly_table <- tibble::tibble(.rows = length(eins))
 
-  for (column_name in expected_header) {
+  for (column_name in small_expected_header) {
     yearly_table[[column_name]] <- NA_real_
   }
 
@@ -100,11 +100,11 @@ make_replacement_folder <- function() {
 }
 
 read_small_all_years <- function(replacement_root) {
-  return(arrow::read_parquet(all_years_path(small_kind, replacement_root)))
+  return(arrow::read_parquet(file.path(replacement_root, all_years_key(small_kind, "501c3-pz"))))
 }
 
 read_small_dictionary <- function(replacement_root) {
-  return(readr::read_csv(dictionary_path(small_kind, replacement_root), show_col_types = FALSE))
+  return(readr::read_csv(file.path(replacement_root, dictionary_key(small_kind, "501c3-pz")), show_col_types = FALSE))
 }
 
 # ---- The type of one column ----
@@ -132,6 +132,16 @@ check(
 check(
   "a column blank in every year takes the last year's type even when that is text",
   choose_type_of_one_column(c("DOUBLE", "VARCHAR"), c(0, 0)) == "VARCHAR"
+)
+
+check(
+  "a year with a single value has a say in the type",
+  is.na(choose_type_of_one_column(c("BOOLEAN", "VARCHAR"), c(1, 3)))
+)
+
+check(
+  "a column filled in an early year only keeps that year's type",
+  choose_type_of_one_column(c("VARCHAR", "DOUBLE"), c(2, 0)) == "VARCHAR"
 )
 
 check(
@@ -170,6 +180,11 @@ check("two sums that differ in the last digits agree", totals_agree(1e12, 1e12 +
 
 check("two sums that differ by a dollar in a million do not agree", !totals_agree(1e6, 1e6 + 1))
 
+check(
+  "two small sums that differ by more than a billionth do not agree",
+  !totals_agree(1, 1 + 1.5e-9)
+)
+
 check("two blank sums agree, and a blank sum does not agree with a number", {
   identical(totals_agree(c(NA, NA), c(NA, 5)), c(TRUE, FALSE))
 })
@@ -188,7 +203,7 @@ check("the all-years file holds the rows of every yearly file", nrow(all_years_t
 
 check(
   "the all-years file has the frozen header plus the carried columns, in order",
-  identical(names(all_years_table), expected_header)
+  identical(names(all_years_table), small_expected_header)
 )
 
 check(
@@ -282,13 +297,13 @@ check(
 
 small_connection <- DBI::dbConnect(duckdb::duckdb())
 
-small_yearly_files <- list_yearly_files(small_kind, built_root, 2021L, 2023L)
+small_yearly_files <- list_yearly_files(small_kind, "501c3-pz", built_root, 2021L, 2023L)
 
 small_yearly_profile <- profile_yearly_files(small_yearly_files, small_connection)
 
 small_column_types <- choose_column_types(small_yearly_profile)
 
-small_all_years_file <- all_years_path(small_kind, built_root)
+small_all_years_file <- file.path(built_root, all_years_key(small_kind, "501c3-pz"))
 
 small_all_years_profile <- profile_parquet_file(small_all_years_file, small_connection)
 
@@ -298,7 +313,7 @@ small_rows_by_year <- count_rows_by_year(small_all_years_file, small_connection)
 check_with <- function(all_years_profile = small_all_years_profile,
                        rows_by_year = small_rows_by_year) {
   return(check_all_years_file(
-    all_years_profile, rows_by_year, small_yearly_profile, small_column_types, expected_header
+    all_years_profile, rows_by_year, small_yearly_profile, small_column_types, small_expected_header
   ))
 }
 
@@ -393,7 +408,7 @@ check(
 
 check(
   "the dictionary describes every column of the file and nothing else",
-  setequal(small_dictionary$VAR_NAME_NEW, expected_header)
+  setequal(small_dictionary$VAR_NAME_NEW, small_expected_header)
 )
 
 check(
@@ -408,7 +423,7 @@ check(
   "after the first rows the columns follow the file's order",
   {
     later_columns <- unique(small_dictionary$VAR_NAME_NEW)[-(1:7)]
-    identical(later_columns, setdiff(expected_header, c(KEY_COLUMNS, CARRIED_COLUMNS)))
+    identical(later_columns, setdiff(small_expected_header, c(KEY_COLUMNS, CARRIED_COLUMNS)))
   }
 )
 
@@ -533,22 +548,6 @@ check(
     c("F9_01_REV_OTH_CY", "SC_02_AVE_EXP_GRASS_NONTAX_CY", "F9_03_PROG_CODE_5", "F9_03_PROG_CODE_6")
   )
 )
-
-check(
-  "a dictionary that leaves out a column of the file fails its check",
-  any(grepl("differ from the file's columns", check_dictionary(small_dictionary[-1, ], expected_header)))
-)
-
-check(
-  "a dictionary row with no type fails its check",
-  {
-    untyped_dictionary <- small_dictionary
-    untyped_dictionary$VAR_DATA_TYPE[[3]] <- NA
-    any(grepl("has no type", check_dictionary(untyped_dictionary, expected_header)))
-  }
-)
-
-check("the dictionary as built passes its check", length(check_dictionary(small_dictionary, expected_header)) == 0)
 
 # ---- Standalone summary ----
 

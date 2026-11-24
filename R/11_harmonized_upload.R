@@ -342,6 +342,34 @@ list_replacement_files <- function(replacement_root, last_year = LAST_YEAR_REPLA
 
 # ---- What a complete replacement folder holds ----
 
+#' Give the key of the yearly files of one kind, without the file ending
+#'
+#' @param file_kind The kind, for example "501C3-CHARITIES-PZ".
+#' @param folder Its folder in the live folder, for example "501c3-pz".
+#' @param years One or more years.
+#' @return One key per year, to which ".csv" or ".parquet" is added.
+yearly_key_stem <- function(file_kind, folder, years) {
+  return(sprintf("%s/marts/CORE-%d-%s-HRMN-V1", folder, years, file_kind))
+}
+
+#' Give the key of the all-years parquet file of one kind
+#'
+#' @param file_kind The kind.
+#' @param folder Its folder in the live folder.
+#' @return One key.
+all_years_key <- function(file_kind, folder) {
+  return(sprintf("%s/full/CORE-FULL-%s-HRMN-V1.parquet", folder, file_kind))
+}
+
+#' Give the key of the dictionary of one kind
+#'
+#' @param file_kind The kind.
+#' @param folder Its folder in the live folder.
+#' @return One key.
+dictionary_key <- function(file_kind, folder) {
+  return(sprintf("%s/dd/DD-CORE-%s-HRMN-V1.csv", folder, file_kind))
+}
+
 #' Give the keys one kind of yearly file must have in the replacement folder
 #'
 #' @param file_kind The kind, for example "501C3-CHARITIES-PZ".
@@ -353,13 +381,13 @@ list_replacement_files <- function(replacement_root, last_year = LAST_YEAR_REPLA
 expected_keys_of_one_kind <- function(file_kind, folder, first_year, last_year) {
   years <- seq(first_year, last_year)
 
-  yearly_stems <- sprintf("%s/marts/CORE-%d-%s-HRMN-V1", folder, years, file_kind)
+  yearly_stems <- yearly_key_stem(file_kind, folder, years)
 
   expected_keys <- c(
     paste0(yearly_stems, ".csv"),
     paste0(yearly_stems, ".parquet"),
-    sprintf("%s/full/CORE-FULL-%s-HRMN-V1.parquet", folder, file_kind),
-    sprintf("%s/dd/DD-CORE-%s-HRMN-V1.csv", folder, file_kind)
+    all_years_key(file_kind, folder),
+    dictionary_key(file_kind, folder)
   )
 
   return(expected_keys)

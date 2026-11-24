@@ -20,12 +20,11 @@ suppressPackageStartupMessages({
 })
 
 source(here("R", "config.R"))
+source(here("R", "data.R"))
 source(here("R", "create_logger.R"))
 
 # In-scope filter — same regex as scripts/inventory_legacy.R.
 .LEGACY_PATTERN <- "^CORE-(\\d{4})-(501C3-CHARITIES|501CE-NONPROFIT|501C3-PRIVFOUND)-(PZ|PF)\\.csv$"
-.LEGACY_YEAR_LO <- 1989L
-.LEGACY_YEAR_HI <- 2011L
 
 #' List in-scope legacy keys from s3://nccsdata/legacy/core/.
 #'
@@ -41,7 +40,8 @@ list_legacy_keys <- function() {
   filenames <- sub("^.*\\s+", "", out)
   filenames <- filenames[grepl(.LEGACY_PATTERN, filenames)]
   yrs <- as.integer(sub(.LEGACY_PATTERN, "\\1", filenames))
-  filenames <- filenames[yrs >= .LEGACY_YEAR_LO & yrs <= .LEGACY_YEAR_HI]
+  # The years are set in one place: LEGACY_SOURCE_FILE_YEARS in R/data.R.
+  filenames <- filenames[is_legacy_source_file_year(yrs)]
   paste0("legacy/core/", filenames)
 }
 

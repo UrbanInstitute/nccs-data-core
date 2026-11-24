@@ -118,7 +118,23 @@ parse_legacy_filename <- function(filename) {
        scope            = m[4])
 }
 
-#' List the legacy source files for a given form ("990combined" -> PZ, "990pf" -> PF).
+#' List the NCCS source files one form of the pre-2012 CORE is made from
+#'
+#' @details
+#' Only files whose source file year is in `LEGACY_SOURCE_FILE_YEARS`
+#' (1989 to 2011) are listed, whatever else the folder holds. In November
+#' 2026 a source folder held the NCCS files for 2012 to 2019 as well, and
+#' a rebuild took 62,715 rows for tax years 2010 and 2011 from the 2012
+#' and 2013 files. The year limit is applied here, where the files are
+#' read, so the contents of a folder cannot decide what the pre-2012 CORE
+#' is made from.
+#'
+#' @param form "990combined" (the charity and nonprofit files, named PZ) or
+#'   "990pf" (the private foundation files, named PF).
+#' @param source_root The folder that holds the NCCS source files.
+#' @return The paths of the files to read, sorted. The attribute `left_out`
+#'   holds the paths of files of the same form whose year is outside the
+#'   limit.
 list_legacy_sources <- function(form, source_root) {
   if (form == "990combined") {
     pat <- "^CORE-\\d{4}-(501C3-CHARITIES|501CE-NONPROFIT)-PZ\\.csv$"
@@ -127,8 +143,17 @@ list_legacy_sources <- function(form, source_root) {
   } else {
     stop(sprintf("Unknown legacy form '%s'", form))
   }
-  files <- list.files(source_root, pattern = pat, full.names = TRUE)
-  sort(files)
+  files_in_folder <- sort(list.files(source_root, pattern = pat, full.names = TRUE))
+
+  source_file_years <- as.integer(stringr::str_match(basename(files_in_folder), "^CORE-(\\d{4})-")[, 2])
+
+  is_in_scope <- is_legacy_source_file_year(source_file_years)
+
+  files <- files_in_folder[is_in_scope]
+
+  attr(files, "left_out") <- files_in_folder[!is_in_scope]
+
+  return(files)
 }
 
 #' Read one legacy CSV; lowercase column names; tag with filename-derived
@@ -245,6 +270,17 @@ derive_subsection_from_partition <- function(dt, subsection_class, logger) {
 #' source files exist for the form.
 harmonize_legacy_form <- function(form, xwalk, source_root, logger) {
   files <- list_legacy_sources(form, source_root)
+
+  files_left_out <- attr(files, "left_out")
+
+  if (length(files_left_out) > 0L) {
+    log4r::warn(logger, sprintf(
+      "Left out %d NCCS file(s) whose year is outside %d to %d: %s",
+      length(files_left_out), min(LEGACY_SOURCE_FILE_YEARS), max(LEGACY_SOURCE_FILE_YEARS),
+      paste(basename(files_left_out), collapse = ", ")
+    ))
+  }
+
   if (length(files) == 0L) {
     log4r::warn(logger, sprintf("No legacy source files for form '%s' under %s",
                                 form, source_root))

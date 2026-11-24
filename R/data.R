@@ -29,6 +29,25 @@ LEGACY_CROSSWALK_FILES <- list(
 # Tax-year cutover between legacy and SOI-current pipelines.
 LEGACY_TAX_YEAR_MAX <- 2011L
 
+# The source file years: the years of the older NCCS CORE files that the
+# pre-2012 CORE is made from. A source file year is the year in the file's
+# name, for example 2005 in CORE-2005-501C3-CHARITIES-PZ.csv. The NCCS
+# files from 2012 on mix NCCS and IRS data and are left out.
+LEGACY_SOURCE_FILE_YEARS <- 1989:2011
+
+#' Say whether a source file year is one the pre-2012 CORE is made from
+#'
+#' @details Used by the step that downloads the NCCS files and by the step
+#'   that reads them, so the two cannot disagree. The step that reads the
+#'   files applies it to whatever the source folder holds: a file copied
+#'   there by hand does not change what the pre-2012 CORE is made from.
+#'
+#' @param source_file_years One or more years taken from NCCS file names.
+#' @return A logical vector: TRUE for 1989 to 2011.
+is_legacy_source_file_year <- function(source_file_years) {
+  return(source_file_years %in% LEGACY_SOURCE_FILE_YEARS)
+}
+
 #' Resolve the crosswalk file path for a CORE output series + tax year.
 #'
 #' Pre-2012 rows are produced by the legacy pipeline and use the legacy_pz /
